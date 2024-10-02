@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: AudioService
+  datasource:
+    url: jdbc:postgresql://localhost:5432/AudioService
+    password: guest
+    username: guest
+  jpa:
+    open-in-view: false
+server:
+  error:
+    include-stacktrace: never 

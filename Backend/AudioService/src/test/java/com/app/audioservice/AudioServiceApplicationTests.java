@@ -1,10 +1,10 @@
-package com.spring.streamingservice;
+package com.app.audioservice;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class BackEndApplicationTests {
+class AudioServiceApplicationTests {
 
 	@Test
 	void contextLoads() {
