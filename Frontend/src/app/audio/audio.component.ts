@@ -8,5 +8,14 @@ import { Component } from '@angular/core';
   styleUrl: './audio.component.css'
 })
 export class AudioComponent {
+    
+    constructor(){
+      this.playMusic();
+
+    }
+  
+    playMusic(){
+    
+    }
 
 }

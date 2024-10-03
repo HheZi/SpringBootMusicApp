@@ -10,3 +10,5 @@ spring:
 server:
   error:
     include-stacktrace: never 
+  tomcat:
+    connection-timeout: 5000

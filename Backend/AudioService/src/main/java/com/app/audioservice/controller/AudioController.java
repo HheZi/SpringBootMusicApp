@@ -1,5 +1,6 @@
 package com.app.audioservice.controller;
 
+import java.io.InputStream;
 import java.lang.module.ModuleDescriptor.Builder;
 import java.util.Arrays;
 import java.util.List;
@@ -29,20 +30,17 @@ public class AudioController {
 	
 	@GetMapping(value = "/{filename}", produces = "audio/mp3")
 	@SneakyThrows
-	public ResponseEntity<Resource> getAudio(@PathVariable("filename") String filename, 
-			@RequestHeader(value =  "Range",  required = false) String rangeHeader){
-		List<HttpRange> ranges = HttpRange.parseRanges(rangeHeader);
-		Resource resource = audioService.getResource(filename);
-		
-		if (!ranges.isEmpty()) {
-			HttpRange httpRange = ranges.get(0);
-			return ResponseEntity.status(HttpStatus.PARTIAL_CONTENT)
-					.header(HttpHeaders.CONTENT_RANGE, String.format("bytes %d-%d/%d", 
-							httpRange.getRangeStart(resource.contentLength()), 
-							httpRange.getRangeEnd(resource.contentLength()), resource.contentLength()))
-					.body(resource);
+	public ResponseEntity<byte[]> getAudio(@PathVariable("filename") String filename, 
+			@RequestHeader(value = "Range", required = false) String rangeHeader){
+		if (rangeHeader == null) {
+			return ResponseEntity
+					.status(HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE)
+					.build();
 		}
-		return ResponseEntity.ok(resource);
+		return ResponseEntity
+				.status(HttpStatus.PARTIAL_CONTENT)
+				.header(HttpHeaders.RANGE, rangeHeader)
+				.body(audioService.getResource(filename, rangeHeader));
 	}
 	
 }
