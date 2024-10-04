@@ -11,6 +11,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpRange;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -29,7 +30,7 @@ public class AudioController {
 	private AudioService audioService;
 	
 	@GetMapping(value = "/{filename}", produces = "audio/mp3")
-	@SneakyThrows
+	@CrossOrigin
 	public ResponseEntity<byte[]> getAudio(@PathVariable("filename") String filename, 
 			@RequestHeader(value = "Range", required = false) String rangeHeader){
 		if (rangeHeader == null) {

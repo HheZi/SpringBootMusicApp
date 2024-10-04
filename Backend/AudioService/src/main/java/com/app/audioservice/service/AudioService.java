@@ -1,5 +1,6 @@
 package com.app.audioservice.service;
 
+import java.io.InputStream;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -37,23 +38,11 @@ public class AudioService {
 			int rangeStart = (int) httpRange.getRangeStart(contentLength);
 			int rangeEnd = (int) httpRange.getRangeEnd(contentLength);
 			
-//			byte[] arr;
+			try(InputStream input = resource.getInputStream();){
+				input.skipNBytes(rangeStart);
+				res = concatTwoArrays(res, input.readNBytes(rangeEnd - rangeStart));
+			}
 			
-//			if (rangeEnd == contentLength - 1) {
-//				resource.getInputStream().skip(rangeStart);
-//				arr = resource.getContentAsByteArray();
-//			}
-//			else {
-//				arr = new byte[(rangeEnd - rangeStart)];
-//				
-//				resource.getInputStream().read(arr, rangeStart, rangeEnd - rangeStart);
-//				
-//			}
-			
-			resource.getInputStream().skip(rangeStart);
-			
-			res = concatTwoArrays(res, resource.getInputStream().readNBytes(rangeEnd - rangeStart));
-
 		}
 		return res;
 	}
