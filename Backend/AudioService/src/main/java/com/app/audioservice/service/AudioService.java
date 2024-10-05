@@ -1,5 +1,6 @@
 package com.app.audioservice.service;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.stream.Stream;
@@ -24,8 +25,7 @@ public class AudioService {
 	@Autowired
 	private ResourceLoader resourceLoader;
 
-	@SneakyThrows
-	public byte[] getResource(String filename, String rangeHeader) {
+	public byte[] getResource(String filename, String rangeHeader) throws IOException {
 		Resource resource = resourceLoader.getResource(String.format(AUDIO_PATH, filename));
 		
 		List<HttpRange> ranges = HttpRange.parseRanges(rangeHeader);

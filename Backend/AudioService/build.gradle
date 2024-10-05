@@ -7,11 +7,6 @@ plugins {
 group = 'com.audioservice'
 version = '1.0.0'
 
-java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(18)
-	}
-}
 
 configurations {
 	compileOnly {
