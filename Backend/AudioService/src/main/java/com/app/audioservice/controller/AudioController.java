@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.app.audioservice.service.AudioService;
+import com.app.audioservice.utils.AudioFragment;
 
 import lombok.SneakyThrows;
 
@@ -41,13 +42,14 @@ public class AudioController {
 					.status(HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE)
 					.build();
 		}
-		byte[] resource = audioService.getResource(filename, rangeHeader);
+		AudioFragment resource = audioService.getResource(filename, rangeHeader);
 		
 		return ResponseEntity
 				.status(HttpStatus.PARTIAL_CONTENT)
 				.cacheControl(CacheControl.noStore())
-				.header(HttpHeaders.RANGE, rangeHeader)
-				.body(resource);
+				.header(HttpHeaders.CONTENT_RANGE, resource.getRangeHeader())
+				.header(HttpHeaders.CONTENT_LENGTH, resource.getContent().length + "")
+				.body(resource.getContent());
 	}
 	
 }

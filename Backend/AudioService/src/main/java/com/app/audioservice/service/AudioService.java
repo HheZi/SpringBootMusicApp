@@ -15,45 +15,51 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.app.audioservice.utils.AppConsts;
+import com.app.audioservice.utils.AudioFragment;
+
 import lombok.SneakyThrows;
 
 @Service
 public class AudioService {
 
-	private static final String AUDIO_PATH =  "classpath:/audio/%s.mp3";
-	
+	private static final String AUDIO_PATH = "classpath:/audio/%s.mp3";
+
 	@Autowired
 	private ResourceLoader resourceLoader;
 
-	public byte[] getResource(String filename, String rangeHeader) throws IOException {
+	public AudioFragment getResource(String filename, String rangeHeader) throws IOException {
 		Resource resource = resourceLoader.getResource(String.format(AUDIO_PATH, filename));
-		
+
 		List<HttpRange> ranges = HttpRange.parseRanges(rangeHeader);
 		long contentLength = resource.contentLength();
-		
+
 		byte[] res = new byte[] {};
-		
-		for (HttpRange httpRange : ranges) {
-			
-			int rangeStart = (int) httpRange.getRangeStart(contentLength);
-			int rangeEnd = (int) httpRange.getRangeEnd(contentLength);
-			
-			try(InputStream input = resource.getInputStream();){
-				input.skipNBytes(rangeStart);
-				res = concatTwoArrays(res, input.readNBytes(rangeEnd - rangeStart));
-			}
-			
+
+		HttpRange httpRange = ranges.get(0);
+
+		int rangeStart = (int) httpRange.getRangeStart(contentLength);
+		int rangeEnd = (int) rangeStart + AppConsts.MAX_CHUNK_OF_AUDIO;
+
+		try (InputStream input = resource.getInputStream();) {
+			input.skipNBytes(rangeStart);
+			res = concatTwoArrays(res, input.readNBytes(AppConsts.MAX_CHUNK_OF_AUDIO));
 		}
-		return res;
+
+		return new AudioFragment(res, createRangeHeaderValue(rangeStart, rangeEnd, contentLength));
+
 	}
-	
+
 	private byte[] concatTwoArrays(byte[] arr1, byte[] arr2) {
 		byte[] newArr = new byte[arr1.length + arr2.length];
-		
+
 		System.arraycopy(arr1, 0, newArr, 0, arr1.length);
 		System.arraycopy(arr2, 0, newArr, arr1.length, arr2.length);
-		
+
 		return newArr;
 	}
-	
+
+	private String createRangeHeaderValue(int startRange, int endRange, long contentLength) {
+		return String.format("bytes %d-%d/%d", startRange, endRange, contentLength);
+	}
 }
