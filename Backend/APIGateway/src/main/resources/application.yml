@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: APIGateway
+  cloud.gateway.discovery.locator.enabled: true
+  cloud.gateway.discovery.locator.lower-case-service-id: true
+server:
+  port: 8080
+
