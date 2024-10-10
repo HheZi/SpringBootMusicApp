@@ -3,33 +3,28 @@ package com.app.audioservice.service;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpRange;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.app.audioservice.utils.AppConsts;
 import com.app.audioservice.utils.AudioFragment;
 
-import lombok.SneakyThrows;
 
 @Service
 public class AudioService {
 
+	public static final int MAX_CHUNK_OF_AUDIO = 1024 * 1024;
+	
 	private static final String AUDIO_PATH = "classpath:/audio/%s.mp3";
 
 	@Autowired
 	private ResourceLoader resourceLoader;
 
 	public AudioFragment getResource(String filename, String rangeHeader) throws IOException {
-		Resource resource = resourceLoader.getResource(String.format(AUDIO_PATH, filename));
+		Resource resource = resourceLoader.getResource(AUDIO_PATH.formatted(filename));
 
 		List<HttpRange> ranges = HttpRange.parseRanges(rangeHeader);
 		long contentLength = resource.contentLength();
@@ -38,12 +33,12 @@ public class AudioService {
 
 		HttpRange httpRange = ranges.get(0);
 
-		int rangeStart = (int) httpRange.getRangeStart(contentLength);
-		int rangeEnd = (int) rangeStart + AppConsts.MAX_CHUNK_OF_AUDIO;
+		long rangeStart =  httpRange.getRangeStart(contentLength);
+		long rangeEnd =  rangeStart + MAX_CHUNK_OF_AUDIO;
 
 		try (InputStream input = resource.getInputStream();) {
 			input.skipNBytes(rangeStart);
-			res = concatTwoArrays(res, input.readNBytes(AppConsts.MAX_CHUNK_OF_AUDIO));
+			res = concatTwoArrays(res, input.readNBytes(MAX_CHUNK_OF_AUDIO));
 		}
 
 		return new AudioFragment(res, createRangeHeaderValue(rangeStart, rangeEnd, contentLength));
@@ -59,7 +54,7 @@ public class AudioService {
 		return newArr;
 	}
 
-	private String createRangeHeaderValue(int startRange, int endRange, long contentLength) {
-		return String.format("bytes %d-%d/%d", startRange, endRange, contentLength);
+	private String createRangeHeaderValue(long startRange, long endRange, long contentLength) {
+		return "bytes %d-%d/%d".formatted(startRange, endRange, contentLength);
 	}
 }

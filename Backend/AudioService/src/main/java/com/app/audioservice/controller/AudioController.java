@@ -34,14 +34,14 @@ public class AudioController {
 	private AudioService audioService;
 	
 	@GetMapping(value = "/{filename}", produces = "audio/mpeg")
-	@CrossOrigin(origins = "http://localhost:4200/")
-	public ResponseEntity<byte[]> getAudio(@PathVariable("filename") String filename, 
+	public ResponseEntity<byte[]> getAudio(@PathVariable String filename, 
 			@RequestHeader(value = "Range", required = false) String rangeHeader) throws IOException{
 		if (rangeHeader == null) {
 			return ResponseEntity
 					.status(HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE)
 					.build();
 		}
+		
 		AudioFragment resource = audioService.getResource(filename, rangeHeader);
 		
 		return ResponseEntity
