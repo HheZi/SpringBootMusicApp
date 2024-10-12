@@ -10,6 +10,4 @@ spring:
 server:
   error:
     include-stacktrace: never 
-  tomcat:
-    connection-timeout: 60000
   port: 0

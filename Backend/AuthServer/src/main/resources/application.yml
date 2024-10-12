@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: AuthService
+server:
+  port: 0
+token:
+  secret: 9649CDE69385C16B568704B2B7A0DA4970C68D8E6FAE19A2A23472DE3AE8ED2F

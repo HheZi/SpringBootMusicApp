@@ -9,3 +9,4 @@ java {
         languageVersion.set(JavaLanguageVersion.of(18))
     }
 }
+

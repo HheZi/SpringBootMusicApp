@@ -34,7 +34,7 @@ public class AudioController {
 	private AudioService audioService;
 	
 	@GetMapping(value = "/{filename}", produces = "audio/mpeg")
-	public ResponseEntity<byte[]> getAudio(@PathVariable String filename, 
+	public ResponseEntity<byte[]> getAudio(@PathVariable("filename") String filename, 
 			@RequestHeader(value = "Range", required = false) String rangeHeader) throws IOException{
 		if (rangeHeader == null) {
 			return ResponseEntity

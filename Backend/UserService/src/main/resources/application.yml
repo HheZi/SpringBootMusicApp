@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: UserService
+  datasource:
+    url: jdbc:postgresql://localhost:5432/Users
+    password: guest
+    username: guest
+server:
+  port: 0
