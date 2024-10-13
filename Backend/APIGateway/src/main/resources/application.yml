@@ -6,12 +6,11 @@ spring:
   cloud.gateway:
     discovery.locator.enabled: true
     discovery.locator.lower-case-service-id: true
-spring.cloud.gateway.routes[0].id: audio-service-route
-spring.cloud.gateway.routes[0].uri: lb://AudioService
-spring.cloud.gateway.routes[0].predicates: Path=/api/audio/**
-spring.cloud.gateway.routes[1].id: auth-service-route
-spring.cloud.gateway.routes[1].uri: lb://AuthService
-spring.cloud.gateway.routes[1].predicates: Path=/login
-spring.cloud.gateway.routes[2].id: user-service-route
-spring.cloud.gateway.routes[2].uri: lb://UserService
-spring.cloud.gateway.routes[2].predicates: Path=/api/users/**
+eureka:
+   client:
+    register-with-eureka: false
+    fetch-registry: true
+    registry-fetch-interval-seconds: 5
+logging:
+  level:
+    '[org.springframework.web]': debug

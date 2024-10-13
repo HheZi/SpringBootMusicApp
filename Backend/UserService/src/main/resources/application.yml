@@ -3,7 +3,10 @@ spring:
     name: UserService
   datasource:
     url: jdbc:postgresql://localhost:5432/Users
-    password: guest
-    username: guest
+    password: postgres
+    username: postgres
 server:
   port: 0
+logging:
+  level:
+    '[org.springframework.web]': debug

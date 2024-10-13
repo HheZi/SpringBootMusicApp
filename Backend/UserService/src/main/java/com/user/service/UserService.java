@@ -15,9 +15,11 @@ import com.user.repository.UserRepository;
 import com.user.util.UserMapper;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserService {
 	
 	private final PasswordEncoder encoder;
@@ -27,6 +29,7 @@ public class UserService {
 	private final UserMapper userMapper;
 	
 	public ValidatedUser validateUser(UserAuthRequest authRequest) {
+		log.warn("Username is {}", authRequest.getUsername());
 		User user = userRepository.findByUsername(authRequest.getUsername())
 				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User is not found"));	
 		

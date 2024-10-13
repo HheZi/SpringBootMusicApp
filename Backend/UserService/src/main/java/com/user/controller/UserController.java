@@ -18,21 +18,21 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api/users/")
 @RequiredArgsConstructor
 public class UserController {
 
 	private final UserService service;
 	
 	@PostMapping
-	public ResponseEntity<?> createUser(@RequestBody UserFormRequest entity) {
+	public Mono<ResponseEntity<?>> createUser(@RequestBody UserFormRequest entity) {
 		service.createNewUser(entity);
 		
-		return ResponseEntity.status(HttpStatus.CREATED).build();
+		return Mono.just(ResponseEntity.status(HttpStatus.CREATED).build());
 	}
 	
 	@PostMapping("/validate")
-	public Mono<ValidatedUser> validate(UserAuthRequest req){
+	public Mono<ValidatedUser> validate(@RequestBody UserAuthRequest req){
 		return Mono.just(service.validateUser(req));
 	}
 	

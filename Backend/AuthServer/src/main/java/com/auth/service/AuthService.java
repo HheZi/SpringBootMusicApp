@@ -1,8 +1,8 @@
 package com.auth.service;
 
-import java.net.URI;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -22,16 +22,23 @@ public class AuthService {
 	
 	private final JwtUtil jwtUtil;
 	
-	private final RestTemplate restTemplate = new RestTemplate();
+	private final WebClient.Builder webClient;
 	
 	@SneakyThrows
-	public String loginUser(AuthRequest authRequest) {
-		UserDetails userDetails = restTemplate.getForEntity(new URI("http://UserService/api/users/validate"), UserDetails.class).getBody();
-		if (userDetails == null) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Wrong login or password");
-		}
-		
-		return jwtUtil.createJwtToken(userDetails);
+	public Mono<String> loginUser(AuthRequest authRequest) {
+		return webClient.build()
+                .post()
+                .uri("http://UserService/api/users/validate")
+                .bodyValue(authRequest)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, response -> Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Wrong login or password")))
+                .bodyToMono(UserDetails.class)
+                .flatMap(userDetails -> {
+                    if (userDetails == null) {
+                        return Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Wrong login or password"));
+                    }
+                    return Mono.just(jwtUtil.createJwtToken(userDetails));
+                });
 	}
 	
 }
