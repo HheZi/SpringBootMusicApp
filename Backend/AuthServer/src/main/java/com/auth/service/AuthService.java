@@ -38,7 +38,8 @@ public class AuthService {
                         return Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Wrong login or password"));
                     }
                     return Mono.just(jwtUtil.createJwtToken(userDetails));
-                });
+                })
+                ;
 	}
 	
 }
