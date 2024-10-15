@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { LoginService } from '../services/login-service.service';
+import { LoginService } from '../services/login/login-service.service';
 import { MessageService } from 'primeng/api';
 import { Router } from '@angular/router';
 
@@ -24,10 +24,14 @@ export class LoginComponent{
         this.router.navigate(["home"]);
       },
       error: err => {
-        this.messageService.add({severity: "error", summary: "Error", detail: "Bad credential"})
+        this.messageService.add({severity: "error", summary: "Error", detail: "Bad credential", closable: true})
       },
     });;
 
+  }
+
+  public navigateToRegistration(): void{
+    this.router.navigate(["registration"])
   }
 
 }

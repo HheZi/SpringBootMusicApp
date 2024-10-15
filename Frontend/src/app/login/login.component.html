@@ -1,27 +1,27 @@
-
 <div class="mainContainer">
 
-    <p-card header="Login to App" styleClass="login-card" [style]="{ width: '460px' }" >
-      <form (ngSubmit)="onSubmit()">
-        <div class="inputField">
-          <span class="p-float-label">
-            <input id="username" type="text" pInputText [(ngModel)]="username" name="username" />
-            <label for="username">Username</label>
-          </span>
-        </div>
-  
-        <div class="inputField">
-          <span class="p-float-label">
-            <input type="password" pInputText [(ngModel)]="password" name="password">
-            <label for="password">Password</label>
-          </span>
-        </div>
-  
-        <div class="buttonContainer">
-          <button pButton type="submit" label="Login" class="p-button-rounded p-button-primary"></button>
-        </div>
-  
-      </form>
-    </p-card>
-  </div>
-  
+  <p-card header="Login to App" styleClass="login-card" [style]="{ width: '460px' }">
+    <form (ngSubmit)="onSubmit()">
+      <div class="inputField">
+        <span class="p-float-label">
+          <input id="username" type="text" pInputText [(ngModel)]="username" name="username" required />
+          <label for="username">Username</label>
+        </span>
+      </div>
+
+      <div class="inputField">
+        <span class="p-float-label">
+          <input type="password" pInputText [(ngModel)]="password" name="password" required />
+          <label for="password">Password</label>
+        </span>
+      </div>
+
+      <div class="buttonContainer">
+        <button pButton type="submit" label="Login" class="p-button-rounded p-button-primary"></button>
+      </div>
+
+    </form>
+    <p-button label="Don't have an account?" icon="pi pi-hashtag" [link]="true" [size]="'small'" [rounded]="true"
+      (onClick)="navigateToRegistration()" [style]="{ margin: '10px' }" />
+  </p-card>
+</div>

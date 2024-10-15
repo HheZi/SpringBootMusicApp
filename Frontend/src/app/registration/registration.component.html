@@ -1,0 +1,42 @@
+<div class="mainContainer">
+    <p-card header="Register" styleClass="registration-card" [style]="{ width: '460px' }">
+        <form (ngSubmit)="onSubmit()">
+
+            <div class="inputField">
+                <span class="p-float-label">
+                    <input id="username" type="text" pInputText [(ngModel)]="username" name="username" required="" />
+                    <label for="username">Username</label>
+                </span>
+            </div>
+
+            <div class="inputField">
+                <span class="p-float-label">
+                    <input id="email" type="email" pInputText [(ngModel)]="email" name="email" required="" />
+                    <label for="email">Email</label>
+                </span>
+            </div>
+
+            <div class="inputField">
+                <span class="p-float-label">
+                    <p-password id="password" [(ngModel)]="password" name="password" required
+                        [inputStyle]="{ width: '420px' }"></p-password>
+                    <label for="password">Password</label>
+                </span>
+            </div>
+
+            <div class="inputField">
+                <span class="p-float-label">
+                    <input type="password" id="confirmPassword" pInputText [(ngModel)]="confirmPassword"
+                        name="confirmPassword" required="" />
+                    <label for="confirmPassword">Confirm Password</label>
+                </span>
+            </div>
+
+            <div class="buttonContainer">
+                <button pButton type="submit" label="Register" class="p-button-rounded"></button>
+            </div>
+        </form>
+        <p-button label="Already have an account?" icon="pi pi-hashtag" [link]="true" [size]="'small'" (onClick)="routeToLogin()" [rounded]="true"
+            [style]="{ margin: '10px' }" />
+    </p-card>
+</div>
