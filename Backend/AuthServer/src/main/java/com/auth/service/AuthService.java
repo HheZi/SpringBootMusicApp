@@ -31,15 +31,11 @@ public class AuthService {
                 .uri("http://UserService/api/users/validate")
                 .bodyValue(authRequest)
                 .retrieve()
-                .onStatus(HttpStatusCode::is4xxClientError, response -> Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Wrong login or password")))
+                .onStatus(HttpStatusCode::is4xxClientError, response -> Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad Credential")))
                 .bodyToMono(UserDetails.class)
                 .flatMap(userDetails -> {
-                    if (userDetails == null) {
-                        return Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "Wrong login or password"));
-                    }
                     return Mono.just(jwtUtil.createJwtToken(userDetails));
-                })
-                ;
+                });
 	}
 	
 }

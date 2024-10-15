@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
@@ -29,7 +30,7 @@ public class AuthenticationGatewayFilter implements GatewayFilter {
 	public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
 		ServerHttpRequest request = exchange.getRequest();
 
-		if (isEndpointSecured(request) && isJwtExpired(request)) {
+		if (isEndpointNotSecured(request) && isJwtExpired(request)) {
 			return Mono.error(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
 		}
 		
@@ -37,11 +38,11 @@ public class AuthenticationGatewayFilter implements GatewayFilter {
 	}
 
 	private boolean isJwtExpired(ServerHttpRequest request) {
-		List<String> vals = request.getHeaders().getOrEmpty("Authorization");
+		List<String> vals = request.getHeaders().getOrEmpty(HttpHeaders.AUTHORIZATION);
 		return  vals.isEmpty() || jwtUtil.isExpired(vals.get(0));
 	}
 
-	private boolean isEndpointSecured(ServerHttpRequest request) {
+	private boolean isEndpointNotSecured(ServerHttpRequest request) {
 		return openEndpoints.stream().noneMatch(t -> request.getURI().getPath().contains(t));
 	}
 

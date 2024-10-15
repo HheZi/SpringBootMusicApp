@@ -1,15 +1,27 @@
+
 <div class="mainContainer">
-    <div class="centerContainer">
-        <form action="" (ngSubmit)="onSubmit()">
-            <div>
-                <input type="text" placeholder="Username"  [(ngModel)]="username" name="username">
-            </div>
-            <div>
-                <input type="password" placeholder="Password" [(ngModel)]="password" name="password">
-            </div>
-            <div>
-                <button class="submitBut" type="submit">Login</button>
-            </div>
-        </form>
-    </div>
-</div>
+
+    <p-card header="Login to App" styleClass="login-card" [style]="{ width: '460px' }" >
+      <form (ngSubmit)="onSubmit()">
+        <div class="inputField">
+          <span class="p-float-label">
+            <input id="username" type="text" pInputText [(ngModel)]="username" name="username" />
+            <label for="username">Username</label>
+          </span>
+        </div>
+  
+        <div class="inputField">
+          <span class="p-float-label">
+            <input type="password" pInputText [(ngModel)]="password" name="password">
+            <label for="password">Password</label>
+          </span>
+        </div>
+  
+        <div class="buttonContainer">
+          <button pButton type="submit" label="Login" class="p-button-rounded p-button-primary"></button>
+        </div>
+  
+      </form>
+    </p-card>
+  </div>
+  
