@@ -21,7 +21,7 @@ import reactor.core.publisher.Mono;
 @Component
 public class AuthenticationGatewayFilter implements GatewayFilter {
 
-	public final List<String> openEndpoints = List.of("/login", "/api/users/");
+	public final List<String> openEndpoints = List.of("/login", "/api/users/", "/api/audio/");
 
 	@Autowired
 	private JwtUtil jwtUtil;
