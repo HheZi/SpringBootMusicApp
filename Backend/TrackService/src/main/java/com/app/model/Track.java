@@ -1,7 +1,9 @@
 package com.app.model;
 
 import java.time.Instant;
+import java.util.UUID;
 
+import org.hibernate.annotations.JdbcType;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -36,12 +38,12 @@ public class Track {
 	@Column(name = "playlist_id")
 	private Long playlistId;
 	
-	@Column(name = "created_by")
-	private Integer createBy;
-	
 	@Column(name = "created_at")
 	@CreatedDate
 	private Instant createdAt;
+	
+	@Column(name = "audio_name")
+	private String audioName;
 	
 	@Column(name = "update_at")
 	@LastModifiedDate

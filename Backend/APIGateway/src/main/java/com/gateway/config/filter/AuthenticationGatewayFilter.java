@@ -20,8 +20,9 @@ import reactor.core.publisher.Mono;
 @RefreshScope
 @Component
 public class AuthenticationGatewayFilter implements GatewayFilter {
-
-	public final List<String> openEndpoints = List.of("/login", "/api/users/", "/api/audio/");
+	
+	
+	private final List<String> openEndpoints = List.of("/login", "/api/users/", "/api/audio/");
 
 	@Autowired
 	private JwtUtil jwtUtil;
@@ -39,7 +40,9 @@ public class AuthenticationGatewayFilter implements GatewayFilter {
 
 	private boolean isJwtExpired(ServerHttpRequest request) {
 		List<String> vals = request.getHeaders().getOrEmpty(HttpHeaders.AUTHORIZATION);
-		return  vals.isEmpty() || jwtUtil.isExpired(vals.get(0));
+		String[] strings = vals.get(0).split("\s");
+		
+		return  vals.isEmpty() || jwtUtil.isExpired(strings[1]);
 	}
 
 	private boolean isEndpointNotSecured(ServerHttpRequest request) {

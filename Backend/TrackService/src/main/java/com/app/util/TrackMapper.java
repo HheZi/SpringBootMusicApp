@@ -1,5 +1,7 @@
 package com.app.util;
 
+import java.util.UUID;
+
 import org.springframework.stereotype.Component;
 
 import com.app.model.Track;
@@ -11,7 +13,7 @@ public class TrackMapper {
 	public Track fromCreateTrackDtoToTrack(CreateTrackDto dto) {
 		return Track.builder()
 				.title(dto.getTitle())
-				.playlistId(dto.getPlaylistId())
+				.audioName(UUID.randomUUID().toString())
 				.build();
 	}
 	

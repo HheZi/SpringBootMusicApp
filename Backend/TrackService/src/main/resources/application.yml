@@ -5,3 +5,8 @@ spring:
     url: jdbc:postgresql://localhost:5432/TrackDB
     password: postgres
     username: postgres
+server:
+  port: 0
+logging:
+  level:
+    '[org.springframework.web]': debug

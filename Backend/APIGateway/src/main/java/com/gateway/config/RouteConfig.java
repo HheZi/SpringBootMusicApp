@@ -18,14 +18,17 @@ public class RouteConfig {
 	@Bean
 	RouteLocator routeLocator(RouteLocatorBuilder builder) {
 		return builder.routes()
-				.route("audio-service-route",
+				.route("audio-service",
 						t -> t.path("/api/audio/**").filters(f -> f.filter(filter)).uri("lb://AudioService"))
 				
-				.route("auth-service-route",
+				.route("auth-service",
 						t -> t.path("/login").filters(f -> f.filter(filter)).uri("lb://AuthService"))
 				
-				.route("user-service-route", t -> t.path("/api/users/**").and().method(HttpMethod.values())
-						.filters(f -> f.filter(filter)).uri("lb://UserService"))
+				.route("user-service", 
+						t -> t.path("/api/users/**").filters(f -> f.filter(filter)).uri("lb://UserService"))
+				
+				.route("track-service", 
+						t -> t.path("/api/tracks/**").filters(f -> f.filter(filter)).uri("lb://TrackService"))
 				.build();
 	}
 

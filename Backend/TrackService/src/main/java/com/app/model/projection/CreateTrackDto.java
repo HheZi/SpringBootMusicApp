@@ -1,9 +1,8 @@
 package com.app.model.projection;
 
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.http.codec.multipart.FilePart;
 
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
@@ -12,7 +11,7 @@ public class CreateTrackDto {
 
 	private String title;
 	
-	private MultipartFile file;
+	private FilePart file;
 	
 	private Long playlistId;
 	

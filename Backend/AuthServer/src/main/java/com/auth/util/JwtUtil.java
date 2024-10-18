@@ -25,7 +25,7 @@ public class JwtUtil {
 	public String createJwtToken(UserDetails userDetails) {
 		return Jwts.builder()
 				.claim("username", userDetails.getUsername())
-				.subject(userDetails.getId()+"")
+				.claim("id", userDetails.getId())
 				.issuedAt(new Date())
 				.expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 1))
 				.signWith(getSingingKey())

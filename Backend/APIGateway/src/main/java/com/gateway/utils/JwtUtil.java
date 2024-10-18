@@ -4,6 +4,7 @@ import java.util.Date;
 
 import javax.crypto.SecretKey;
 
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -18,7 +19,7 @@ public class JwtUtil {
 	private String SECRET_KEY;
 
 	private Claims getClaims(String token) {
-		return (Claims) Jwts.parser().decryptWith(getSingingKey()).build().parse(token).getPayload();
+		return (Claims) Jwts.parser().verifyWith(getSingingKey()).build().parseSignedClaims(token).getPayload();
 	}
 
 	public boolean isExpired(String token) {

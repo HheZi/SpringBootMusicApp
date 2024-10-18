@@ -12,6 +12,7 @@ import com.app.model.projection.CreateTrackDto;
 import com.app.service.TrackService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
 @RestController
@@ -22,10 +23,12 @@ public class TrackContoller {
 	private final TrackService trackService;
 	
 	@PostMapping
-	public Mono<ResponseEntity<?>> createTrack(@ModelAttribute Mono<CreateTrackDto> dto, @RequestHeader("id") Integer id){
-		
+	public Mono<ResponseEntity<?>> createTrack(@ModelAttribute Mono<CreateTrackDto> dto){
 		return dto
-				.flatMap(t -> Mono.just(ResponseEntity.status(HttpStatus.CREATED).build()));
+				.flatMap(t -> {
+					trackService.createTrack(t);
+					return Mono.just(ResponseEntity.status(HttpStatus.CREATED).build());
+				});
 	}
 	
 }
