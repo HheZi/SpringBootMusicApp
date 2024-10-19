@@ -11,9 +11,7 @@ server:
   error:
     include-stacktrace: never 
   port: 0
-audio:
-  path: classpath:/audio
-  type: mp3
+audio.path: /Programming/Java/StreamingService/Backend/AudioService/audio
 logging:
   level:
     '[org.springframework.web]': debug
