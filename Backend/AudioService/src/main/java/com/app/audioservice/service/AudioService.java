@@ -1,13 +1,17 @@
 package com.app.audioservice.service;
 
+import static java.nio.file.StandardOpenOption.CREATE;
+import static java.nio.file.StandardOpenOption.CREATE_NEW;
+import static java.nio.file.StandardOpenOption.WRITE;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +37,6 @@ public class AudioService {
 	
 	private final String AUDIO_PATH;
 	
-	@Value("${audio.type}")
 	private String audioType;
 	
 	@Autowired
@@ -42,6 +45,7 @@ public class AudioService {
 	public AudioService(@Value("${audio.path}") String path, @Value("${audio.type}") String type) {
 		this.AUDIO_PATH = !path.endsWith("/") ? path + "/" : path;
 		this.AUDIO_FILE = AUDIO_PATH + "%s." + type;
+		this.audioType = type;
 	}
 	
 	public AudioFragment getResource(String filename, String rangeHeader) throws IOException {
@@ -64,8 +68,11 @@ public class AudioService {
 
 	@SneakyThrows
 	public void saveAudio(SaveAudioDTO dto) {
-		Path path = Paths.get(resourceLoader.getResource(AUDIO_PATH + dto.getName() + audioType).getURI());
-		Files.write(path, dto.getContent(), StandardOpenOption.CREATE_NEW);
+		
+		
+		Path path = Path.of(resourceLoader.getResource(AUDIO_PATH).getURI()).resolve(dto.getName() + audioType);
+		
+		Files.write(path, dto.getContent());
 	}
 	
 	private String createRangeHeaderValue(long startRange, long endRange, long contentLength) {

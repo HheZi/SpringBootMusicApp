@@ -27,7 +27,7 @@ public class JwtUtil {
 				.claim("username", userDetails.getUsername())
 				.claim("id", userDetails.getId())
 				.issuedAt(new Date())
-				.expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 1))
+				.expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 5))
 				.signWith(getSingingKey())
 				.compact();
 	}

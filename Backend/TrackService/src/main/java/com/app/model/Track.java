@@ -38,14 +38,14 @@ public class Track {
 	@Column(name = "playlist_id")
 	private Long playlistId;
 	
-	@Column(name = "created_at")
+	@Column(name = "created_at", updatable = false)
 	@CreatedDate
 	private Instant createdAt;
 	
 	@Column(name = "audio_name")
 	private String audioName;
 	
-	@Column(name = "update_at")
+	@Column(name = "updated_at")
 	@LastModifiedDate
 	private Instant updateAt;
 }
