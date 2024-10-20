@@ -12,11 +12,14 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.app.model.projection.CreateTrackDto;
+import com.app.model.projection.ResponseTrack;
 import com.app.service.TrackService;
 
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import org.springframework.web.bind.annotation.GetMapping;
+
 
 @RestController
 @RequestMapping("/api/tracks/")
@@ -25,6 +28,12 @@ public class TrackContoller {
 
 	private final TrackService trackService;
 
+	@GetMapping
+	public Flux<ResponseTrack> getTracks() {
+		return trackService.getTracks();
+	}
+	
+	
 	@PostMapping
 	public Mono<ResponseEntity<?>> createTrack(@ModelAttribute Mono<CreateTrackDto> dto,
 			@RequestPart("file") Mono<FilePart> file) {

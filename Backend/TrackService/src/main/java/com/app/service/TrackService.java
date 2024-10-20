@@ -11,11 +11,13 @@ import org.springframework.web.server.ResponseStatusException;
 import com.app.model.Track;
 import com.app.model.projection.CreateTrackDto;
 import com.app.model.projection.RequestSaveAudio;
+import com.app.model.projection.ResponseTrack;
 import com.app.repository.TrackRepository;
 import com.app.util.TrackMapper;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.util.function.Tuple2;
 
@@ -29,6 +31,12 @@ public class TrackService {
 
 	private final WebClient.Builder webClient;
 
+	
+	public Flux<ResponseTrack> getTracks(){
+		return Flux.fromIterable(repository.findAll())
+				.map(mapper::fromTrackToResponseTrack);
+	}
+	
 	@SneakyThrows
 	public void createTrack(Tuple2<CreateTrackDto, FilePart> dto) {
 		Track track = mapper.fromCreateTrackDtoToTrack(dto.getT1());
