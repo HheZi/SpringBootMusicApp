@@ -1,3 +1,4 @@
+import { HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
 @Injectable({
@@ -13,7 +14,7 @@ export class AuthService {
     localStorage.setItem(this.KEY_NAME, token);  
   }
 
-  public getAuthToken(): string | null{
+  private getAuthToken(): string | null{
     return localStorage.getItem(this.KEY_NAME);
   }
 
@@ -21,5 +22,11 @@ export class AuthService {
     localStorage.removeItem(this.KEY_NAME); 
   }
 
-  
+  public getAuthTokenInHeader(): HttpHeaders{
+    const token = this.getAuthToken();
+    if(token){
+      return new HttpHeaders({"Authorization": `Bearer ${this.getAuthToken()}`})
+    }
+    return  new HttpHeaders({"": ""})
+  }
 }

@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { LoginComponent } from './login/login.component';
 import { RegistrationComponent } from './registration/registration.component';
 import { HomeComponent } from './home/home.component';
+import { SeeTracksComponent } from './home/see-tracks/see-tracks.component';
 
 const routes: Routes = [
 {
@@ -15,8 +16,8 @@ const routes: Routes = [
 },
 {
   path: '', 
-  component: HomeComponent
-
+  component: HomeComponent,
+  children: [{path: 'tracks', component: SeeTracksComponent}]
 }];
 
 @NgModule({

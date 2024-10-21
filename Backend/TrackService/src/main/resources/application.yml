@@ -1,6 +1,6 @@
 spring:
   application:
-    name: TrackService
+    name: track-service
   datasource:
     url: jdbc:postgresql://localhost:5432/TrackDB
     password: postgres

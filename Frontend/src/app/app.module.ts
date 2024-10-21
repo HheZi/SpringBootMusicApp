@@ -17,6 +17,9 @@ import { RegistrationComponent } from './registration/registration.component';
 import { HomeComponent } from './home/home.component';
 import { AudioComponent } from './home/audio/audio.component';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { SeeTracksComponent } from './home/see-tracks/see-tracks.component';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { DataViewModule } from 'primeng/dataview';
 
 @NgModule({
   declarations: [
@@ -24,7 +27,8 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
     LoginComponent,
     RegistrationComponent,
     HomeComponent,
-    AudioComponent
+    AudioComponent,
+    SeeTracksComponent
   ],
   imports: [
     BrowserModule,
@@ -36,7 +40,9 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
     ButtonModule,    
     ToastModule,
     MessageModule,
-    NoopAnimationsModule
+    NoopAnimationsModule,
+    NgbModule,
+    DataViewModule
   ],
   providers: [provideHttpClient()],
   bootstrap: [AppComponent]

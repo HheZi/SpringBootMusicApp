@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: author-service
+  datasource:
+    url: jdbc:postgresql://localhost:5432/AuthorDB
+    username: postgres
+    password: postgres
+server:
+  port: 0
+logging:
+  level:
+    '[org.springframework.web]': debug

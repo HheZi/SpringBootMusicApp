@@ -8,13 +8,12 @@ import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
-public class BadValidationResponse{
-	
+public class BadValidationResponse {
+
 	private static final long serialVersionUID = 1519413422684127113L;
 
 	private String field;
-	
+
 	private String message;
-	
-	
+
 }

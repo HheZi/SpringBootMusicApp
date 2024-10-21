@@ -19,16 +19,19 @@ public class RouteConfig {
 	RouteLocator routeLocator(RouteLocatorBuilder builder) {
 		return builder.routes()
 				.route("audio-service",
-						t -> t.path("/api/audio/**").filters(f -> f.filter(filter)).uri("lb://AudioService"))
+						t -> t.path("/api/audio/**").filters(f -> f.filter(filter)).uri("lb://audio-service"))
 				
 				.route("auth-service",
-						t -> t.path("/login").filters(f -> f.filter(filter)).uri("lb://AuthService"))
+						t -> t.path("/login").filters(f -> f.filter(filter)).uri("lb://auth-service"))
 				
 				.route("user-service", 
-						t -> t.path("/api/users/**").filters(f -> f.filter(filter)).uri("lb://UserService"))
+						t -> t.path("/api/users/**").filters(f -> f.filter(filter)).uri("lb://user-service"))
 				
 				.route("track-service", 
-						t -> t.path("/api/tracks/**").filters(f -> f.filter(filter)).uri("lb://TrackService"))
+						t -> t.path("/api/tracks/**").filters(f -> f.filter(filter)).uri("lb://track-service"))
+				
+				.route("author-service", 
+						t -> t.path("/api/authors/**").filters(f -> f.filter(filter)).uri("lb://author-service"))
 				.build();
 	}
 

@@ -1,24 +1,14 @@
 package com.app.audioservice.service;
 
-import static java.nio.file.StandardOpenOption.CREATE;
-import static java.nio.file.StandardOpenOption.CREATE_NEW;
-import static java.nio.file.StandardOpenOption.WRITE;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
 import java.nio.file.Files;
-import java.nio.file.OpenOption;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.HttpRange;
 import org.springframework.stereotype.Service;
 
@@ -26,7 +16,6 @@ import com.app.audioservice.model.SaveAudioDTO;
 import com.app.audioservice.utils.AudioFragment;
 
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 
 @Service
 public class AudioService {
@@ -47,7 +36,7 @@ public class AudioService {
 			HttpRange httpRange = ranges.get(0);
 
 			long rangeStart = httpRange.getRangeStart(contentLength);
-			long rangeEnd = rangeStart + MAX_CHUNK_OF_AUDIO;
+			long rangeEnd = rangeStart + MAX_CHUNK_OF_AUDIO > contentLength ? contentLength : rangeStart + MAX_CHUNK_OF_AUDIO;
 
 			input.skipNBytes(rangeStart);
 			return new AudioFragment(input.readNBytes(MAX_CHUNK_OF_AUDIO),

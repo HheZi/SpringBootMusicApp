@@ -8,7 +8,7 @@ import { AppConts } from '../../app.consts';
 })
 export class RegistrationService {
 
-  private registrationUrl = AppConts.ORIGIN_URL + '/api/users/';
+  private registrationUrl = AppConts.BASE_URL + '/api/users/';
 
   constructor(private httpClient: HttpClient) {}
 

@@ -48,7 +48,7 @@ public class TrackService {
             DataBufferUtils.release(dataBuffer);  
             return content;
         })
-        .doOnNext(t -> webClient.build().post().uri("http://AudioService/api/audio")
+        .doOnNext(t -> webClient.build().post().uri("http://audio-service/api/audio")
             .bodyValue(new RequestSaveAudio(track.getAudioName(), t))
             .retrieve()
             .bodyToMono(Void.class)

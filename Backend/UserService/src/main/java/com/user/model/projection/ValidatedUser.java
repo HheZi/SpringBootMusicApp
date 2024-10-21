@@ -10,9 +10,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Getter
 public class ValidatedUser {
-	
+
 	private Integer id;
-	
+
 	private String username;
-	
+
 }

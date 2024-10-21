@@ -1,5 +1,5 @@
 export class AppConts{
 
-    public static readonly ORIGIN_URL: string = 'http://localhost:8080'; 
+    public static readonly BASE_URL: string = 'http://localhost:8080'; 
 
 }

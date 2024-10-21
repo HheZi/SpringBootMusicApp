@@ -1,6 +1,5 @@
 package com.user.model;
 
-
 import java.time.Instant;
 
 import org.springframework.data.annotation.CreatedDate;
@@ -31,17 +30,17 @@ public class User {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
-	
+
 	private String username;
-	
+
 	private String email;
-	
+
 	private String password;
-	
+
 	@CreatedDate
 	@Column(name = "created_at")
 	private Instant createdAt;
-	
+
 	@LastModifiedDate
 	@Column(name = "updated_at")
 	private Instant updateAt;

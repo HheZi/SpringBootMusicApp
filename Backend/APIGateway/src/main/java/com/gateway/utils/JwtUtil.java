@@ -19,8 +19,9 @@ public class JwtUtil {
 	@Value("${token.secret}")
 	private String SECRET_KEY;
 
+	
 	private Claims getClaims(String token) {
-		return Jwts.parser().verifyWith(getSingingKey()).build().parseSignedClaims(token).getPayload();
+		return  Jwts.parser().verifyWith(getSingingKey()).build().parseSignedClaims(token).getPayload();
 	}
 
 	public boolean isExpired(String token) {
@@ -31,6 +32,10 @@ public class JwtUtil {
 		}
 	}
 
+	public String getValue(Object key, String token) {
+		return getClaims(token).get(key).toString();
+	}
+	
 	private SecretKey getSingingKey() {
 		return Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
 	}

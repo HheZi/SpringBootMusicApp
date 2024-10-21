@@ -11,15 +11,15 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 
 @Configuration
 public class CryptoConfig {
-	
+
 	@Bean
 	SecurityWebFilterChain filterChain(ServerHttpSecurity httpSecurity) {
 		return httpSecurity.csrf(t -> t.disable()).build();
 	}
-	
+
 	@Bean
 	PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
-	
+
 }

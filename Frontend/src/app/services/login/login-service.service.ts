@@ -7,7 +7,7 @@ import { AppConts } from '../../app.consts';
   providedIn: 'root',
 })
 export class LoginService {
-  private loginUrl: string = AppConts.ORIGIN_URL + '/login';
+  private loginUrl: string = AppConts.BASE_URL + '/login';
 
   constructor(private httpClient: HttpClient) { }
 

@@ -11,4 +11,4 @@ plugins {
 }
 
 rootProject.name = "Backend"
-include("AudioService", "EurekaServer", "APIGateway", "UserService", "AuthServer", "TrackService")
+include("audio-service", "eureka-server", "api-gateway", "audio-service", "auth-service", "track-service")

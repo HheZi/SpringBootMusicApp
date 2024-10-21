@@ -28,7 +28,7 @@ public class AuthService {
 	public Mono<String> loginUser(AuthRequest authRequest) {
 		return webClient.build()
                 .post()
-                .uri("http://UserService/api/users/validate")
+                .uri("http://user-service/api/users/validate")
                 .bodyValue(authRequest)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, response -> Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad Credential")))
