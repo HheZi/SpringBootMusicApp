@@ -17,6 +17,7 @@ public class TrackMapper {
 		return Track.builder()
 				.title(dto.getTitle())
 				.audioName(UUID.randomUUID().toString())
+				.authorId(dto.getAuthorId())
 				.build();
 	}
 	
@@ -25,6 +26,7 @@ public class TrackMapper {
 				.title(track.getTitle())
 				.audioUrl(String.format(AUDIO_URL, track.getAudioName()))
 				.playlistId(track.getPlaylistId())
+				.authorId(track.getAuthorId())
 				.build();
 	}
 	

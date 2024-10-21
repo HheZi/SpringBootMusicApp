@@ -34,6 +34,9 @@ public class Track {
 	private Long id;
 	
 	private String title;
+
+	@Column(name = "author_id")
+	private Integer authorId;
 	
 	@Column(name = "playlist_id")
 	private Long playlistId;
