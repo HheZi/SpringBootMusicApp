@@ -32,6 +32,9 @@ public class RouteConfig {
 				
 				.route("author-service", 
 						t -> t.path("/api/authors/**").filters(f -> f.filter(filter)).uri("lb://author-service"))
+				
+				.route("playlist-service", 
+						t -> t.path("/api/playlists/**").filters(f -> f.filter(filter)).uri("lb://playlist-service"))
 				.build();
 	}
 

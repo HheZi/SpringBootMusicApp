@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: playlist-service
+  datasource:
+    url: jdbc:postgresql://localhost:5432/PlaylistDB
+    username: postgres
+    password: postgres
+server:
+  port: 0
