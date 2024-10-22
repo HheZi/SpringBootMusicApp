@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: image-service
+server:
+  port: 0
+audio.path: /Programming/Java/StreamingService/Backend/image-service/images

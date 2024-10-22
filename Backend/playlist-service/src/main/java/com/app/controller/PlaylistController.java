@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 
 
@@ -34,8 +35,8 @@ public class PlaylistController {
 	}
 	
 	@PostMapping
-	public Mono<ResponseEntity<?>> createPlaylist(@RequestBody Mono<RequestPlaylist> mono){
-		return mono.doOnNext(playlistService::createPlaylist)
+	public Mono<ResponseEntity<?>> createPlaylist(@RequestBody Mono<RequestPlaylist> mono, @RequestHeader("userId") Integer userId){
+		return mono.doOnNext(t -> playlistService.createPlaylist(t, userId))
 				.flatMap(t -> Mono.just(ResponseEntity.status(HttpStatus.CREATED).build()));
 	}
 	

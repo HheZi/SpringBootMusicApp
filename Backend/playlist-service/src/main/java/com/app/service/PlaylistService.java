@@ -28,8 +28,8 @@ public class PlaylistService {
 	}
 	
 	
-	public void createPlaylist(RequestPlaylist dto) {
-		Playlist playlist = playlistMapper.fromRequestPlaylistToPlaylist(dto);
+	public void createPlaylist(RequestPlaylist dto, Integer userId) {
+		Playlist playlist = playlistMapper.fromRequestPlaylistToPlaylist(dto, userId);
 		
 		playlistRepository.save(playlist);
 	}

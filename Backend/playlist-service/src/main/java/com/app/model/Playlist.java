@@ -33,9 +33,15 @@ public class Playlist {
 	
 	private String name;
 	
+	@Column(name = "image_name")
+	private String imageName;
+	
 	@Column(name = "created_at", updatable = false)
 	@CreatedDate
 	private Instant createdAt;
+	
+	@Column(name = "created_by", updatable = false)
+	private Integer createdBy;
 	
 	@Column(name = "updated_at")
 	@LastModifiedDate

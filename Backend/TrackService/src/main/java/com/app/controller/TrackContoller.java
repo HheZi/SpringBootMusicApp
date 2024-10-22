@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -33,12 +34,11 @@ public class TrackContoller {
 		return trackService.getTracks();
 	}
 	
-	
 	@PostMapping
 	public Mono<ResponseEntity<?>> createTrack(@ModelAttribute Mono<CreateTrackDto> dto,
-			@RequestPart("file") Mono<FilePart> file) {
+			@RequestPart("file") Mono<FilePart> file, @RequestHeader("userId") Integer userId) {
 
-		return Mono.zip(dto, file).doOnNext(trackService::createTrack)
+		return Mono.zip(dto, file).doOnNext(t -> trackService.createTrack(t, userId))
 				.flatMap(t -> Mono.just(ResponseEntity.status(HttpStatus.CREATED).build()));
 	}
 

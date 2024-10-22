@@ -33,15 +33,19 @@ public class AuthenticationGatewayFilter implements GatewayFilter {
 
 		String token = getTokenFromHeader(request);
 		
-		if (isEndpointNotSecured(request) && isJwtExpired(token)) {
-			return Mono.error(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
+		if (isEndpointNotSecured(request)) {
+			
+			if (isJwtExpired(token)) {
+				return Mono.error(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
+			}
+
+			HttpHeaders headers = exchange.getRequest().getHeaders();
+
+			headers.add("userId", jwtUtil.getValue("id", token));
+			headers.add("username", jwtUtil.getValue("username", token));
 		}
 		
-		HttpHeaders headers = exchange.getRequest().getHeaders();
 		
-		
-//		headers.add("userId", jwtUtil.getValue("id", token));
-//		headers.add("username", jwtUtil.getValue("username", token));
 		
 		return chain.filter(exchange);
 	}

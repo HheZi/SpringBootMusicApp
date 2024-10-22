@@ -9,9 +9,10 @@ import com.app.model.projection.ResponseNamePlaylist;
 @Component
 public class PlaylistMapper {
 
-	public Playlist fromRequestPlaylistToPlaylist(RequestPlaylist dto) {
+	public Playlist fromRequestPlaylistToPlaylist(RequestPlaylist dto, Integer userId) {
 		return Playlist.builder()
 				.name(dto.getName())
+				.createdBy(userId)
 				.build();
 	}
 	

@@ -35,6 +35,9 @@ public class RouteConfig {
 				
 				.route("playlist-service", 
 						t -> t.path("/api/playlists/**").filters(f -> f.filter(filter)).uri("lb://playlist-service"))
+				
+				.route("image-service", 
+						t -> t.path("/api/images/**").filters(f -> f.filter(filter)).uri("lb://image-service"))
 				.build();
 	}
 

@@ -1,5 +1,6 @@
 package com.app.service;
 
+import org.checkerframework.checker.units.qual.m;
 import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.codec.multipart.FilePart;
@@ -38,8 +39,8 @@ public class TrackService {
 	}
 	
 	@SneakyThrows
-	public void createTrack(Tuple2<CreateTrackDto, FilePart> dto) {
-		Track track = mapper.fromCreateTrackDtoToTrack(dto.getT1());
+	public void createTrack(Tuple2<CreateTrackDto, FilePart> dto, Integer userId) {
+		Track track = mapper.fromCreateTrackDtoToTrack(dto.getT1(), userId);
 
 		DataBufferUtils.join(dto.getT2().content())
         .map(dataBuffer -> {
