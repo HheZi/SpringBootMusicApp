@@ -1,6 +1,6 @@
 export interface Track {
    title: string,
-   playlistId: number,
+   playlist: string,
    audioUrl: string 
    author: string
 }

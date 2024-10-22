@@ -5,6 +5,7 @@ import { Track } from './track';
 import { AudioComponent } from '../audio/audio.component';
 import { Title } from '@angular/platform-browser';
 import { AuthorService } from '../../services/author/author.service';
+import { PlaylistService } from '../../services/playlist/playlist.service';
 
 @Component({
   selector: 'app-see-tracks',
@@ -16,7 +17,7 @@ export class SeeTracksComponent implements OnInit {
   public tracks: Track[] = [];
 
   constructor(private trackService: TrackService, private messageService: MessageService, private title: Title,
-    private authorService: AuthorService) { }
+    private authorService: AuthorService, private playlistService: PlaylistService) { }
 
   ngOnInit(): void {
     this.title.setTitle("Tracks")
@@ -30,9 +31,15 @@ export class SeeTracksComponent implements OnInit {
           .subscribe({
 
             next: (authors: any) => {
-              for (let i = 0; i < tracksResp.length; i++)
-                this.tracks.push({ title: tracksResp[i].title, audioUrl: tracksResp[i].audioUrl, author: authors[i].name, playlistId: tracksResp[i].playlistId })
-              console.log(authors);
+              this.playlistService.getPlaylists(tracksResp.map((x: any) => x.playlistId)).subscribe({
+                next: (playlists: any) => {
+                  for (let i = 0; i < tracksResp.length; i++)
+                    this.tracks.push({
+                      "title": tracksResp[i].title, "audioUrl": tracksResp[i].audioUrl, "author": authors[i].name,
+                      "playlist": playlists[i].name
+                    })
+                }
+              })
 
             }
 
