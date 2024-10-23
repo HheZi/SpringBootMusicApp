@@ -34,7 +34,7 @@ public class TrackService {
 
 	
 	public Flux<ResponseTrack> getTracks(){
-		return Flux.fromIterable(repository.findAll())
+		return repository.findAll()
 				.map(mapper::fromTrackToResponseTrack);
 	}
 	

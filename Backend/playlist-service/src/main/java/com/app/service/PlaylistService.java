@@ -33,7 +33,7 @@ public class PlaylistService {
 	private WebClient.Builder builder;
 
 	public Flux<ResponseNamePlaylist> getPlatlistById(List<Integer> id) {
-		return Flux.fromIterable(playlistRepository.findAllById(id))
+		return playlistRepository.findAllById(id)
 				.map(playlistMapper::fromPlaylistToResponseNamePlaylist);
 
 	}

@@ -1,11 +1,9 @@
 package com.app.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 
 import com.app.model.Author;
 
-@Repository
-public interface AuthorRepository extends JpaRepository<Author, Integer>{
+public interface AuthorRepository extends ReactiveCrudRepository<Author, Integer>{
 
 }

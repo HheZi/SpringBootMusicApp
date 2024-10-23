@@ -3,8 +3,8 @@ package com.app.audioservice.model;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@NoArgsConstructor
 @Data
+@NoArgsConstructor
 public class SaveAudioDTO {
 	
 	private String name;

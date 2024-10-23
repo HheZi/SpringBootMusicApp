@@ -15,7 +15,6 @@ import com.user.repository.UserRepository;
 import com.user.util.UserMapper;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
 @Service
@@ -28,15 +27,16 @@ public class UserService {
 
 	private final UserMapper userMapper;
 
-	public ValidatedUser validateUser(UserAuthRequest authRequest) {
-		User user = userRepository.findByUsername(authRequest.getUsername())
-				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User is not found"));
+	public Mono<ValidatedUser> validateUser(UserAuthRequest authRequest) {
+		return userRepository.findByUsername(authRequest.getUsername())
+				.switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, "The user is not found")))
+				.doOnNext(t -> {
+					if (!encoder.matches(authRequest.getPassword(), t.getPassword())) {
+						throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Wrong credentials");
+					}
+				})
+				.map(userMapper::fromUserToValidatedUser);
 
-		if (!encoder.matches(authRequest.getPassword(), user.getPassword())) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Wrong credentials");
-		}
-
-		return userMapper.fromUserToValidatedUser(user);
 	}
 
 	public void createNewUser(UserFormRequest formRequest) {

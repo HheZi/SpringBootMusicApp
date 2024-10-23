@@ -39,10 +39,12 @@ public class AuthenticationGatewayFilter implements GatewayFilter {
 				return Mono.error(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
 			}
 
-			HttpHeaders headers = exchange.getRequest().getHeaders();
+			exchange.getRequest()
+					.mutate()
+					.header("userId", jwtUtil.getValue("id", token))
+					.header("username", jwtUtil.getValue("username", token))
+					.build();
 
-			headers.add("userId", jwtUtil.getValue("id", token));
-			headers.add("username", jwtUtil.getValue("username", token));
 		}
 		
 		

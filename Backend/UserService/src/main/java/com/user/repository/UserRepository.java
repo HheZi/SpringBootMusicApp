@@ -1,13 +1,13 @@
 package com.user.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
-
-import com.user.model.User;
-import java.util.List;
 import java.util.Optional;
 
-@Repository
-public interface UserRepository extends JpaRepository<User, Integer> {
-	Optional<User> findByUsername(String username);
+import org.springframework.data.repository.reactive.ReactiveCrudRepository;
+
+import com.user.model.User;
+
+import reactor.core.publisher.Mono;
+
+public interface UserRepository extends ReactiveCrudRepository<User, Integer> {
+	Mono<User> findByUsername(String username);
 }

@@ -1,8 +1,8 @@
 spring:
   application:
     name: playlist-service
-  datasource:
-    url: jdbc:postgresql://localhost:5432/PlaylistDB
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/PlaylistDB
     username: postgres
     password: postgres
 server:

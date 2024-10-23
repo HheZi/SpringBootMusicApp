@@ -1,11 +1,10 @@
 package com.app.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.stereotype.Repository;
 
 import com.app.model.Track;
 
-@Repository
-public interface TrackRepository extends JpaRepository<Track, Long>{
+public interface TrackRepository extends ReactiveCrudRepository<Track, Long>{
 
 }

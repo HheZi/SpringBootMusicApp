@@ -1,15 +1,7 @@
 spring:
   application:
     name: audio-service
-  datasource:
-    url: jdbc:postgresql://localhost:5432/AudioService
-    password: guest
-    username: guest
-  jpa:
-    open-in-view: false
 server:
-  error:
-    include-stacktrace: never 
   port: 0
 audio.path: /Programming/Java/StreamingService/Backend/AudioService/audio
 logging:

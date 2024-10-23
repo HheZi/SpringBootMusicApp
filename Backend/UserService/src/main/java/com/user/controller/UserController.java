@@ -40,7 +40,7 @@ public class UserController {
 
 	@PostMapping("/validate")
 	public Mono<ValidatedUser> validate(@RequestBody UserAuthRequest req) {
-		return Mono.just(service.validateUser(req));
+		return service.validateUser(req);
 	}
 
 }
