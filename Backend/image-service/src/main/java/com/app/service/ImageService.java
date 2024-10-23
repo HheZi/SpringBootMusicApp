@@ -25,7 +25,8 @@ public class ImageService {
 	
 	@SneakyThrows
 	public void saveImage(RequestImage image) {
-		Files.write(Path.of(imagePath, image.getName()), image.getContent(), CREATE_NEW);
+		
+		Files.write(Path.of(imagePath, image.getName()), image.getContent().getBytes(), CREATE_NEW);
 	}
 	
 }
