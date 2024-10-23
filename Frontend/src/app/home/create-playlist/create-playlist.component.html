@@ -1,0 +1,56 @@
+<div class="container mt-4">
+    <h2>Create Playlist</h2>
+    <form  [formGroup]="playlistForm" (ngSubmit)="onSubmit()">
+      <div class="mb-3">
+        <label for="title" class="form-label">Playlist Title</label>
+        <input formControlName="title" id="title" class="form-control" />
+        <div *ngIf="playlistForm.get('title')?.invalid && (playlistForm.get('title')?.touched || playlistForm.get('title')?.dirty)" class="text-danger">
+          Title is required.
+        </div>
+      </div>
+  
+      <div class="mb-3">
+        <label for="artist" class="form-label">Artist</label>
+        <input formControlName="artist" id="artist" class="form-control" />
+        <div *ngIf="playlistForm.get('artist')?.invalid && (playlistForm.get('artist')?.touched || playlistForm.get('artist')?.dirty)" class="text-danger">
+          Artist is required.
+        </div>
+      </div>
+  
+      <div class="mb-3">
+        <label for="cover" class="form-label">Cover Image</label>
+        <input type="file" id="cover" (change)="onCoverSelected($event)" class="form-control" />
+      </div>
+  
+      <div class="mb-3">
+        <img *ngIf="playlistForm.get('cover')?.value" [src]="playlistForm.get('cover')?.value" class="img-fluid mb-3" alt="Cover Preview" />
+      </div>
+  
+      <h4>Tracks</h4>
+      <div formArrayName="tracks">
+        <div *ngFor="let track of tracks.controls; let i = index"  class="mb-3">
+          <div class="row">
+            <div class="col">
+              <input formControlName="title" class="form-control" placeholder="Track Title" />
+              <div *ngIf="track.get('title')?.invalid && (track.get('title')?.touched || track.get('title')?.dirty)" class="text-danger">
+                Track title is required.
+              </div>
+            </div>
+            <div class="col">
+              <input formControlName="audioUrl" class="form-control" placeholder="Audio URL" />
+              <div *ngIf="track.get('audioUrl')?.invalid && (track.get('audioUrl')?.touched || track.get('audioUrl')?.dirty)" class="text-danger">
+                Audio URL is required.
+              </div>
+            </div>
+            <div class="col-auto">
+              <button type="button" class="btn btn-danger" (click)="removeTrack(i)">Remove</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button type="button" class="btn btn-secondary me-2" (click)="addTrack()">Add Track</button>
+  
+      <button type="submit" class="btn btn-primary" [disabled]="playlistForm.invalid">Create Playlist</button>
+    </form>
+  </div>
+  

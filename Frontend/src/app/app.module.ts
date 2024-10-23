@@ -5,7 +5,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
 import { LoginComponent } from './login/login.component';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { provideHttpClient } from '@angular/common/http';
 import { ToastModule } from 'primeng/toast';
 import { MessageModule } from 'primeng/message';
@@ -20,6 +20,7 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { SeeTracksComponent } from './home/see-tracks/see-tracks.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { DataViewModule } from 'primeng/dataview';
+import { CreatePlaylistComponent } from './home/create-playlist/create-playlist.component';
 
 @NgModule({
   declarations: [
@@ -28,7 +29,8 @@ import { DataViewModule } from 'primeng/dataview';
     RegistrationComponent,
     HomeComponent,
     AudioComponent,
-    SeeTracksComponent
+    SeeTracksComponent,
+    CreatePlaylistComponent
   ],
   imports: [
     BrowserModule,
@@ -42,7 +44,8 @@ import { DataViewModule } from 'primeng/dataview';
     MessageModule,
     NoopAnimationsModule,
     NgbModule,
-    DataViewModule
+    DataViewModule,
+    ReactiveFormsModule
   ],
   providers: [provideHttpClient()],
   bootstrap: [AppComponent]

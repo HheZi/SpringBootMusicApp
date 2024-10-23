@@ -14,7 +14,9 @@ export class AudioComponent implements OnInit, OnDestroy {
   private static plyr: Plyr;
 
   ngOnInit(): void {
-    AudioComponent.plyr = new Plyr(this.audioPlayerRef.nativeElement, { controls: ['play', 'progress', 'current-time', 'mute', 'volume'], })
+    if (!AudioComponent.plyr) 
+      AudioComponent.plyr = new Plyr(this.audioPlayerRef.nativeElement, { controls: ['play', 'progress', 'current-time', 'mute', 'volume'] });
+    
   }
 
   public static playAudio(track: Track): void {
@@ -27,7 +29,6 @@ export class AudioComponent implements OnInit, OnDestroy {
       }]
     }
     if ('mediaSession' in navigator) {
-      // Устанавливаем метаданные
       navigator.mediaSession.metadata = new MediaMetadata({
         title: track.title,
         artist: track.author + "",
