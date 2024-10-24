@@ -35,11 +35,9 @@ public class TrackContoller {
 	}
 	
 	@PostMapping
-	public Mono<ResponseEntity<?>> createTrack(@ModelAttribute Mono<CreateTrackDto> dto,
-			@RequestPart("file") Mono<FilePart> file, @RequestHeader("userId") Integer userId) {
-
-		return Mono.zip(dto, file).doOnNext(t -> trackService.createTrack(t, userId))
-				.flatMap(t -> Mono.just(ResponseEntity.status(HttpStatus.CREATED).build()));
+	public Mono<ResponseEntity<?>> createTrack(@ModelAttribute Flux<CreateTrackDto> dto, @RequestHeader("userId") Integer userId) {
+		return dto.doOnNext(t -> trackService.createTrack(t, userId))
+				.then().map(t -> ResponseEntity.status(HttpStatus.CREATED).build());
 	}
 
 }

@@ -10,6 +10,7 @@ public class AuthorMapper {
 
 	public AuthorResponse fromAuthorToAuthorResponse(Author author) {
 		return AuthorResponse.builder()
+				.id(author.getId())
 				.name(author.getName())
 				.build();
 	}

@@ -1,26 +1,21 @@
 package com.app.service;
 
-import org.checkerframework.checker.units.qual.m;
-import org.springframework.core.io.buffer.DataBufferUtils;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.server.ResponseStatusException;
 
 import com.app.model.Track;
+import com.app.model.projection.AuthorResponse;
 import com.app.model.projection.CreateTrackDto;
-import com.app.model.projection.RequestSaveAudio;
 import com.app.model.projection.ResponseTrack;
 import com.app.repository.TrackRepository;
 import com.app.util.TrackMapper;
 
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.util.function.Tuple2;
 
 @Service
 @RequiredArgsConstructor
@@ -38,26 +33,37 @@ public class TrackService {
 				.map(mapper::fromTrackToResponseTrack);
 	}
 	
-	@SneakyThrows
-	public void createTrack(Tuple2<CreateTrackDto, FilePart> dto, Integer userId) {
-		Track track = mapper.fromCreateTrackDtoToTrack(dto.getT1(), userId);
-
-		DataBufferUtils.join(dto.getT2().content())
-        .map(dataBuffer -> {
-            byte[] content = new byte[dataBuffer.readableByteCount()];
-            dataBuffer.read(content);  
-            DataBufferUtils.release(dataBuffer);  
-            return content;
-        })
-        .doOnNext(t -> webClient.build().post().uri("http://audio-service/api/audio")
-            .bodyValue(new RequestSaveAudio(track.getAudioName(), t))
-            .retrieve()
-            .bodyToMono(Void.class)
-            .subscribe())
-        .subscribe();
-
-		repository.save(track);
-
+	public void createTrack(CreateTrackDto dto, Integer userId) {
+		findAuthorIdByName(dto.getAuthor())
+				.doOnNext(t -> {
+					Track track = mapper.fromCreateTrackDtoToTrack(dto, userId, t.getId());
+					saveAudio(track.getAudioName(), dto.getAudio());
+					
+					repository.save(track);
+				});
 	}
 
+	private void saveAudio(String name, FilePart filepart) {
+		MultipartBodyBuilder builder = new MultipartBodyBuilder();
+		builder.part("name", name);
+		builder.part("content", filepart);
+		
+		webClient.baseUrl("http://audio-service/api/audio")
+		.build()
+		.post()
+		.bodyValue(BodyInserters.fromMultipartData(builder.build()))
+		.retrieve()
+		.bodyToMono(Void.class)
+		.subscribe();
+		
+	}
+	
+	private Mono<AuthorResponse> findAuthorIdByName(String name) {
+		return webClient.baseUrl("http://author-service/api/authors/" + name)
+		.build()
+		.get()
+		.retrieve()
+		.bodyToMono(AuthorResponse.class);
+		
+	}
 }

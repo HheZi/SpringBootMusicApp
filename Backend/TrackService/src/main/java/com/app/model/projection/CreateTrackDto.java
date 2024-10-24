@@ -1,5 +1,7 @@
 package com.app.model.projection;
 
+import org.springframework.http.codec.multipart.FilePart;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,5 +13,7 @@ public class CreateTrackDto {
 	
 	private Long playlistId;
 	
-	private Integer authorId;
+	private String author;
+	
+	private FilePart audio;
 }

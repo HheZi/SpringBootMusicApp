@@ -20,7 +20,7 @@ import lombok.SneakyThrows;
 @Service
 public class AudioService {
 
-	public final int MAX_CHUNK_OF_AUDIO = 1024 * 1024;
+	private final int CHUNK_OF_AUDIO = 1024 * 1024;
 
 	@Value("${audio.path}")
 	private String audioPath;
@@ -36,10 +36,10 @@ public class AudioService {
 			HttpRange httpRange = ranges.get(0);
 
 			long rangeStart = httpRange.getRangeStart(contentLength);
-			long rangeEnd = rangeStart + MAX_CHUNK_OF_AUDIO > contentLength ? contentLength : rangeStart + MAX_CHUNK_OF_AUDIO;
+			long rangeEnd = rangeStart + CHUNK_OF_AUDIO > contentLength ? contentLength : rangeStart + CHUNK_OF_AUDIO;
 
 			input.skipNBytes(rangeStart);
-			return new AudioFragment(input.readNBytes(MAX_CHUNK_OF_AUDIO),
+			return new AudioFragment(input.readNBytes(CHUNK_OF_AUDIO),
 					createRangeHeaderValue(rangeStart, rangeEnd, contentLength));
 
 		}
@@ -49,7 +49,7 @@ public class AudioService {
 	@SneakyThrows
 	public void saveAudio(SaveAudioDTO dto) {
 		Path path = Path.of(audioPath).resolve(dto.getName());
-		Files.write(path, dto.getContent());
+		Files.write(path, dto.getContent().getBytes());
 	}
 
 	private String createRangeHeaderValue(long startRange, long endRange, long contentLength) {

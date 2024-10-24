@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,6 +31,11 @@ public class AuthorController {
 	@GetMapping
 	public Flux<AuthorResponse> getAuthors(@RequestParam("ids") List<Integer> ids){
 		return authorService.getAuthorById(ids);
+	}
+	
+	@GetMapping("/{symbol}")
+	public Flux<AuthorResponse> getAuthorsBySymbols(@PathVariable("symbol") String symbol){
+		return authorService.getAuthorByFirstSymbols(symbol);
 	}
 	
 	@PostMapping

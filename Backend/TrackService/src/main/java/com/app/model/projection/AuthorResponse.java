@@ -1,12 +1,10 @@
 package com.app.model.projection;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Builder
+@NoArgsConstructor
 @Data
-@AllArgsConstructor
 public class AuthorResponse {
 
 	private Integer id;

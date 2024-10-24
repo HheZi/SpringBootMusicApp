@@ -3,6 +3,7 @@ package com.app.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.app.model.enums.PlaylistType;
 import com.app.model.projection.RequestPlaylist;
 import com.app.model.projection.ResponseNamePlaylist;
 import com.app.service.PlaylistService;
@@ -34,10 +35,16 @@ public class PlaylistController {
 		return playlistService.getPlatlistById(ids);
 	}
 	
+	@GetMapping("/types")
+	public Flux<PlaylistType> getPlaylistTypes(){
+		return playlistService.getPlaylistTypes();
+	}
+	
 	@PostMapping
 	public Mono<ResponseEntity<?>> createPlaylist(@RequestBody Mono<RequestPlaylist> mono, @RequestHeader("userId") Integer userId){
 		return mono.doOnNext(t -> playlistService.createPlaylist(t, userId))
 				.flatMap(t -> Mono.just(ResponseEntity.status(HttpStatus.CREATED).build()));
 	}
+	
 	
 }

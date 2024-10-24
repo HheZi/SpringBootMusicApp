@@ -58,14 +58,8 @@ public class PlaylistService {
 
 	}
 
-//	private PlaylistType calculatePlaylistType(RequestPlaylist dto) {
-//		int size = dto.getTracks().size();
-//
-//		if (size == 1) {
-//			return SINGLE;
-//		} else if (size < 5 && dto.getPlaylistType() == ALBUM) {
-//			return MINI_ALBUM;
-//		}
-//		return PLAYLIST;
-//	}
+	public Flux<PlaylistType> getPlaylistTypes(){
+		return Flux.fromArray(PlaylistType.values());
+	}
+	
 }

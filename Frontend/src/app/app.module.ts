@@ -21,6 +21,10 @@ import { SeeTracksComponent } from './home/see-tracks/see-tracks.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { DataViewModule } from 'primeng/dataview';
 import { CreatePlaylistComponent } from './home/create-playlist/create-playlist.component';
+import { FileUploadModule } from 'primeng/fileupload';
+import { AutoCompleteModule } from 'primeng/autocomplete';
+import { CascadeSelectModule } from 'primeng/cascadeselect';
+import { DropdownModule } from 'primeng/dropdown';
 
 @NgModule({
   declarations: [
@@ -45,7 +49,10 @@ import { CreatePlaylistComponent } from './home/create-playlist/create-playlist.
     NoopAnimationsModule,
     NgbModule,
     DataViewModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    FileUploadModule,
+    AutoCompleteModule,
+    DropdownModule 
   ],
   providers: [provideHttpClient()],
   bootstrap: [AppComponent]

@@ -13,11 +13,11 @@ public class TrackMapper {
 
 	private final String AUDIO_URL = "http://localhost:8080/api/audio/%s";
 	
-	public Track fromCreateTrackDtoToTrack(CreateTrackDto dto, Integer userId) {
+	public Track fromCreateTrackDtoToTrack(CreateTrackDto dto, Integer userId, Integer authorId) {
 		return Track.builder()
 				.title(dto.getTitle())
 				.audioName(UUID.randomUUID().toString())
-				.authorId(dto.getAuthorId())
+				.authorId(authorId)
 				.createdBy(userId)
 				.build();
 	}

@@ -24,12 +24,21 @@ public class AuthorService {
 	private final AuthorMapper authorMapper;
 	
 	public Flux<AuthorResponse> getAuthorById(List<Integer> id) {
-		return authorRepository.findAllById(id).map(authorMapper::fromAuthorToAuthorResponse);
+		return authorRepository
+				.findAllById(id)
+				.map(authorMapper::fromAuthorToAuthorResponse);
 	}
 	
+	public Flux<AuthorResponse> getAuthorByFirstSymbols(String symbols){
+		return authorRepository
+				.findByNameStartingWithIgnoreCase(symbols)
+				.map(authorMapper::fromAuthorToAuthorResponse);
+	}
+
 	public void saveAuthor(String nameOfAuthor) {
 		Author author = new Author(null, nameOfAuthor);
 		
 		authorRepository.save(author);
 	}
+	
 }

@@ -4,6 +4,8 @@ import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 
 import com.app.model.Author;
 
-public interface AuthorRepository extends ReactiveCrudRepository<Author, Integer>{
+import reactor.core.publisher.Flux;
 
+public interface AuthorRepository extends ReactiveCrudRepository<Author, Integer>{
+	Flux<Author> findByNameStartingWithIgnoreCase(String name);
 }
