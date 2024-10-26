@@ -16,9 +16,7 @@ public class RequestPlaylist {
 
 	private String name;
 	
-	private FilePart cover;
-	
-	private Integer authorId;
-	
 	private PlaylistType playlistType;
+	
+	private FilePart cover;
 }

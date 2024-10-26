@@ -16,4 +16,8 @@ export class TrackService {
   public getTracks() : Observable<Object>{
     return this.httpClient.get(this.TRACK_URL, {headers: this.authService.getAuthTokenInHeader()});
   }
+
+  public createTracks(body: any): void{
+    this.httpClient.post(this.TRACK_URL, body, {headers: this.authService.getAuthTokenInHeader()})
+  }
 }

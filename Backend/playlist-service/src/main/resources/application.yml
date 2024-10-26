@@ -7,3 +7,6 @@ spring:
     password: postgres
 server:
   port: 0
+logging:
+  level:
+    '[org.springframework.web]': debug

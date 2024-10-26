@@ -12,18 +12,21 @@ import com.app.model.projection.ResponseNamePlaylist;
 @Component
 public class PlaylistMapper {
 
-	public Playlist fromRequestPlaylistToPlaylist(RequestPlaylist dto, Integer userId, PlaylistType playlistType) {
+	private final String IMAGE_URL = "http://localhost:8080/api/images/";
+	
+	public Playlist fromRequestPlaylistToPlaylist(RequestPlaylist dto, Integer userId) {
 		return Playlist.builder()
 				.name(dto.getName())
 				.imageName(UUID.randomUUID().toString())
-				.playlistType(playlistType)
 				.createdBy(userId)
+				.playlistType(dto.getPlaylistType())
 				.build();
 	}
 	
 	public ResponseNamePlaylist fromPlaylistToResponseNamePlaylist(Playlist playlist) {
 		return ResponseNamePlaylist.builder()
 				.name(playlist.getName())
+				.imageUrl(IMAGE_URL + playlist.getImageName())
 				.build();
 	}
 	

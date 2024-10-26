@@ -1,11 +1,12 @@
 package com.app.service;
 
-import static com.app.model.enums.PlaylistType.*;
-
 import java.util.List;
 
 import org.springframework.core.io.buffer.DataBufferUtils;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
@@ -14,13 +15,16 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import com.app.model.Playlist;
 import com.app.model.enums.PlaylistType;
+import com.app.model.projection.RequestImage;
 import com.app.model.projection.RequestPlaylist;
 import com.app.model.projection.ResponseNamePlaylist;
 import com.app.repository.PlaylistRepository;
 import com.app.util.PlaylistMapper;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @Service
 @RequiredArgsConstructor
@@ -30,36 +34,42 @@ public class PlaylistService {
 
 	private final PlaylistMapper playlistMapper;
 
-	private WebClient.Builder builder;
+	private final WebClient.Builder builder;
 
 	public Flux<ResponseNamePlaylist> getPlatlistById(List<Integer> id) {
-		return playlistRepository.findAllById(id)
-				.map(playlistMapper::fromPlaylistToResponseNamePlaylist);
-
+		return playlistRepository.findAllById(id).map(playlistMapper::fromPlaylistToResponseNamePlaylist);
 	}
 
-	public void createPlaylist(RequestPlaylist dto, Integer userId) {
+	public Mono<ResponseEntity<Integer>> createPlaylist(RequestPlaylist dto, FilePart cover, Integer userId) {
 
-		Playlist playlist = playlistMapper.fromRequestPlaylistToPlaylist(dto, userId, PLAYLIST);
+		Playlist playlist = playlistMapper.fromRequestPlaylistToPlaylist(dto, userId);
 
-		savePlaylistCover(playlist.getImageName(), dto.getCover());
+		savePlaylistCover(playlist.getImageName(), cover);
 
-		playlistRepository.save(playlist);
+		return playlistRepository.save(playlist)
+				.map(t -> ResponseEntity.status(HttpStatus.CREATED).body(t.getId()));
 	}
 
 	private void savePlaylistCover(String name, FilePart filePart) {
-		MultipartBodyBuilder multipartBodyBuilder = new MultipartBodyBuilder();
-		multipartBodyBuilder.part("content", filePart);
-		multipartBodyBuilder.part("name", name);
 
-		builder.baseUrl("http://image-service/api/images").build().post()
-				.bodyValue(BodyInserters.fromMultipartData(multipartBodyBuilder.build())).retrieve()
-				.bodyToMono(Void.class).subscribe();
+		DataBufferUtils.join(filePart.content())
+	    .map(dataBuffer -> {
+	    	byte[] bs = new byte[dataBuffer.readableByteCount()];
+	    	dataBuffer.read(bs);
+	    	DataBufferUtils.release(dataBuffer);
+	    	return bs;
+	    })
+	    .doOnNext(t -> {
+	    	builder.build().post().uri("http://image-service/api/images/")
+	    	.bodyValue(new RequestImage(name, t))
+	    	.retrieve()
+	    	.bodyToMono(Void.class).subscribe();
+	    }).subscribe();
 
 	}
 
-	public Flux<PlaylistType> getPlaylistTypes(){
+	public Flux<PlaylistType> getPlaylistTypes() {
 		return Flux.fromArray(PlaylistType.values());
 	}
-	
+
 }

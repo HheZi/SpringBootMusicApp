@@ -11,6 +11,6 @@ public class RequestImage {
 	
 	private String name;
 	
-	private MultipartFile content;
+	private byte[] content;
 	
 }

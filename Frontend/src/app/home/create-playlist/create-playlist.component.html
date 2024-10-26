@@ -11,7 +11,7 @@
       </div>
     </div>
 
-    <div class="mb-3">
+    <div class="mb-3" *ngIf="playlistForm.get('playlistType')?.value === 'ALBUM' || playlistForm.get('playlistType')?.value === 'MINI_ALBUM'">
       <p-autoComplete 
         [suggestions]="authors" 
         (completeMethod)="searchAuthors($event)" 
@@ -41,24 +41,33 @@
 
     <h4>Tracks</h4>
     <div formArrayName="tracks">
-      <div *ngFor="let track of tracks.controls; let i = index" class="mb-3">
+      <div *ngFor="let track of tracks.controls; let i = index" [formGroupName]="i" class="mb-3">
         <div class="row">
           <div class="col">
-            <input formControlName="title" class="form-control" placeholder="Track Title" />
+            <input class="form-control" placeholder="Title" formControlName="title" />
             <div *ngIf="track.get('title')?.invalid && (track.get('title')?.touched || track.get('title')?.dirty)"
-              class="text-danger">
+                 class="text-danger">
               Track title is required.
             </div>
           </div>
+          
           <div class="col">
-            <p-fileUpload mode="basic" chooseLabel="Add audio" chooseIcon="pi pi-upload" accept="audio/*"
-              maxFileSize="1000000" />
-            <div
-              *ngIf="track.get('audioFile')?.invalid && (track.get('audioFile')?.touched || track.get('audioFile')?.dirty)"
-              class="text-danger">
+            <p-fileUpload mode="basic" chooseLabel="Audio" chooseIcon="pi pi-upload" accept="audio/*" (onSelect)="onFileSelected($event, i)"/>
+            <div *ngIf="track.get('audioFile')?.invalid && (track.get('audioFile')?.touched || track.get('audioFile')?.dirty)"
+                 class="text-danger">
               Audio URL is required.
             </div>
           </div>
+          
+          <div class="col" *ngIf="playlistForm.get('playlistType')?.value === 'PLAYLIST' || playlistForm.get('playlistType')?.value === 'SINGLE'">
+            <p-autoComplete 
+              [suggestions]="authors" 
+              (completeMethod)="searchAuthors($event)" 
+              formControlName="author" 
+              placeholder="Type to search author">
+            </p-autoComplete>
+          </div>
+          
           <div class="col-auto">
             <button type="button" class="btn btn-danger" (click)="removeTrack(i)">Remove</button>
           </div>
@@ -67,6 +76,6 @@
     </div>
     <button type="button" class="btn btn-secondary me-2" (click)="addTrack()">Add Track</button>
 
-    <button type="submit" class="btn btn-primary" >Create Playlist</button>
+    <button type="submit" class="btn btn-primary" [disabled]="playlistForm.invalid">Create Playlist</button>
   </form>
 </div>

@@ -14,14 +14,15 @@ import reactor.core.publisher.Mono;
 
 import java.util.List;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
-
+import org.springframework.web.bind.annotation.RequestPart;
 
 @RestController
 @RequestMapping("/api/playlists/")
@@ -29,22 +30,24 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class PlaylistController {
 
 	private final PlaylistService playlistService;
-	
+
 	@GetMapping
 	public Flux<ResponseNamePlaylist> getPlaylists(@RequestParam("ids") List<Integer> ids) {
 		return playlistService.getPlatlistById(ids);
 	}
-	
+
 	@GetMapping("/types")
-	public Flux<PlaylistType> getPlaylistTypes(){
+	public Flux<PlaylistType> getPlaylistTypes() {
 		return playlistService.getPlaylistTypes();
 	}
-	
+
 	@PostMapping
-	public Mono<ResponseEntity<?>> createPlaylist(@RequestBody Mono<RequestPlaylist> mono, @RequestHeader("userId") Integer userId){
-		return mono.doOnNext(t -> playlistService.createPlaylist(t, userId))
-				.flatMap(t -> Mono.just(ResponseEntity.status(HttpStatus.CREATED).build()));
+	public Mono<ResponseEntity<Integer>> createPlaylist(
+//			@RequestPart("cover") Mono<FilePart> cover, 
+			@ModelAttribute Mono<RequestPlaylist> mono,
+			@RequestHeader("userId") Integer userId
+		) {
+		return mono.flatMap(t -> playlistService.createPlaylist(t, t.getCover(), userId));
 	}
-	
-	
+
 }

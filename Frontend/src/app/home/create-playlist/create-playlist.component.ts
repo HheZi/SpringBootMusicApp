@@ -18,7 +18,7 @@ export class CreatePlaylistComponent implements OnInit{
   constructor(private fb: FormBuilder, private playlistService: PlaylistService, private authorService: AuthorService) {
     this.playlistForm = this.fb.group({
       title: ['', Validators.required],
-      author: ['', Validators.required],
+      author: [''],
       cover: [null],
       playlistType: ['', Validators.required],
       tracks: this.fb.array([])
@@ -40,46 +40,51 @@ export class CreatePlaylistComponent implements OnInit{
       }
     })
   }
-
-  onAuthorSelect(event: any): void {
-    const selectedAuthorId = event.id; 
-    console.log(selectedAuthorId);
-    
-    this.playlistForm.patchValue({ artistId: selectedAuthorId }); 
-  }
-  
-  get tracks(): FormArray {
-    return this.playlistForm.get('tracks') as FormArray;
-  }
+   
+  get tracks(): FormArray { 
+    return this.playlistForm.get('tracks') as FormArray; 
+  } 
   
   addTrack(): void {
     this.tracks.push(this.fb.group({
       title: ['', Validators.required],
-      audioFile: [null, Validators.required]
+      audio: [null],
+      author: ['']
     }));
   }
   
   removeTrack(index: number): void {
     this.tracks.removeAt(index);
   }
-  deleteImage() {
 
+  deleteImage() {
     this.playlistForm.patchValue({"cover": null});
   }  
     
   onSubmit(): void {
     console.log('Playlist Created:', this.playlistForm.value);
     if (this.playlistForm.valid) {
-      
+      this.playlistService.createPlaylist(this.playlistForm);
+    }
+  }
+
+  onFileSelected(event: any, index: number): void {
+    const file = event.files[0]; 
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.tracks.at(index).patchValue({ audio: reader.result }); 
+      };
+      reader.readAsDataURL(file); 
     }
   }
 
   onCoverSelected(event: any): void {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = e => this.playlistForm.patchValue({ cover: e.target?.result });
-      reader.readAsDataURL(file);
-    }
+    const input = event.target as HTMLInputElement;
+  
+  if (input && input.files && input.files.length > 0) {
+    const file = input.files[0];
+    this.playlistForm.patchValue({ cover: file });
+  }
   }
 }
