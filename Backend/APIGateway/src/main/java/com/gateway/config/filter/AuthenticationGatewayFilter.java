@@ -22,7 +22,7 @@ import reactor.core.publisher.Mono;
 public class AuthenticationGatewayFilter implements GatewayFilter {
 	
 	
-	private final List<String> openEndpoints = List.of("/login", "/api/users/", "/api/audio/");
+	private final List<String> openEndpoints = List.of("/login", "/api/users/", "/api/audio/", "/api/images/");
 
 	@Autowired
 	private JwtUtil jwtUtil;

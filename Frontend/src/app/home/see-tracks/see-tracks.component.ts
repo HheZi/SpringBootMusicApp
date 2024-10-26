@@ -36,7 +36,7 @@ export class SeeTracksComponent implements OnInit {
                   for (let i = 0; i < tracksResp.length; i++)
                     this.tracks.push({
                       "title": tracksResp[i].title, "audioUrl": tracksResp[i].audioUrl, "author": authors[i].name,
-                      "playlist": playlists[i].name
+                      "playlist": playlists[i].name, "imageUrl": playlists[i].imageUrl
                     })
                 }
               })

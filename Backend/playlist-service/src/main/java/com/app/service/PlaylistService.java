@@ -37,14 +37,18 @@ public class PlaylistService {
 	private final WebClient.Builder builder;
 
 	public Flux<ResponseNamePlaylist> getPlatlistById(List<Integer> id) {
-		return playlistRepository.findAllById(id).map(playlistMapper::fromPlaylistToResponseNamePlaylist);
+		return playlistRepository
+				.findAllById(id)
+				.map(playlistMapper::fromPlaylistToResponseNamePlaylist);
 	}
 
 	public Mono<ResponseEntity<Integer>> createPlaylist(RequestPlaylist dto, FilePart cover, Integer userId) {
+		boolean coverIsPresent = cover.filename() != null && !cover.filename().isEmpty();
+		
+		Playlist playlist = playlistMapper.fromRequestPlaylistToPlaylist(dto, userId, coverIsPresent);
 
-		Playlist playlist = playlistMapper.fromRequestPlaylistToPlaylist(dto, userId);
-
-		savePlaylistCover(playlist.getImageName(), cover);
+		if (coverIsPresent) 
+			savePlaylistCover(playlist.getImageName(), cover);			
 
 		return playlistRepository.save(playlist)
 				.map(t -> ResponseEntity.status(HttpStatus.CREATED).body(t.getId()));

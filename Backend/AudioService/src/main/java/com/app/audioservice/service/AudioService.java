@@ -1,5 +1,7 @@
 package com.app.audioservice.service;
 
+import static java.nio.file.StandardOpenOption.CREATE_NEW;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -49,7 +51,7 @@ public class AudioService {
 	@SneakyThrows
 	public void saveAudio(SaveAudioDTO dto) {
 		Path path = Path.of(audioPath).resolve(dto.getName());
-		Files.write(path, dto.getContent().getBytes());
+		Files.write(path, dto.getContent(), CREATE_NEW);
 	}
 
 	private String createRangeHeaderValue(long startRange, long endRange, long contentLength) {

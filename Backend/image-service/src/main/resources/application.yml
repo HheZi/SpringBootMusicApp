@@ -3,7 +3,9 @@ spring:
     name: image-service
 server:
   port: 0
-audio.path: /Programming/Java/StreamingService/Backend/image-service/images
+image:
+  path: /Programming/Java/StreamingService/Backend/image-service/images
+  default: /Programming/Java/StreamingService/Backend/image-service/images/default_audio.png
 logging:
   level:
     '[org.springframework.web]': debug

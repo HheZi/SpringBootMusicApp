@@ -2,89 +2,69 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, FormArray } from '@angular/forms';
 import { PlaylistService } from '../../services/playlist/playlist.service';
 import { AuthorService } from '../../services/author/author.service';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-create-playlist',
   templateUrl: './create-playlist.component.html',
   styleUrl: './create-playlist.component.css'
 })
-export class CreatePlaylistComponent implements OnInit{
+export class CreatePlaylistComponent implements OnInit {
   playlistForm: FormGroup;
-  
+
   public playlistTypes: string[] = [];
 
   public authors: string[] = [];
 
-  constructor(private fb: FormBuilder, private playlistService: PlaylistService, private authorService: AuthorService) {
+  constructor(private fb: FormBuilder, private playlistService: 
+    PlaylistService, private authorService: AuthorService,
+     private messageService: MessageService) {
+
     this.playlistForm = this.fb.group({
       title: ['', Validators.required],
-      author: [''],
       cover: [null],
-      playlistType: ['', Validators.required],
-      tracks: this.fb.array([])
+      playlistType: ['', Validators.required]
     });
+
   }
+
   ngOnInit(): void {
     this.playlistService.getPlaylistTypes().subscribe({
       next: (types: any) => {
-       this.playlistTypes = types;
-      } 
+        this.playlistTypes = types;
+      }
     })
-    
+
   }
 
-  public searchAuthors(event: any){
+  public searchAuthors(event: any) {
     this.authorService.getAuthorsBySymbol(event.query).subscribe({
       next: (authors: any) => {
         this.authors = authors.map((a: any) => a.name);
       }
     })
   }
-   
-  get tracks(): FormArray { 
-    return this.playlistForm.get('tracks') as FormArray; 
-  } 
-  
-  addTrack(): void {
-    this.tracks.push(this.fb.group({
-      title: ['', Validators.required],
-      audio: [null],
-      author: ['']
-    }));
-  }
-  
-  removeTrack(index: number): void {
-    this.tracks.removeAt(index);
-  }
 
-  deleteImage() {
-    this.playlistForm.patchValue({"cover": null});
-  }  
-    
   onSubmit(): void {
-    console.log('Playlist Created:', this.playlistForm.value);
-    if (this.playlistForm.valid) {
-      this.playlistService.createPlaylist(this.playlistForm);
-    }
-  }
+    if (this.playlistForm.valid) { 
+      const formData = new FormData();
+      formData.append("cover", this.playlistForm.get("cover")?.value);
+      formData.append("name", this.playlistForm.get("title")?.value);
+      formData.append("playlistType", this.playlistForm.get("playlistType")?.value);
 
-  onFileSelected(event: any, index: number): void {
-    const file = event.files[0]; 
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        this.tracks.at(index).patchValue({ audio: reader.result }); 
-      };
-      reader.readAsDataURL(file); 
+      this.playlistService.createPlaylist(formData).subscribe({
+        next: (data) => this.messageService.add({closable: true, detail: "Playlist created", severity: "success"}),
+        error: (err) =>  this.messageService.add({closable: true, detail: err.error, severity: "error", summary: "Something went wrong"})
+      });
     }
   }
 
   onCoverSelected(event: any): void {
     const input = event.target as HTMLInputElement;
-  
-  if (input && input.files && input.files.length > 0) {
-    const file = input.files[0];
-    this.playlistForm.patchValue({ cover: file });
-  }
+
+    if (input && input.files && input.files.length > 0) {
+      const file = input.files[0];
+      this.playlistForm.patchValue({ cover: file });
+    }
   }
 }

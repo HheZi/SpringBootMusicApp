@@ -43,11 +43,12 @@ public class PlaylistController {
 
 	@PostMapping
 	public Mono<ResponseEntity<Integer>> createPlaylist(
-//			@RequestPart("cover") Mono<FilePart> cover, 
+			@RequestPart(value = "cover", required = false) Mono<FilePart> cover, 
 			@ModelAttribute Mono<RequestPlaylist> mono,
 			@RequestHeader("userId") Integer userId
 		) {
-		return mono.flatMap(t -> playlistService.createPlaylist(t, t.getCover(), userId));
+		return Mono.zip(mono, cover)
+				.flatMap(t -> playlistService.createPlaylist(t.getT1(), t.getT2(), userId));
 	}
 
 }

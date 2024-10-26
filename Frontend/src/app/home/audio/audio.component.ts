@@ -33,6 +33,7 @@ export class AudioComponent implements OnInit, OnDestroy {
         title: track.title,
         artist: track.author + "",
         album: track.playlist + "",
+        artwork: [{src: track.imageUrl}]
       });
       AudioComponent.plyr.play();
     }

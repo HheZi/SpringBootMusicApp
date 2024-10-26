@@ -23,22 +23,7 @@ export class PlaylistService {
     return this.httpClient.get(this.PLAYLIST_URL + "types", {headers: this.authService.getAuthTokenInHeader(), responseType: "json"});
   }
 
-  public createPlaylist(playlistForm: FormGroup){
-    const formData = new FormData();
-    formData.append("cover", playlistForm.get("cover")?.value);
-    formData.append("name", playlistForm.get("title")?.value);
-    formData.append("playlistType", playlistForm.get("playlistType")?.value);
-    
-    this.httpClient.post(this.PLAYLIST_URL, formData, {headers: this.authService.getAuthTokenInHeader()}).subscribe({
-        next: (playlistId) => {
-          playlistForm.get("tracks")?.value.forEach((track: any) => {
-            track.playlistId = playlistId;
-            if(playlistForm.get("playlistType")?.value === "ALBUM" || playlistForm.get("playlistType")?.value === "MINI_ALBUM"){
-              track.author = playlistForm.get("author")?.value
-            }
-          });
-          // this.trackService.createTracks(playlistForm.get("tracks")?.value)
-        }
-      })
-  }
+  public createPlaylist(formData: FormData): Observable<Object>{
+    return this.httpClient.post(this.PLAYLIST_URL, formData, {headers: this.authService.getAuthTokenInHeader()});
+  }  
 }

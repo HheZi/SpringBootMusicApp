@@ -14,10 +14,12 @@ public class PlaylistMapper {
 
 	private final String IMAGE_URL = "http://localhost:8080/api/images/";
 	
-	public Playlist fromRequestPlaylistToPlaylist(RequestPlaylist dto, Integer userId) {
+	private final String DEFAULT_IMAGE_URL = "http://localhost:8080/api/images/default";
+	
+	public Playlist fromRequestPlaylistToPlaylist(RequestPlaylist dto, Integer userId, boolean coverIsPresent) {
 		return Playlist.builder()
 				.name(dto.getName())
-				.imageName(UUID.randomUUID().toString())
+				.imageName(coverIsPresent ?  UUID.randomUUID().toString() : null)
 				.createdBy(userId)
 				.playlistType(dto.getPlaylistType())
 				.build();
@@ -26,7 +28,7 @@ public class PlaylistMapper {
 	public ResponseNamePlaylist fromPlaylistToResponseNamePlaylist(Playlist playlist) {
 		return ResponseNamePlaylist.builder()
 				.name(playlist.getName())
-				.imageUrl(IMAGE_URL + playlist.getImageName())
+				.imageUrl(playlist.getImageName() != null ? IMAGE_URL + playlist.getImageName() : DEFAULT_IMAGE_URL)
 				.build();
 	}
 	

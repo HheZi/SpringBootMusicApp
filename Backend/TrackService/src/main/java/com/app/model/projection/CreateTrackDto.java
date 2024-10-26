@@ -4,6 +4,7 @@ import org.springframework.http.codec.multipart.FilePart;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import reactor.core.publisher.Flux;
 
 @NoArgsConstructor
 @Data
@@ -15,5 +16,5 @@ public class CreateTrackDto {
 	
 	private String author;
 	
-	private FilePart audio;
+	private byte[] audio;
 }

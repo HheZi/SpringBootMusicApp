@@ -1,5 +1,6 @@
 package com.app.service;
 
+import org.checkerframework.checker.units.qual.m;
 import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
@@ -9,6 +10,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import com.app.model.Track;
 import com.app.model.projection.AuthorResponse;
 import com.app.model.projection.CreateTrackDto;
+import com.app.model.projection.RequestSaveAudio;
 import com.app.model.projection.ResponseTrack;
 import com.app.repository.TrackRepository;
 import com.app.util.TrackMapper;
@@ -43,15 +45,12 @@ public class TrackService {
 				});
 	}
 
-	private void saveAudio(String name, FilePart filepart) {
-		MultipartBodyBuilder builder = new MultipartBodyBuilder();
-		builder.part("name", name);
-		builder.part("content", filepart);
+	private void saveAudio(String name, byte[] content) {
 		
 		webClient.baseUrl("http://audio-service/api/audio")
 		.build()
 		.post()
-		.bodyValue(BodyInserters.fromMultipartData(builder.build()))
+		.bodyValue(new RequestSaveAudio(name, content))
 		.retrieve()
 		.bodyToMono(Void.class)
 		.subscribe();

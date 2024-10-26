@@ -5,6 +5,9 @@ spring:
     url: r2dbc:postgresql://localhost:5432/TrackDB
     password: postgres
     username: postgres
+  codec:
+    max-in-memory-size:
+      36MB
 server:
   port: 0
 logging:

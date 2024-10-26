@@ -20,11 +20,12 @@ import com.app.service.ImageService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @RestController
 @RequestMapping("/api/images/")
 @RequiredArgsConstructor
-@Slf4j
 public class ImageController {
 
 	private final ImageService imageService;
@@ -36,9 +37,14 @@ public class ImageController {
 				.body(imageService.getImage(name));
 	}
 
+	@GetMapping("/default")
+	public byte[] getDefaultCover() {
+		return imageService.getDefaultImage();
+	}
+	
+	
 	@PostMapping
 	public ResponseEntity<?> saveImage(@RequestBody RequestImage image) {
-		log.warn("dto is {}", image);
 		imageService.saveImage(image);
 		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
