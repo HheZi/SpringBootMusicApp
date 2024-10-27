@@ -1,10 +1,11 @@
 package com.app.service;
 
-import org.checkerframework.checker.units.qual.m;
-import org.springframework.http.client.MultipartBodyBuilder;
+import org.springframework.core.io.buffer.DataBufferUtils;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.ResponseEntity.BodyBuilder;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import com.app.model.Track;
@@ -35,34 +36,28 @@ public class TrackService {
 				.map(mapper::fromTrackToResponseTrack);
 	}
 	
-	public void createTrack(CreateTrackDto dto, Integer userId) {
-		findAuthorIdByName(dto.getAuthor())
-				.doOnNext(t -> {
-					Track track = mapper.fromCreateTrackDtoToTrack(dto, userId, t.getId());
-					saveAudio(track.getAudioName(), dto.getAudio());
-					
-					repository.save(track);
-				});
+	public Mono<ResponseEntity<?>> createTrack(CreateTrackDto dto, Integer userId) {
+		return repository.save(mapper.fromCreateTrackDtoToTrack(dto, userId))
+				.doOnNext(t -> saveAudio(t.getAudioName(), dto.getAudio()))
+				.map(t -> ResponseEntity.status(HttpStatus.CREATED).build());
 	}
 
-	private void saveAudio(String name, byte[] content) {
+	private void saveAudio(String name, FilePart audio) {
 		
-		webClient.baseUrl("http://audio-service/api/audio")
-		.build()
-		.post()
-		.bodyValue(new RequestSaveAudio(name, content))
-		.retrieve()
-		.bodyToMono(Void.class)
-		.subscribe();
+		DataBufferUtils.join(audio.content())
+        .map(dataBuffer -> {
+            byte[] content = new byte[dataBuffer.readableByteCount()];
+            dataBuffer.read(content);  
+            DataBufferUtils.release(dataBuffer);  
+            return content;
+        })
+        .doOnNext(t -> webClient.build().post().uri("http://audio-service/api/audio")
+            .bodyValue(new RequestSaveAudio(name, t))
+            .retrieve()
+            .bodyToMono(Void.class)
+            .subscribe())
+        .subscribe();
 		
 	}
 	
-	private Mono<AuthorResponse> findAuthorIdByName(String name) {
-		return webClient.baseUrl("http://author-service/api/authors/" + name)
-		.build()
-		.get()
-		.retrieve()
-		.bodyToMono(AuthorResponse.class);
-		
-	}
 }

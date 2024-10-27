@@ -9,6 +9,8 @@ import lombok.Data;
 @AllArgsConstructor
 public class ResponseNamePlaylist {
 
+	private Integer id;
+	
 	private String name;
 	
 	private String imageUrl;

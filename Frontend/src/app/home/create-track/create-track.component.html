@@ -1,0 +1,53 @@
+<div class="container mt-5">
+    <div class="card">
+      <div class="card-header bg-primary text-white">
+        <h3>Create New Track</h3>
+      </div>
+      <div class="card-body">
+        <form [formGroup]="trackForm" (ngSubmit)="onSubmit()">
+          <div class="form-group">
+            <label for="title">Track Title</label>
+            <input id="title" type="text" class="form-control" formControlName="title" pInputText />
+            <div *ngIf="trackForm.get('title')?.invalid && trackForm.get('title')?.touched" class="text-danger">
+              Title is required
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="playlist">Playlist</label>
+            <div>
+                <p-autoComplete  id="playlist"  formControlName="playlist" field="name" [suggestions]="playlists" 
+                    (completeMethod)="searchPlaylists($event)"/>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="author">Author</label>
+            <div>
+                <p-autoComplete  id="author"  formControlName="author" field="name" [suggestions]="authors" 
+                (completeMethod)="searchAuthors($event)"/>
+
+            </div>
+            <div *ngIf="trackForm.get('author')?.invalid && trackForm.get('author')?.touched" class="text-danger">
+              Author is required
+            </div>
+          </div>
+
+  
+          <div class="form-group">
+            <label for="file">Audio File</label>
+            <p-fileUpload mode="advanced" name="file" (onSelect)="onFileSelected($event)" [customUpload]="true"  accept="audio/mpeg" 
+            [showCancelButton]="true" [maxFileSize]="293601280" [showUploadButton]="false" [fileLimit]="1"/>
+            <div *ngIf="trackForm.get('file')?.invalid && trackForm.get('file')?.touched" class="text-danger">
+              File is required
+            </div>
+          </div>
+  
+          <button type="submit" class="btn btn-success mt-3" [disabled]="trackForm.invalid">
+            Create Track
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+  

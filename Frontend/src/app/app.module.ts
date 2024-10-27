@@ -25,6 +25,7 @@ import { FileUploadModule } from 'primeng/fileupload';
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { CascadeSelectModule } from 'primeng/cascadeselect';
 import { DropdownModule } from 'primeng/dropdown';
+import { CreateTrackComponent } from './home/create-track/create-track.component';
 
 @NgModule({
   declarations: [
@@ -34,7 +35,8 @@ import { DropdownModule } from 'primeng/dropdown';
     HomeComponent,
     AudioComponent,
     SeeTracksComponent,
-    CreatePlaylistComponent
+    CreatePlaylistComponent,
+    CreateTrackComponent
   ],
   imports: [
     BrowserModule,

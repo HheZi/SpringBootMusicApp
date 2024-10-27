@@ -27,6 +27,7 @@ public class PlaylistMapper {
 	
 	public ResponseNamePlaylist fromPlaylistToResponseNamePlaylist(Playlist playlist) {
 		return ResponseNamePlaylist.builder()
+				.id(playlist.getId())
 				.name(playlist.getName())
 				.imageUrl(playlist.getImageName() != null ? IMAGE_URL + playlist.getImageName() : DEFAULT_IMAGE_URL)
 				.build();

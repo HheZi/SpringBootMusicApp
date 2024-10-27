@@ -5,6 +5,10 @@ import org.springframework.stereotype.Repository;
 
 import com.app.model.Playlist;
 
+import reactor.core.publisher.Flux;
+
 public interface PlaylistRepository extends ReactiveCrudRepository<Playlist, Integer>{
 
+	Flux<Playlist> findByNameContainingIgnoreCase(String name);
+	
 }

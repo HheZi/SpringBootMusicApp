@@ -41,6 +41,11 @@ public class PlaylistService {
 				.findAllById(id)
 				.map(playlistMapper::fromPlaylistToResponseNamePlaylist);
 	}
+	
+	public Flux<ResponseNamePlaylist> findPlaylistsBySymbol(String symbol){
+		return playlistRepository.findByNameContainingIgnoreCase(symbol)
+				.map(playlistMapper::fromPlaylistToResponseNamePlaylist);
+	}
 
 	public Mono<ResponseEntity<Integer>> createPlaylist(RequestPlaylist dto, FilePart cover, Integer userId) {
 		boolean coverIsPresent = cover.filename() != null && !cover.filename().isEmpty();

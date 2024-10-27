@@ -14,7 +14,7 @@ public class CreateTrackDto {
 	
 	private Long playlistId;
 	
-	private String author;
+	private Integer authorId;
 	
-	private byte[] audio;
+	private FilePart audio;
 }

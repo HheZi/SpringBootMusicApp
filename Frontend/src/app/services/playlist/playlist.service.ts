@@ -15,8 +15,12 @@ export class PlaylistService {
 
   constructor(private httpClient: HttpClient, private authService: AuthService, private trackService: TrackService) {}
 
-  public getPlaylists(ids: number[]){
+  public getPlaylists(ids: number[]): Observable<Object>{
     return this.httpClient.get(this.PLAYLIST_URL, {headers: this.authService.getAuthTokenInHeader(), params: {ids: ids}})
+  }
+
+  public getPlaylistsBySymbol(symbol: string): Observable<Object>{
+    return this.httpClient.get(this.PLAYLIST_URL + symbol, {headers: this.authService.getAuthTokenInHeader()});
   }
 
   public getPlaylistTypes(): Observable<Object>{

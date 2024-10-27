@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -39,6 +40,11 @@ public class PlaylistController {
 	@GetMapping("/types")
 	public Flux<PlaylistType> getPlaylistTypes() {
 		return playlistService.getPlaylistTypes();
+	}
+	
+	@GetMapping("/{symbol}")
+	public Flux<ResponseNamePlaylist> getPlaylitsBySymbol(@PathVariable("symbol") String symbol){
+		return playlistService.findPlaylistsBySymbol(symbol);
 	}
 
 	@PostMapping
