@@ -23,9 +23,9 @@ public class AuthorService {
 
 	private final AuthorMapper authorMapper;
 	
-	public Flux<AuthorResponse> getAuthorById(List<Integer> id) {
+	public Mono<AuthorResponse> getAuthorById(Integer id) {
 		return authorRepository
-				.findAllById(id)
+				.findById(id)
 				.map(authorMapper::fromAuthorToAuthorResponse);
 	}
 	

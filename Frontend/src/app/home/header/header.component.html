@@ -1,0 +1,24 @@
+<header class="header">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light ">
+        <div class="d-flex flex-grow-3 align-items-center">
+          <div class="navbar-nav">
+            <a class="nav-link" (click)="navigateTo('/tracks/see')">Tracks</a>
+            <a class="nav-link" (click)="navigateTo('tracks/create')">Create Track</a>
+            <a class="nav-link" (click)="navigateTo('/playlists/create')">Create Playlist</a>
+          </div>
+        </div>
+      
+        <div class="d-flex flex-grow-1 justify-content-end pe-3">
+          <form class="d-flex search-form" (ngSubmit)="onSearch()">
+            <input
+              class="form-control me-2"
+              type="search"
+              placeholder="Search track"
+              aria-label="Search"
+              name="search"
+            />
+            <button pButton type="button" icon="pi pi-search" (click)="onSearch()"></button>
+          </form>
+        </div>
+      </nav>
+</header>

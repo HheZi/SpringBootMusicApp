@@ -32,9 +32,9 @@ public class PlaylistController {
 
 	private final PlaylistService playlistService;
 
-	@GetMapping
-	public Flux<ResponseNamePlaylist> getPlaylists(@RequestParam("ids") List<Integer> ids) {
-		return playlistService.getPlatlistById(ids);
+	@GetMapping("/{id}")
+	public Mono<ResponseNamePlaylist> getPlaylists(@PathVariable("id") Integer id) {
+		return playlistService.getPlatlistById(id);
 	}
 
 	@GetMapping("/types")
@@ -42,7 +42,7 @@ public class PlaylistController {
 		return playlistService.getPlaylistTypes();
 	}
 	
-	@GetMapping("/{symbol}")
+	@GetMapping("/symbol/{symbol}")
 	public Flux<ResponseNamePlaylist> getPlaylitsBySymbol(@PathVariable("symbol") String symbol){
 		return playlistService.findPlaylistsBySymbol(symbol);
 	}

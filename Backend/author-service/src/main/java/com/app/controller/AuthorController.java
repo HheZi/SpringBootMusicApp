@@ -28,12 +28,12 @@ public class AuthorController {
 
 	private final AuthorService authorService;
 	
-	@GetMapping
-	public Flux<AuthorResponse> getAuthors(@RequestParam("ids") List<Integer> ids){
-		return authorService.getAuthorById(ids);
+	@GetMapping("/{id}")
+	public Mono<AuthorResponse> getAuthors(@PathVariable("id") Integer id){
+		return authorService.getAuthorById(id);
 	}
 	
-	@GetMapping("/{symbol}")
+	@GetMapping("/symbol/{symbol}")
 	public Flux<AuthorResponse> getAuthorsBySymbols(@PathVariable("symbol") String symbol){
 		return authorService.getAuthorByFirstSymbols(symbol);
 	}

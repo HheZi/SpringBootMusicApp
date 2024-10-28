@@ -21,7 +21,7 @@ const routes: Routes = [
   path: '', 
   component: HomeComponent,
   children: [{path: 'tracks/see', component: SeeTracksComponent}, 
-  {path: 'playlist/create', component: CreatePlaylistComponent},
+  {path: 'playlists/create', component: CreatePlaylistComponent},
   {path: 'tracks/create', component: CreateTrackComponent}]
 }];
 

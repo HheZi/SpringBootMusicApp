@@ -26,6 +26,8 @@ import { AutoCompleteModule } from 'primeng/autocomplete';
 import { CascadeSelectModule } from 'primeng/cascadeselect';
 import { DropdownModule } from 'primeng/dropdown';
 import { CreateTrackComponent } from './home/create-track/create-track.component';
+import { HeaderComponent } from './home/header/header.component';
+import { MenubarModule } from 'primeng/menubar';
 
 @NgModule({
   declarations: [
@@ -36,7 +38,8 @@ import { CreateTrackComponent } from './home/create-track/create-track.component
     AudioComponent,
     SeeTracksComponent,
     CreatePlaylistComponent,
-    CreateTrackComponent
+    CreateTrackComponent,
+    HeaderComponent
   ],
   imports: [
     BrowserModule,
@@ -54,7 +57,8 @@ import { CreateTrackComponent } from './home/create-track/create-track.component
     ReactiveFormsModule,
     FileUploadModule,
     AutoCompleteModule,
-    DropdownModule 
+    DropdownModule,
+    MenubarModule 
   ],
   providers: [provideHttpClient()],
   bootstrap: [AppComponent]

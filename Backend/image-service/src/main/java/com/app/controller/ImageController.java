@@ -5,6 +5,7 @@ import java.util.concurrent.TimeUnit;
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -34,6 +35,7 @@ public class ImageController {
 	public ResponseEntity<byte[]> getImage(@PathVariable("name") String name) {
 		return ResponseEntity.status(HttpStatus.OK)
 				.cacheControl(CacheControl.maxAge(1, TimeUnit.DAYS))
+				.header(HttpHeaders.CONTENT_TYPE, MediaType.IMAGE_JPEG_VALUE)
 				.body(imageService.getImage(name));
 	}
 

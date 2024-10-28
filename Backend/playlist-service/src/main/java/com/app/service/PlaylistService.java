@@ -36,9 +36,9 @@ public class PlaylistService {
 
 	private final WebClient.Builder builder;
 
-	public Flux<ResponseNamePlaylist> getPlatlistById(List<Integer> id) {
+	public Mono<ResponseNamePlaylist> getPlatlistById(Integer id) {
 		return playlistRepository
-				.findAllById(id)
+				.findById(id)
 				.map(playlistMapper::fromPlaylistToResponseNamePlaylist);
 	}
 	

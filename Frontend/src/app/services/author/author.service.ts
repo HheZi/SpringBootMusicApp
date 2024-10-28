@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { AuthService } from '../auth/auth.service';
 import { AppConts } from '../../app.consts';
@@ -13,11 +13,11 @@ export class AuthorService {
 
   constructor(private httpClient: HttpClient, private authService: AuthService) { }
 
-  public getAuthorsByIds(ids: number[]): Observable<Object>{
-    return this.httpClient.get(this.AUTHOR_URL, {headers: this.authService.getAuthTokenInHeader(), params: {ids: ids}, responseType: 'json'});
+  public getAuthorsById(id: number): Observable<Object>{
+    return this.httpClient.get(this.AUTHOR_URL + id, {headers: this.authService.getAuthTokenInHeader(), responseType: 'json'});
   }
 
   public getAuthorsBySymbol(symbol: string): Observable<Object>{
-    return this.httpClient.get(this.AUTHOR_URL + symbol, {headers: this.authService.getAuthTokenInHeader(), responseType: "json"});
+    return this.httpClient.get(this.AUTHOR_URL + "symbol/" + symbol, {headers: this.authService.getAuthTokenInHeader(), responseType: "json"});
   }
 }

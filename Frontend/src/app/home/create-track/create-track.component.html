@@ -7,7 +7,9 @@
         <form [formGroup]="trackForm" (ngSubmit)="onSubmit()">
           <div class="form-group">
             <label for="title">Track Title</label>
-            <input id="title" type="text" class="form-control" formControlName="title" pInputText />
+            <div>
+              <input id="title" type="text"  formControlName="title" pInputText />
+            </div>
             <div *ngIf="trackForm.get('title')?.invalid && trackForm.get('title')?.touched" class="text-danger">
               Title is required
             </div>

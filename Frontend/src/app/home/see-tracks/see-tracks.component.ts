@@ -26,25 +26,19 @@ export class SeeTracksComponent implements OnInit {
       error: err => this.messageService.add({ closable: true, summary: "Error while loading a tracks", detail: err.error, severity: "error" }),
 
       next: (tracksResp: any) => {
-
-        this.authorService.getAuthorsByIds(tracksResp.map((x: any) => x.authorId))
-          .subscribe({
-
-            next: (authors: any) => {
-              this.playlistService.getPlaylists(tracksResp.map((x: any) => x.playlistId)).subscribe({
-                next: (playlists: any) => {
-                  for (let i = 0; i < tracksResp.length; i++)
-                    this.tracks.push({
-                      "title": tracksResp[i].title, "audioUrl": tracksResp[i].audioUrl, "author": authors[i].name,
-                      "playlist": playlists[i].name, "imageUrl": playlists[i].imageUrl
-                    })
+        tracksResp.forEach((track: any) => {
+          this.authorService.getAuthorsById(track.authorId).subscribe({
+            next: (author: any) => {
+              this.playlistService.getPlaylists(track.playlistId).subscribe({
+                next: (playlist: any) => {
+                  this.tracks.push({title: track.title, audioUrl: track.audioUrl, author: 
+                    author.name, imageUrl: playlist.imageUrl, playlist: playlist.name})
                 }
               })
-
             }
+          })
 
-          });
-
+        });
       }
     });
   }
