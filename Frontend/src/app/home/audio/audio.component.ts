@@ -1,6 +1,8 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import Plyr from 'plyr';
 import { Track } from '../see-tracks/track';
+import { Subscription } from 'rxjs';
+import { AudioService } from '../../services/audio/audio.service';
 
 @Component({
   selector: 'app-audio',
@@ -11,16 +13,23 @@ export class AudioComponent implements OnInit, OnDestroy {
 
   @ViewChild('audioPlayer', { static: true })
   private audioPlayerRef!: ElementRef;
-  private static plyr: Plyr;
+  private plyr!: Plyr;
+  public author: string = 'Author';
+  public title: string = 'Title';
+  public coverUrl: string = 'http://localhost:8080/api/images/default';
+  private subscription: Subscription | null = null;
 
-  ngOnInit(): void {
-    if (!AudioComponent.plyr) 
-      AudioComponent.plyr = new Plyr(this.audioPlayerRef.nativeElement, { controls: ['play', 'progress', 'current-time', 'mute', 'volume'] });
-    
+  constructor(private audioService: AudioService){}
+
+  ngOnInit(): void { 
+    this.plyr = new Plyr(this.audioPlayerRef.nativeElement, { controls: ['play', 'progress', 'current-time', 'mute', 'volume'] });
+    this.audioService.currentTrack$.subscribe({
+      next: (track: any) => this.playAudio(track)
+    })
   }
 
-  public static playAudio(track: Track): void {
-    AudioComponent.plyr.source = {
+  public playAudio(track: Track): void {
+    this.plyr.source = {
       type: 'audio',
       title: track.title,
       sources: [{
@@ -28,6 +37,9 @@ export class AudioComponent implements OnInit, OnDestroy {
         type: "audio/mpeg"
       }]
     }
+    this.author = track.author;
+    this.coverUrl = track.imageUrl;
+    this.title = track.title;
     if ('mediaSession' in navigator) {
       navigator.mediaSession.metadata = new MediaMetadata({
         title: track.title,
@@ -35,12 +47,12 @@ export class AudioComponent implements OnInit, OnDestroy {
         album: track.playlist + "",
         artwork: [{src: track.imageUrl}]
       });
-      AudioComponent.plyr.play();
+      this.plyr.play();
     }
   }
 
   ngOnDestroy(): void {
-    if (AudioComponent.plyr)
-      AudioComponent.plyr.destroy()
+    if (this.plyr)
+      this.plyr.destroy()
   }
 }

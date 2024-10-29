@@ -1,10 +1,31 @@
-.mainAudio{
-    width: 100%;
-    background-color: #ffffff;
-    border-top: 1px solid #ccc;
-    padding: 20px;
-    bottom: 0;
-    position: fixed;
-    margin-bottom: auto;
-    height: 10%;
+.mainAudio {
+  width: 100%;
+  background-color: #ffffff;
+  border-top: 1px solid #ccc;
+  padding: 10px 20px;
+  bottom: 0;
+  position: fixed;
+  height: 10%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Стили для обложки трека */
+.track-cover {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 5px;
+}
+
+/* Стили для текста трека */
+.track-title {
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.track-artist {
+  color: #666;
+  font-size: 12px;
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { TrackService } from '../../services/track/track.service';
 import { MessageService } from 'primeng/api';
 import { Track } from './track';
@@ -8,6 +8,8 @@ import { AuthorService } from '../../services/author/author.service';
 import { PlaylistService } from '../../services/playlist/playlist.service';
 import { ActivatedRoute } from '@angular/router';
 import { HttpHeaders, HttpParams } from '@angular/common/http';
+import { BehaviorSubject } from 'rxjs';
+import { AudioService } from '../../services/audio/audio.service';
 
 @Component({
   selector: 'app-see-tracks',
@@ -15,6 +17,8 @@ import { HttpHeaders, HttpParams } from '@angular/common/http';
   styleUrls: ['./see-tracks.component.css'],
 })
 export class SeeTracksComponent implements OnInit {
+
+  
 
   public tracks: Track[] = [];
   public radioVal: string = "Track";
@@ -26,7 +30,8 @@ export class SeeTracksComponent implements OnInit {
     private titleService: Title,
     private authorService: AuthorService,
     private playlistService: PlaylistService,
-    private activatedRoute: ActivatedRoute
+    private activatedRoute: ActivatedRoute,
+    private audioService: AudioService
   ) {
     this.titleService.setTitle("Tracks");
    }
@@ -112,7 +117,7 @@ export class SeeTracksComponent implements OnInit {
   }
 
   public playTrack(track: Track): void {
-    AudioComponent.playAudio(track);
+    this.audioService.setCurrentTrack(track);
   }
 
   private handleError(summary: string, error: any): void {

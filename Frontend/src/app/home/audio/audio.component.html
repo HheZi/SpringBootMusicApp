@@ -1,3 +1,12 @@
-<footer class="mainAudio">
-        <audio #audioPlayer controls type="audio/mpeg"></audio>
+<footer class="mainAudio d-flex align-items-center">
+        <div class="d-flex align-items-center col-auto">
+                <img src="{{coverUrl}}" alt="Cover" class="track-cover me-3" />
+                <div>
+                        <p class="track-title mb-1">{{ title }}</p>
+                        <p class="track-artist mb-0">{{ author }}</p>
+                </div>
+        </div>
+        <div class="flex-grow-1 audio ">
+                <audio #audioPlayer controls type="audio/mpeg"></audio>
+        </div>
 </footer>
