@@ -6,7 +6,6 @@
                 [(ngModel)]="radioVal"
                 value="Track" 
                 variant="filled" 
-                (onClick)="getTracksByName()"
                 inputId="track" />
         <label for="track" class="ms-1 me-3">Track name</label>
         <p-radioButton 
@@ -14,7 +13,6 @@
                 value="Playlist" 
                 [(ngModel)]="radioVal"
                 variant="filled" 
-                (onClick)="getTracksByName()"
                 inputId="playlist" />
         <label for="playlist" class="ms-1 me-3">Playlist name</label>
         <p-radioButton 
@@ -22,7 +20,6 @@
                 value="Author" 
                 [(ngModel)]="radioVal"
                 variant="filled" 
-                (onClick)="getTracksByName()"
                 inputId="author" />
         <label for="author" class="ms-1 me-3">Author name</label>
     </div>

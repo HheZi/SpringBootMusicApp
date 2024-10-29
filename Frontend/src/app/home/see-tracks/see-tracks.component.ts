@@ -7,71 +7,116 @@ import { Title } from '@angular/platform-browser';
 import { AuthorService } from '../../services/author/author.service';
 import { PlaylistService } from '../../services/playlist/playlist.service';
 import { ActivatedRoute } from '@angular/router';
-import { HttpHeaders } from '@angular/common/http';
+import { HttpHeaders, HttpParams } from '@angular/common/http';
 
 @Component({
   selector: 'app-see-tracks',
   templateUrl: './see-tracks.component.html',
-  styleUrl: './see-tracks.component.css',
+  styleUrls: ['./see-tracks.component.css'],
 })
 export class SeeTracksComponent implements OnInit {
 
   public tracks: Track[] = [];
-  public radioVal?: string;
+  public radioVal: string = "Track";
   public searchValue: string | null = null;
 
-  constructor(private trackService: TrackService, private messageService: MessageService, private title: Title,
-    private authorService: AuthorService, private playlistService: PlaylistService, private activeRoute: ActivatedRoute) { }
+  constructor(
+    private trackService: TrackService,
+    private messageService: MessageService,
+    private titleService: Title,
+    private authorService: AuthorService,
+    private playlistService: PlaylistService,
+    private activatedRoute: ActivatedRoute
+  ) {
+    this.titleService.setTitle("Tracks");
+   }
 
   ngOnInit(): void {
-    this.activeRoute.queryParams.subscribe((params: any) => {
-      this.searchValue = params['name'];
-    });
-    this.title.setTitle("Tracks")
-    this.getTracks(null);
-  }
-
-  private getTracks(header: any): void{
-    this.tracks = [];
-    this.trackService.getTracks(header).subscribe({
-      error: err => this.messageService.add({ closable: true, summary: "Error while loading a tracks", detail: err.error, severity: "error" }),
-
-      next: (tracksResp: any) => {
-        tracksResp.forEach((track: any) => {
-          this.authorService.getAuthorsById(track.authorId).subscribe({
-            next: (author: any) => {
-              this.playlistService.getPlaylists(track.playlistId).subscribe({
-                next: (playlist: any) => {
-                  this.tracks.push({title: track.title, audioUrl: track.audioUrl, author: 
-                    author.name, imageUrl: playlist.imageUrl, playlist: playlist.name})
-                }
-              })
-            }
-          })
-
-        });
+    this.activatedRoute.queryParams.subscribe(params => {
+      this.searchValue = params['name'] || null;
+      if (this.searchValue) {
+        this.getTracksByName(this.searchValue);
       }
     });
+    if (!this.searchValue) {
+      this.getTracks();
+    }
   }
 
-  public getTracksByName(): void{
-    if(this.radioVal === "Track"){
-      this.getTracks({name: this.searchValue})
-    }
-    else if(this.radioVal === "Author"){
-      this.authorService.getAuthorsBySymbol(this.searchValue as string).subscribe((resp: any) => {
-        var header = new HttpHeaders()
-        header.set("authorId", resp.join(","))
-        console.log(header);
+  public getTracks(headers: HttpParams | null = null): void {
+    this.trackService.getTracks(headers).subscribe({
+      next: tracksResp => this.populateTracks(tracksResp),
+      error: err => this.messageService.add({
+        closable: true,
+        summary: "Error while loading tracks",
+        detail: err.error,
+        severity: "error"
+      })
+    });
+  }
+
+  private populateTracks(tracksResp: any): void {
+    this.tracks = [];    
+    tracksResp.forEach((track: any) => {
+      this.authorService.getAuthorsById(track.authorId).subscribe({
+        next: (author: any) => {
+          this.playlistService.getPlaylists(track.playlistId).subscribe({
+            next: (playlist: any) => {
+              this.tracks.push({
+                title: track.title,
+                audioUrl: track.audioUrl,
+                author: author.name,
+                imageUrl: playlist.imageUrl,
+                playlist: playlist.name
+              });
+            }
+          });
+        }
+      });
+    });
+  }
+
+  public getTracksByName(value: string): void {
+    if (this.radioVal === "Track") {
+      var params = new HttpParams();
+      this.getTracks(params.append("name", value))
+    } else if (this.radioVal === "Author") {
+      this.authorService.getAuthorsBySymbol(value).subscribe({
+        next: (authors: any) => this.fetchTracksByAuthors(authors),
+        error: err => this.handleError("Error while loading authors", err)
+      });
+    } else if (this.radioVal === "Playlist") {
+      this.playlistService.getPlaylistsBySymbol(value).subscribe({
+        next: (playlists: any) => this.fetchTracksByPlaylists(playlists),
+        error: err => this.handleError("Error while loading playlists", err)
       });
     }
-    else if(this.radioVal === "Playlist"){
-      this.playlistService.getPlaylistsBySymbol(this.searchValue as string).subscribe(() => this.getTracks(null));
-    }
+  }
+
+  private fetchTracksByAuthors(authors: any[]): void {
+    authors.forEach((author: any) => {
+      this.trackService.getTracksByAuthorId(author.id).subscribe({
+        next: (tracks: any) => this.populateTracks(tracks),
+        error: (err: any) => this.handleError("Error while loading tracks by author", err)
+      });
+    });
+  }
+
+  private fetchTracksByPlaylists(playlists: any[]): void {
+    playlists.forEach(playlist => {
+      this.trackService.getTracksByPlaylistId(playlist.id).subscribe({
+        next: (tracks: any) => this.populateTracks(tracks),
+        error: (err: any) => this.handleError("Error while loading tracks by playlist", err)
+      });
+    });
   }
 
   public playTrack(track: Track): void {
     AudioComponent.playAudio(track);
+  }
+
+  private handleError(summary: string, error: any): void {
+    this.messageService.add({ closable: true, summary, detail: error.error, severity: "error" });
   }
 
 }
