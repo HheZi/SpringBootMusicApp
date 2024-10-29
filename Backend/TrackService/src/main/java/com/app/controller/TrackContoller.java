@@ -1,17 +1,15 @@
 package com.app.controller;
 
-import org.springframework.http.HttpStatus;
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.codec.multipart.FilePart;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.app.model.projection.CreateTrackDto;
 import com.app.model.projection.ResponseTrack;
@@ -20,7 +18,6 @@ import com.app.service.TrackService;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import org.springframework.web.bind.annotation.GetMapping;
 
 
 @RestController
@@ -31,12 +28,19 @@ public class TrackContoller {
 	private final TrackService trackService;
 
 	@GetMapping
-	public Flux<ResponseTrack> getTracks() {
-		return trackService.getTracks();
+	public Flux<ResponseTrack> getTracks(
+			@RequestParam(value = "name", required = false) String trackName, 
+			@RequestParam(value = "authorId", required = false) List<Integer> authorId,
+			@RequestParam(value = "playlistId", required = false) List<Integer> playlistId
+		){
+		return trackService.getTracks(trackName, authorId, playlistId);
 	}
 	
 	@PostMapping
-	public Mono<ResponseEntity<?>> createTrack(@ModelAttribute Mono<CreateTrackDto> dto, @RequestHeader("userId") Integer userId) {
+	public Mono<ResponseEntity<?>> createTrack(
+			@ModelAttribute Mono<CreateTrackDto> dto, 
+			@RequestHeader("userId") Integer userId
+		) {
 		return dto.flatMap(t -> trackService.createTrack(t, userId));
 	}
 

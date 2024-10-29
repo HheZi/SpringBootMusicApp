@@ -10,8 +10,10 @@ export class HeaderComponent {
   
   public constructor(private router: Router){}
 
+  public textInput: string = '';
+
   onSearch() {
-    throw new Error('Method not implemented.');
+    this.router.navigate(['tracks/see'], {queryParams: {'name': this.textInput}})
   }
   
   navigateTo(arg0: string) {

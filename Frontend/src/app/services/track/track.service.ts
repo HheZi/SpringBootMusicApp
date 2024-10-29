@@ -13,8 +13,10 @@ export class TrackService {
 
   constructor(private httpClient: HttpClient, private authService: AuthService) { }
 
-  public getTracks() : Observable<Object>{
-    return this.httpClient.get(this.TRACK_URL, {headers: this.authService.getAuthTokenInHeader()});
+  public getTracks(header: any) : Observable<Object>{
+    if(header === null)
+      return this.httpClient.get(this.TRACK_URL);
+    return this.httpClient.get(this.TRACK_URL, {headers: header});
   }
 
   public createTracks(tracks: any): Observable<Object>{

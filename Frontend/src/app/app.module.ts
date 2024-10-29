@@ -28,6 +28,7 @@ import { DropdownModule } from 'primeng/dropdown';
 import { CreateTrackComponent } from './home/create-track/create-track.component';
 import { HeaderComponent } from './home/header/header.component';
 import { MenubarModule } from 'primeng/menubar';
+import { RadioButtonModule } from 'primeng/radiobutton';
 
 @NgModule({
   declarations: [
@@ -58,7 +59,8 @@ import { MenubarModule } from 'primeng/menubar';
     FileUploadModule,
     AutoCompleteModule,
     DropdownModule,
-    MenubarModule 
+    MenubarModule,
+    RadioButtonModule 
   ],
   providers: [provideHttpClient()],
   bootstrap: [AppComponent]

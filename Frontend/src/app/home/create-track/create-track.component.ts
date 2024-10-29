@@ -1,16 +1,17 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { AuthorService } from '../../services/author/author.service';
 import { PlaylistService } from '../../services/playlist/playlist.service';
 import { TrackService } from '../../services/track/track.service';
 import { MessageService } from 'primeng/api';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-create-track',
   templateUrl: './create-track.component.html',
   styleUrl: './create-track.component.css'
 })
-export class CreateTrackComponent {
+export class CreateTrackComponent implements  OnInit{
   
   public trackForm: FormGroup;
   
@@ -19,13 +20,18 @@ export class CreateTrackComponent {
   public playlists: string[] = []; 
 
   constructor(private fb: FormBuilder, private authorService: AuthorService, 
-    private playlistService: PlaylistService, private trackService: TrackService, private messageService: MessageService) {
+    private playlistService: PlaylistService, private trackService: TrackService, private messageService: MessageService,
+    private title: Title) {
     this.trackForm = this.fb.group({
       title: ['', Validators.required],
       author: [null, Validators.required],
       audio: [null, Validators.required],
       playlist: [null, Validators.required]
     });
+  }
+
+  ngOnInit(): void {
+    this.title.setTitle("Create Track");
   }
   
   onFileSelected(event: any): void {

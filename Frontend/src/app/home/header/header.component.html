@@ -16,6 +16,7 @@
               placeholder="Search track"
               aria-label="Search"
               name="search"
+              [(ngModel)]="textInput"
             />
             <button pButton type="button" icon="pi pi-search" (click)="onSearch()"></button>
           </form>

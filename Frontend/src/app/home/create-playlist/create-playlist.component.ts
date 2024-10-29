@@ -3,6 +3,7 @@ import { FormGroup, FormBuilder, Validators, FormArray } from '@angular/forms';
 import { PlaylistService } from '../../services/playlist/playlist.service';
 import { AuthorService } from '../../services/author/author.service';
 import { MessageService } from 'primeng/api';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-create-playlist',
@@ -18,7 +19,7 @@ export class CreatePlaylistComponent implements OnInit {
 
   constructor(private fb: FormBuilder, private playlistService: 
     PlaylistService, private authorService: AuthorService,
-     private messageService: MessageService) {
+     private messageService: MessageService, private title: Title) {
 
     this.playlistForm = this.fb.group({
       title: ['', Validators.required],
@@ -29,6 +30,7 @@ export class CreatePlaylistComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.title.setTitle("Create Playlist")
     this.playlistService.getPlaylistTypes().subscribe({
       next: (types: any) => {
         this.playlistTypes = types;

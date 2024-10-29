@@ -1,15 +1,19 @@
 package com.app.service;
 
+import java.util.List;
+
 import org.springframework.core.io.buffer.DataBufferUtils;
+import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
+import org.springframework.data.relational.core.query.Criteria;
+import org.springframework.data.relational.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.ResponseEntity.BodyBuilder;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import com.app.model.Track;
-import com.app.model.projection.AuthorResponse;
 import com.app.model.projection.CreateTrackDto;
 import com.app.model.projection.RequestSaveAudio;
 import com.app.model.projection.ResponseTrack;
@@ -30,12 +34,35 @@ public class TrackService {
 
 	private final WebClient.Builder webClient;
 
+	private final R2dbcEntityTemplate template;
 	
-	public Flux<ResponseTrack> getTracks(){
-		return repository.findAll()
+	public Flux<ResponseTrack> getTracks(
+			String trackName, 
+			List<Integer> authorId, 
+			List<Integer> playlistId
+		){
+		Criteria criteria;
+
+		if (trackName != null) {
+			criteria = Criteria.where("title").like(trackName+ "%");
+		}
+		else if (authorId != null) {
+			criteria = Criteria.where("author_id").in(authorId);
+		}
+		else if (playlistId != null) {
+			criteria = Criteria.where("playlist_id").in(playlistId);
+		}
+		else {
+			return repository.findAll()
+					.map(mapper::fromTrackToResponseTrack);			
+		}
+		
+		return template.select(Query.query(criteria), Track.class)
 				.map(mapper::fromTrackToResponseTrack);
+		
 	}
 	
+	@Transactional
 	public Mono<ResponseEntity<?>> createTrack(CreateTrackDto dto, Integer userId) {
 		return repository.save(mapper.fromCreateTrackDtoToTrack(dto, userId))
 				.doOnNext(t -> saveAudio(t.getAudioName(), dto.getAudio()))
@@ -43,7 +70,6 @@ public class TrackService {
 	}
 
 	private void saveAudio(String name, FilePart audio) {
-		
 		DataBufferUtils.join(audio.content())
         .map(dataBuffer -> {
             byte[] content = new byte[dataBuffer.readableByteCount()];
@@ -59,5 +85,5 @@ public class TrackService {
         .subscribe();
 		
 	}
-	
+
 }

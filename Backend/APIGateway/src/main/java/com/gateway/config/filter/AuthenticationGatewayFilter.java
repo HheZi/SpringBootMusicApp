@@ -1,12 +1,17 @@
 package com.gateway.config.filter;
 
+import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpMethod.POST;
+
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
@@ -20,9 +25,14 @@ import reactor.core.publisher.Mono;
 @RefreshScope
 @Component
 public class AuthenticationGatewayFilter implements GatewayFilter {
-	
-	
-	private final List<String> openEndpoints = List.of("/login", "/api/users/", "/api/audio/", "/api/images/");
+
+	private final List<OpenEndpoint> openEndpoints = List.of(
+			new OpenEndpoint("/login", new HttpMethod[] { POST }),
+			new OpenEndpoint("/api/users/", new HttpMethod[] { POST }),
+			new OpenEndpoint("/api/audio/", new HttpMethod[] { GET }),
+			new OpenEndpoint("/api/images/", new HttpMethod[] { GET }),
+			new OpenEndpoint("/api/tracks/", new HttpMethod[] { GET })
+		);
 
 	@Autowired
 	private JwtUtil jwtUtil;
@@ -32,37 +42,44 @@ public class AuthenticationGatewayFilter implements GatewayFilter {
 		ServerHttpRequest request = exchange.getRequest();
 
 		String token = getTokenFromHeader(request);
-		
+
 		if (isEndpointNotSecured(request)) {
-			
-			if (isJwtExpired(token)) {
-				return Mono.error(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
-			}
-
-			exchange.getRequest()
-					.mutate()
-					.header("userId", jwtUtil.getValue("id", token))
-					.header("username", jwtUtil.getValue("username", token))
-					.build();
-
+			return chain.filter(exchange);
 		}
 		
-		
-		
+		if (isJwtExpired(token)) {
+			return Mono.error(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
+		}
+
+		exchange.getRequest()
+		.mutate()
+		.header("userId", jwtUtil.getValue("id", token))
+		.header("username", jwtUtil.getValue("username", token))
+		.build();
+
 		return chain.filter(exchange);
 	}
 
 	private boolean isJwtExpired(String token) {
-		return  token == null || jwtUtil.isExpired(token);
+		return token == null || jwtUtil.isExpired(token);
 	}
-	
+
 	private String getTokenFromHeader(ServerHttpRequest request) {
 		List<String> vals = request.getHeaders().get(HttpHeaders.AUTHORIZATION);
 		return vals == null ? null : vals.get(0).split("\s")[1];
 	}
 
 	private boolean isEndpointNotSecured(ServerHttpRequest request) {
-		return openEndpoints.stream().noneMatch(t -> request.getURI().getPath().contains(t));
+	    return openEndpoints.stream()
+	            .anyMatch(endpoint -> isUriTheSame(request, endpoint.uri()) && isHttpMethodTheSame(request, endpoint.httpMethods()));
+	}
+
+	private boolean isUriTheSame(ServerHttpRequest request, String uri) {
+		return request.getURI().getPath().contains(uri);
+	}
+
+	private boolean isHttpMethodTheSame(ServerHttpRequest request, HttpMethod[] httpMethods) {
+		return Stream.of(httpMethods).anyMatch(method -> method.equals(request.getMethod()));
 	}
 
 }
