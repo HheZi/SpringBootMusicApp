@@ -22,7 +22,7 @@ import lombok.SneakyThrows;
 @Service
 public class AudioService {
 
-	private final int CHUNK_OF_AUDIO = 1024 * 1024;
+	public final int CHUNK_OF_AUDIO = 1024 * 1024;
 
 	@Value("${audio.path}")
 	private String audioPath;
