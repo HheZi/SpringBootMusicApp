@@ -26,6 +26,7 @@ public class AuthorService {
 	public Mono<AuthorResponse> getAuthorById(Integer id) {
 		return authorRepository
 				.findById(id)
+				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "The author is not found")))
 				.map(authorMapper::fromAuthorToAuthorResponse);
 	}
 	
