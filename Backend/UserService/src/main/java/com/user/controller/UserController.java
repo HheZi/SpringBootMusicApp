@@ -30,11 +30,8 @@ public class UserController {
 
 	@PostMapping
 	public Mono<ResponseEntity<?>> createUser(@Validated @RequestBody(required = true) Mono<UserFormRequest> entity) {
-		return entity.flatMap(request -> {
-			service.createNewUser(request);
-
-			return Mono.just(ResponseEntity.status(HttpStatus.CREATED).build());
-		});
+		return entity.doOnNext(service::createNewUser)
+				.flatMap(t -> Mono.just(ResponseEntity.status(HttpStatus.CREATED).build()));
 
 	}
 

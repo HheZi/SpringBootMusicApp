@@ -18,7 +18,6 @@ import lombok.NoArgsConstructor;
 public class UserFormRequest {
 
 	@NotBlank(message = "The username can't be blank")
-	@Length(min = 4, message = "The username lenght must be at least 4 characters long")
 	private String username;
 
 	@Email(message = "The email must follow the email template")
