@@ -1,4 +1,4 @@
-package com.auth.model;
+package com.auth.payload.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

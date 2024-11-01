@@ -8,8 +8,8 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.auth.model.AuthRequest;
-import com.auth.model.UserDetails;
+import com.auth.payload.request.AuthRequest;
+import com.auth.payload.response.UserDetails;
 import com.auth.util.JwtUtil;
 
 import lombok.RequiredArgsConstructor;
