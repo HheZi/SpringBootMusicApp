@@ -3,7 +3,7 @@ package com.app.util;
 import org.springframework.stereotype.Component;
 
 import com.app.model.Author;
-import com.app.model.projection.AuthorResponse;
+import com.app.payload.response.AuthorResponse;
 
 @Component
 public class AuthorMapper {

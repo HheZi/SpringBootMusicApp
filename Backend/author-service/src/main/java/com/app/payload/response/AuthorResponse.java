@@ -1,4 +1,4 @@
-package com.app.model.projection;
+package com.app.payload.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

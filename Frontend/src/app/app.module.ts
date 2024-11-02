@@ -29,6 +29,9 @@ import { CreateTrackComponent } from './home/create-track/create-track.component
 import { HeaderComponent } from './home/header/header.component';
 import { MenubarModule } from 'primeng/menubar';
 import { RadioButtonModule } from 'primeng/radiobutton';
+import { CreateAuthorComponent } from './home/create-author/create-author.component';
+import { MenuModule } from 'primeng/menu';
+
 
 @NgModule({
   declarations: [
@@ -40,7 +43,8 @@ import { RadioButtonModule } from 'primeng/radiobutton';
     SeeTracksComponent,
     CreatePlaylistComponent,
     CreateTrackComponent,
-    HeaderComponent
+    HeaderComponent,
+    CreateAuthorComponent
   ],
   imports: [
     BrowserModule,
@@ -60,7 +64,8 @@ import { RadioButtonModule } from 'primeng/radiobutton';
     AutoCompleteModule,
     DropdownModule,
     MenubarModule,
-    RadioButtonModule 
+    RadioButtonModule,
+    MenuModule 
   ],
   providers: [provideHttpClient()],
   bootstrap: [AppComponent]

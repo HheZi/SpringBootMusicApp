@@ -20,4 +20,9 @@ export class AuthorService {
   public getAuthorsBySymbol(symbol: string): Observable<Object>{
     return this.httpClient.get(this.AUTHOR_URL + "symbol/" + symbol, {headers: this.authService.getAuthTokenInHeader(), responseType: "json"});
   }
+
+  public createAuthor(body: any): Observable<Object>{
+    return this.httpClient.post(this.AUTHOR_URL, body, {headers: this.authService.getAuthTokenInHeader(), responseType: "json"});
+  }
+
 }

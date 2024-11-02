@@ -1,20 +1,16 @@
 package com.app.controller;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.data.r2dbc.DataR2dbcTest;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
-import com.app.model.projection.AuthorResponse;
+import com.app.payload.request.AuthorCreateRequest;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @SpringBootTest
 @TestPropertySource(locations = "classpath:/application-test.properties")
@@ -23,6 +19,9 @@ class AuthorControllerTest {
 
 	@Autowired
 	private WebTestClient testClient;
+	
+	@Autowired
+	private ObjectMapper mapper;
 	
 	@Test
 	void test_get_author_method() {
@@ -52,12 +51,14 @@ class AuthorControllerTest {
 	}
 	
 	@Test
-	void test_create_author_method() {
-		String nameOfNewAuthor = "New";
+	void test_create_author_method() throws JsonProcessingException {
+		
+		AuthorCreateRequest request = new AuthorCreateRequest("New");
 		
 		testClient.post()
 		.uri("/api/authors/")
-		.bodyValue(nameOfNewAuthor)
+		.contentType(MediaType.APPLICATION_JSON)
+		.bodyValue(mapper.writeValueAsBytes(request))
 		.exchange()
 		.expectStatus().isCreated();
 		

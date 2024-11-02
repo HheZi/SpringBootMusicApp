@@ -1,0 +1,15 @@
+<div class="container mt-5">
+    <div class="card">
+        <div class="card-header text-center">
+            <h3>Create autor</h3>
+        </div>
+        <div class="card-body">
+            <form (ngSubmit)="onSubmit()">
+                <div class="form-group">
+                    <input  type="text" class="form-control" name="name" [(ngModel)]="name" placeholder="Enter the name">
+                </div>
+                <button class="btn btn-primary mt-2">Submit</button>
+            </form>
+        </div>
+    </div>
+</div>

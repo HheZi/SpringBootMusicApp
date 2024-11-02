@@ -40,8 +40,10 @@ public class ImageController {
 	}
 
 	@GetMapping("/default")
-	public byte[] getDefaultCover() {
-		return imageService.getDefaultImage();
+	public ResponseEntity<byte[]> getDefaultCover() {
+		return ResponseEntity.ok()
+				.cacheControl(CacheControl.maxAge(1, TimeUnit.DAYS))
+				.body(imageService.getDefaultImage());
 	}
 	
 	

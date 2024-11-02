@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { MenuItem } from 'primeng/api';
 
 @Component({
   selector: 'app-header',
@@ -7,12 +8,18 @@ import { Router } from '@angular/router';
   styleUrl: './header.component.css'
 })
 export class HeaderComponent {
+  public items: MenuItem[] = [
+    {label: "Track", routerLink: "tracks/create"},
+    {label: "Playlist", routerLink: "playlists/create"},
+    {label: "Author", routerLink: "authors/create"},
+  ];
+  public butLabel: string|undefined = "Create";
   
   public constructor(private router: Router){}
 
   public textInput: string = '';
 
-  onSearch() {
+  onSearch() {  
     this.router.navigate(['tracks/see'], {queryParams: {'name': this.textInput}})
   }
   

@@ -18,11 +18,11 @@ import { AudioService } from '../../services/audio/audio.service';
 })
 export class SeeTracksComponent implements OnInit {
 
-  
 
+  public isNotFound: boolean = false;
   public tracks: Track[] = [];
   public radioVal: string = "Track";
-  public searchValue: string | null = null;
+  public searchValue!: string;
 
   constructor(
     private trackService: TrackService,
@@ -34,13 +34,13 @@ export class SeeTracksComponent implements OnInit {
     private audioService: AudioService
   ) {
     this.titleService.setTitle("Tracks");
-   }
+  }
 
   ngOnInit(): void {
     this.activatedRoute.queryParams.subscribe(params => {
       this.searchValue = params['name'] || null;
       if (this.searchValue) {
-        this.getTracksByName(this.searchValue);
+        this.getTracksByName();
       }
     });
     if (!this.searchValue) {
@@ -61,59 +61,71 @@ export class SeeTracksComponent implements OnInit {
   }
 
   private populateTracks(tracksResp: any): void {
-    this.tracks = [];    
-    tracksResp.forEach((track: any) => {
-      this.authorService.getAuthorsById(track.authorId).subscribe({
-        next: (author: any) => {
-          this.playlistService.getPlaylists(track.playlistId).subscribe({
-            next: (playlist: any) => {
-              this.tracks.push({
-                title: track.title,
-                audioUrl: track.audioUrl,
-                author: author.name,
-                imageUrl: playlist.imageUrl,
-                playlist: playlist.name
-              });
-            }
-          });
-        }
+    this.tracks = [];
+    this.checkIfTracksNotFound(tracksResp);
+    if (!this.isNotFound)
+      tracksResp.forEach((track: any) => {
+        this.authorService.getAuthorsById(track.authorId).subscribe({
+          next: (author: any) => {
+            this.playlistService.getPlaylists(track.playlistId).subscribe({
+              next: (playlist: any) => {
+                this.tracks.push({
+                  title: track.title,
+                  audioUrl: track.audioUrl,
+                  author: author.name,
+                  imageUrl: playlist.imageUrl,
+                  playlist: playlist.name
+                });
+              }
+            });
+          }
+        });
       });
-    });
   }
 
-  public getTracksByName(value: string): void {
+  public getTracksByName(): void {
+    console.log(this.radioVal);
+
     if (this.radioVal === "Track") {
       var params = new HttpParams();
-      this.getTracks(params.append("name", value))
+      this.getTracks(params.append("name", this.searchValue))
     } else if (this.radioVal === "Author") {
-      this.authorService.getAuthorsBySymbol(value).subscribe({
+      this.authorService.getAuthorsBySymbol(this.searchValue).subscribe({
         next: (authors: any) => this.fetchTracksByAuthors(authors),
         error: err => this.handleError("Error while loading authors", err)
       });
     } else if (this.radioVal === "Playlist") {
-      this.playlistService.getPlaylistsBySymbol(value).subscribe({
+      this.playlistService.getPlaylistsBySymbol(this.searchValue).subscribe({
         next: (playlists: any) => this.fetchTracksByPlaylists(playlists),
         error: err => this.handleError("Error while loading playlists", err)
       });
     }
   }
 
+  private checkIfTracksNotFound(value: any): void {
+    this.isNotFound = (value as Array<Object>).length > 0 ? false : true;
+  }
+
   private fetchTracksByAuthors(authors: any[]): void {
-    authors.forEach((author: any) => {
-      this.trackService.getTracksByAuthorId(author.id).subscribe({
-        next: (tracks: any) => this.populateTracks(tracks),
-        error: (err: any) => this.handleError("Error while loading tracks by author", err)
+    this.checkIfTracksNotFound(authors)
+    if (!this.isNotFound)
+      authors.forEach((author: any) => {
+        this.trackService.getTracksByAuthorId(author.id).subscribe({
+          next: (tracks: any) => this.populateTracks(tracks),
+          error: (err: any) => this.handleError("Error while loading tracks by author", err)
+        });
       });
-    });
   }
 
   private fetchTracksByPlaylists(playlists: any[]): void {
-    playlists.forEach(playlist => {
-      this.trackService.getTracksByPlaylistId(playlist.id).subscribe({
-        next: (tracks: any) => this.populateTracks(tracks),
-        error: (err: any) => this.handleError("Error while loading tracks by playlist", err)
+    this.checkIfTracksNotFound(playlists)
+    if (!this.isNotFound)
+      playlists.forEach(playlist => {
+        this.trackService.getTracksByPlaylistId(playlist.id).subscribe({
+          next: (tracks: any) => this.populateTracks(tracks),
+          error: (err: any) => this.handleError("Error while loading tracks by playlist", err)
+        });
       });
-    });
   }
 
   public playTrack(track: Track): void {

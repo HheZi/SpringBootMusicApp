@@ -9,4 +9,4 @@ server:
   port: 0
 logging:
   level:
-    '[org.springframework.web]': debug
+    '[org.springframework.data.r2dbc]': debug

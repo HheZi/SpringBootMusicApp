@@ -4,14 +4,17 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.app.model.Author;
-import com.app.model.projection.AuthorResponse;
+import com.app.payload.request.AuthorCreateRequest;
+import com.app.payload.response.AuthorResponse;
 import com.app.repository.AuthorRepository;
 import com.app.util.AuthorMapper;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -36,10 +39,10 @@ public class AuthorService {
 				.map(authorMapper::fromAuthorToAuthorResponse);
 	}
 
-	public void saveAuthor(String nameOfAuthor) {
-		Author author = new Author(null, nameOfAuthor);
+	public Mono<Integer> saveAuthor(AuthorCreateRequest dto) {
+		Author author = new Author(null, dto.getName());
 		
-		authorRepository.save(author);
+		return authorRepository.save(author).map(Author::getId);
 	}
 	
 }

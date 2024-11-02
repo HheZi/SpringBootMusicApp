@@ -8,7 +8,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.app.model.projection.AuthorResponse;
+import com.app.payload.request.AuthorCreateRequest;
+import com.app.payload.response.AuthorResponse;
 import com.app.service.AuthorService;
 
 import lombok.RequiredArgsConstructor;
@@ -37,9 +38,9 @@ public class AuthorController {
 	}
 	
 	@PostMapping
-	public Mono<ResponseEntity<?>> createAuthor(@RequestBody Mono<String> name) {
-		return name.doOnNext(authorService::saveAuthor)
-				.flatMap(t -> Mono.just(ResponseEntity.status(HttpStatus.CREATED).build()));
+	public Mono<ResponseEntity<?>> createAuthor(@RequestBody Mono<AuthorCreateRequest> dto) {
+		return dto.map(authorService::saveAuthor)
+				.flatMap(t -> Mono.just(ResponseEntity.status(HttpStatus.CREATED).body(t)));
 	}
 	
 	
