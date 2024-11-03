@@ -26,8 +26,8 @@ export class LoginComponent implements OnInit {
 
   onSubmit(): void {
     this.service.loginUser(this.username, this.password).subscribe({
-      next: (token: string) => {
-        this.authService.saveAuthToken(token);
+      next: (tokenResp: any) => {
+        this.authService.saveAuthToken(tokenResp);
         this.router.navigate(["/tracks/see"]);
       },
       error: err => {

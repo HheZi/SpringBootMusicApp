@@ -6,7 +6,7 @@ import { AppComponent } from './app.component';
 
 import { LoginComponent } from './login/login.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { provideHttpClient } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule, provideHttpClient } from '@angular/common/http';
 import { ToastModule } from 'primeng/toast';
 import { MessageModule } from 'primeng/message';
 import { CardModule } from 'primeng/card';
@@ -31,6 +31,7 @@ import { MenubarModule } from 'primeng/menubar';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { CreateAuthorComponent } from './home/create-author/create-author.component';
 import { MenuModule } from 'primeng/menu';
+import { AuthorizationInterceptorService } from './interceptor/authorization-interceptor.service';
 
 
 @NgModule({
@@ -50,6 +51,7 @@ import { MenuModule } from 'primeng/menu';
     BrowserModule,
     AppRoutingModule,
     FormsModule,
+    HttpClientModule,
     CardModule,     
     InputTextModule, 
     PasswordModule,  
@@ -67,7 +69,7 @@ import { MenuModule } from 'primeng/menu';
     RadioButtonModule,
     MenuModule 
   ],
-  providers: [provideHttpClient()],
+  providers: [ {provide: HTTP_INTERCEPTORS, useClass: AuthorizationInterceptorService, multi: true}],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

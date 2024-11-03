@@ -1,10 +1,12 @@
 package com.auth.util;
 
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import javax.crypto.SecretKey;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.relational.core.sql.From;
 import org.springframework.stereotype.Component;
 
 import com.auth.payload.response.UserDetails;
@@ -21,12 +23,13 @@ public class JwtUtil {
 	@Value("${token.secret}")
 	private String SECRET_KEY;
 	
+	private final Long EXPIRATION_TIME_IN_MINUTES = 15L;
 	
 	public String createJwtToken(Integer userId) {
 		return Jwts.builder()
 				.claim("id", userId)
 				.issuedAt(new Date())
-				.expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 5))
+				.expiration(new Date(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(EXPIRATION_TIME_IN_MINUTES)))
 				.signWith(getSingingKey())
 				.compact();
 	}
@@ -34,7 +37,6 @@ public class JwtUtil {
 	public Claims getClaims(String token) {
 		return (Claims) Jwts.parser().decryptWith(getSingingKey()).build().parse(token).getPayload();
 	}
-	
 	
 	public boolean isExpired(String token) {
 		return getClaims(token).getExpiration().before(new Date());

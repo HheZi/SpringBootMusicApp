@@ -28,6 +28,6 @@ export class TrackService {
   }
 
   public createTracks(tracks: any): Observable<Object>{
-    return this.httpClient.post(this.TRACK_URL, tracks, {headers: this.authService.getAuthTokenInHeader()});
+    return this.httpClient.post(this.TRACK_URL, tracks);
   }
 }

@@ -14,15 +14,15 @@ export class AuthorService {
   constructor(private httpClient: HttpClient, private authService: AuthService) { }
 
   public getAuthorsById(id: number): Observable<Object>{
-    return this.httpClient.get(this.AUTHOR_URL + id, {headers: this.authService.getAuthTokenInHeader(), responseType: 'json'});
+    return this.httpClient.get(this.AUTHOR_URL + id, { responseType: 'json'});
   }
 
   public getAuthorsBySymbol(symbol: string): Observable<Object>{
-    return this.httpClient.get(this.AUTHOR_URL + "symbol/" + symbol, {headers: this.authService.getAuthTokenInHeader(), responseType: "json"});
+    return this.httpClient.get(this.AUTHOR_URL + "symbol/" + symbol, { responseType: "json"});
   }
 
   public createAuthor(body: any): Observable<Object>{
-    return this.httpClient.post(this.AUTHOR_URL, body, {headers: this.authService.getAuthTokenInHeader(), responseType: "json"});
+    return this.httpClient.post(this.AUTHOR_URL, body, { responseType: "json"});
   }
 
 }

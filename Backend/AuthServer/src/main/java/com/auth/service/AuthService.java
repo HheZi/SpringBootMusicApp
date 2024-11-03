@@ -68,6 +68,9 @@ public class AuthService {
 	}
 
 	public Mono<JwtTokenResponse> refreshJWTToken(RefreshTokenRequest refreshToken) {
+		if (refreshToken.getRefreshToken() == null) {
+			return Mono.error(() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "You need to login"));
+		}
 		return refreshTokenRepository.findByToken(UUID.fromString(refreshToken.getRefreshToken()))
 				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "You need to login")))
 				.flatMap(t -> {
@@ -78,6 +81,5 @@ public class AuthService {
 				})
 				.map(t -> new JwtTokenResponse(jwtUtil.createJwtToken(t.getUserId())));
 	}
-	
 	
 }
