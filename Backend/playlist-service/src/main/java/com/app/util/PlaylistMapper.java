@@ -6,8 +6,8 @@ import org.springframework.stereotype.Component;
 
 import com.app.model.Playlist;
 import com.app.model.enums.PlaylistType;
-import com.app.model.projection.RequestPlaylist;
-import com.app.model.projection.ResponseNamePlaylist;
+import com.app.payload.request.RequestPlaylist;
+import com.app.payload.response.ResponseNamePlaylist;
 
 @Component
 public class PlaylistMapper {
@@ -19,7 +19,7 @@ public class PlaylistMapper {
 	public Playlist fromRequestPlaylistToPlaylist(RequestPlaylist dto, Integer userId, boolean coverIsPresent) {
 		return Playlist.builder()
 				.name(dto.getName())
-				.imageName(coverIsPresent ?  UUID.randomUUID().toString() : null)
+				.imageName(coverIsPresent ?  UUID.randomUUID() : null)
 				.createdBy(userId)
 				.playlistType(dto.getPlaylistType())
 				.build();
@@ -29,7 +29,7 @@ public class PlaylistMapper {
 		return ResponseNamePlaylist.builder()
 				.id(playlist.getId())
 				.name(playlist.getName())
-				.imageUrl(playlist.getImageName() != null ? IMAGE_URL + playlist.getImageName() : DEFAULT_IMAGE_URL)
+				.imageUrl(playlist.getImageName() != null ? IMAGE_URL + playlist.getImageName().toString() : DEFAULT_IMAGE_URL)
 				.build();
 	}
 	

@@ -1,6 +1,8 @@
 package com.app.model;
 
 
+import java.util.UUID;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
@@ -29,7 +31,7 @@ public class Track {
 	private Long playlistId;
 	
 	@Column("audio_name")
-	private String audioName;
+	private UUID audioName;
 
 	@Column("created_by")
 	private Integer createdBy;

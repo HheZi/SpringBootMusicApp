@@ -1,6 +1,7 @@
 package com.app.model;
 
 import java.time.Instant;
+import java.util.UUID;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
@@ -26,7 +27,7 @@ public class Playlist {
 	private String name;
 	
 	@Column("image_name")
-	private String imageName;
+	private UUID imageName;
 	
 	@Column("playlist_type")
 	private PlaylistType playlistType;

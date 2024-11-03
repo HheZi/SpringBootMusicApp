@@ -10,10 +10,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.user.model.dto.BadValidationResponse;
-import com.user.model.projection.UserAuthRequest;
-import com.user.model.projection.UserFormRequest;
-import com.user.model.projection.ValidatedUser;
+import com.user.payload.request.UserAuthRequest;
+import com.user.payload.request.UserFormRequest;
+import com.user.payload.response.BadValidationResponse;
+import com.user.payload.response.ValidatedUser;
 import com.user.service.UserService;
 
 import lombok.RequiredArgsConstructor;

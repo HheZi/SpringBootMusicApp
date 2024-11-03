@@ -3,8 +3,8 @@ package com.user.util;
 import org.springframework.stereotype.Component;
 
 import com.user.model.User;
-import com.user.model.projection.UserFormRequest;
-import com.user.model.projection.ValidatedUser;
+import com.user.payload.request.UserFormRequest;
+import com.user.payload.response.ValidatedUser;
 
 @Component
 public class UserMapper {

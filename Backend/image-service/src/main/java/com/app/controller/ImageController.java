@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.app.model.RequestImage;
+import com.app.payload.RequestImage;
 import com.app.service.ImageService;
 
 import lombok.RequiredArgsConstructor;

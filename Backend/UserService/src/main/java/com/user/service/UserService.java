@@ -8,9 +8,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.user.model.User;
-import com.user.model.projection.UserAuthRequest;
-import com.user.model.projection.UserFormRequest;
-import com.user.model.projection.ValidatedUser;
+import com.user.payload.request.UserAuthRequest;
+import com.user.payload.request.UserFormRequest;
+import com.user.payload.response.ValidatedUser;
 import com.user.repository.UserRepository;
 import com.user.util.UserMapper;
 

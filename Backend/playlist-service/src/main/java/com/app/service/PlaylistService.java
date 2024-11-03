@@ -15,9 +15,9 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import com.app.model.Playlist;
 import com.app.model.enums.PlaylistType;
-import com.app.model.projection.RequestImage;
-import com.app.model.projection.RequestPlaylist;
-import com.app.model.projection.ResponseNamePlaylist;
+import com.app.payload.request.RequestImage;
+import com.app.payload.request.RequestPlaylist;
+import com.app.payload.response.ResponseNamePlaylist;
 import com.app.repository.PlaylistRepository;
 import com.app.util.PlaylistMapper;
 
@@ -53,7 +53,7 @@ public class PlaylistService {
 		Playlist playlist = playlistMapper.fromRequestPlaylistToPlaylist(dto, userId, coverIsPresent);
 
 		if (coverIsPresent) 
-			savePlaylistCover(playlist.getImageName(), cover);			
+			savePlaylistCover(playlist.getImageName().toString(), cover);			
 
 		return playlistRepository.save(playlist)
 				.map(t -> ResponseEntity.status(HttpStatus.CREATED).body(t.getId()));

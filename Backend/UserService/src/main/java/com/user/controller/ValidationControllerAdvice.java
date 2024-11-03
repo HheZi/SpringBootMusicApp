@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.bind.support.WebExchangeBindException;
 
-import com.user.model.dto.BadValidationResponse;
+import com.user.payload.response.BadValidationResponse;
 
 @RestControllerAdvice
 public class ValidationControllerAdvice {

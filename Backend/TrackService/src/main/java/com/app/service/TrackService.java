@@ -14,9 +14,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import com.app.model.Track;
-import com.app.model.projection.CreateTrackDto;
-import com.app.model.projection.RequestSaveAudio;
-import com.app.model.projection.ResponseTrack;
+import com.app.payload.request.CreateTrackDto;
+import com.app.payload.request.RequestSaveAudio;
+import com.app.payload.response.ResponseTrack;
 import com.app.repository.TrackRepository;
 import com.app.util.TrackMapper;
 
@@ -65,7 +65,7 @@ public class TrackService {
 	@Transactional
 	public Mono<ResponseEntity<?>> createTrack(CreateTrackDto dto, Integer userId) {
 		return repository.save(mapper.fromCreateTrackDtoToTrack(dto, userId))
-				.doOnNext(t -> saveAudio(t.getAudioName(), dto.getAudio()))
+				.doOnNext(t -> saveAudio(t.getAudioName().toString(), dto.getAudio()))
 				.map(t -> ResponseEntity.status(HttpStatus.CREATED).build());
 	}
 

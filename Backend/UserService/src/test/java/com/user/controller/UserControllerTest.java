@@ -16,9 +16,9 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import com.user.model.projection.UserAuthRequest;
-import com.user.model.projection.UserFormRequest;
-import com.user.model.projection.ValidatedUser;
+import com.user.payload.request.UserAuthRequest;
+import com.user.payload.request.UserFormRequest;
+import com.user.payload.response.ValidatedUser;
 
 @SpringBootTest
 @TestPropertySource(locations = "classpath:/application-test.properties")

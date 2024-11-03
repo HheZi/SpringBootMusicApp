@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpRange;
 import org.springframework.stereotype.Service;
 
-import com.app.audioservice.model.SaveAudioDTO;
+import com.app.audioservice.payload.SaveAudioDTO;
 import com.app.audioservice.utils.AudioFragment;
 
 import lombok.SneakyThrows;

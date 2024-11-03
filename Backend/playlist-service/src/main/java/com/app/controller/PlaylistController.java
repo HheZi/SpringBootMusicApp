@@ -4,8 +4,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.app.model.enums.PlaylistType;
-import com.app.model.projection.RequestPlaylist;
-import com.app.model.projection.ResponseNamePlaylist;
+import com.app.payload.request.RequestPlaylist;
+import com.app.payload.response.ResponseNamePlaylist;
 import com.app.service.PlaylistService;
 
 import lombok.RequiredArgsConstructor;

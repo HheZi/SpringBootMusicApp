@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.app.model.projection.CreateTrackDto;
-import com.app.model.projection.ResponseTrack;
+import com.app.payload.request.CreateTrackDto;
+import com.app.payload.response.ResponseTrack;
 import com.app.service.TrackService;
 
 import lombok.RequiredArgsConstructor;
