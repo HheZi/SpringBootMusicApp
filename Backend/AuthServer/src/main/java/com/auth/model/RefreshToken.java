@@ -29,5 +29,9 @@ public class RefreshToken {
 	
 	@Column("user_id")
 	private Integer userId;
+
+	public RefreshToken(Integer userId) {
+		this.userId = userId;
+	}
 	
 }

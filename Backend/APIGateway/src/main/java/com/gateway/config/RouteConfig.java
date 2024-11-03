@@ -22,7 +22,7 @@ public class RouteConfig {
 						t -> t.path("/api/audio/**").filters(f -> f.filter(filter)).uri("lb://audio-service"))
 				
 				.route("auth-service",
-						t -> t.path("/login").filters(f -> f.filter(filter)).uri("lb://auth-service"))
+						t -> t.path("/api/auth/**").filters(f -> f.filter(filter)).uri("lb://auth-service"))
 				
 				.route("user-service", 
 						t -> t.path("/api/users/**").filters(f -> f.filter(filter)).uri("lb://user-service"))

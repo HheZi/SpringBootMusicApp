@@ -27,7 +27,7 @@ import reactor.core.publisher.Mono;
 public class AuthenticationGatewayFilter implements GatewayFilter {
 
 	private final List<OpenEndpoint> openEndpoints = List.of(
-			new OpenEndpoint("/login", new HttpMethod[] { POST }),
+			new OpenEndpoint("/api/auth/", new HttpMethod[] { POST }),
 			new OpenEndpoint("/api/users/", new HttpMethod[] { POST }),
 			new OpenEndpoint("/api/audio/", new HttpMethod[] { GET }),
 			new OpenEndpoint("/api/images/", new HttpMethod[] { GET }),
@@ -54,7 +54,6 @@ public class AuthenticationGatewayFilter implements GatewayFilter {
 		exchange.getRequest()
 		.mutate()
 		.header("userId", jwtUtil.getValue("id", token))
-		.header("username", jwtUtil.getValue("username", token))
 		.build();
 
 		return chain.filter(exchange);

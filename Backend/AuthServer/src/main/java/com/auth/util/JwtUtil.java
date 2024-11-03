@@ -22,10 +22,9 @@ public class JwtUtil {
 	private String SECRET_KEY;
 	
 	
-	public String createJwtToken(UserDetails userDetails) {
+	public String createJwtToken(Integer userId) {
 		return Jwts.builder()
-				.claim("username", userDetails.getUsername())
-				.claim("id", userDetails.getId())
+				.claim("id", userId)
 				.issuedAt(new Date())
 				.expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 5))
 				.signWith(getSingingKey())
