@@ -35,11 +35,4 @@ export class AuthService {
     localStorage.removeItem(this.TOKEN_KEY_NAME); 
   }
 
-  public getAuthTokenInHeader(): HttpHeaders{
-    const token = this.getAuthToken();
-    if(token){
-      return new HttpHeaders({"Authorization": `Bearer ${token}`})
-    }
-    return  new HttpHeaders({"": ""})
-  }
 }

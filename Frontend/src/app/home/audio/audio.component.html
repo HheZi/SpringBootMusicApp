@@ -6,7 +6,13 @@
                         <p class="track-artist mb-0">{{ author }}</p>
                 </div>
         </div>
-        <div class="flex-grow-1 audio ">
-                <audio #audioPlayer controls type="audio/mpeg"></audio>
+        <div class="flex-grow-1">
+                <div class="text-center mb-0">
+                    <i class="pi pi-step-backward-alt icon me-3" (click)="playPreviousTrack()"></i>   
+                    <i class="pi pi-step-forward-alt icon" (click)="playNextTrack()"></i>  
+                </div>
+                <div class="audio">
+                        <audio #audioPlayer controls type="audio/mpeg"></audio>
+                </div>
         </div>
 </footer>

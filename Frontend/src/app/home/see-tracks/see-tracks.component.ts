@@ -2,13 +2,11 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { TrackService } from '../../services/track/track.service';
 import { MessageService } from 'primeng/api';
 import { Track } from './track';
-import { AudioComponent } from '../audio/audio.component';
 import { Title } from '@angular/platform-browser';
 import { AuthorService } from '../../services/author/author.service';
 import { PlaylistService } from '../../services/playlist/playlist.service';
 import { ActivatedRoute } from '@angular/router';
-import { HttpHeaders, HttpParams } from '@angular/common/http';
-import { BehaviorSubject } from 'rxjs';
+import { HttpParams } from '@angular/common/http';
 import { AudioService } from '../../services/audio/audio.service';
 
 @Component({
@@ -74,7 +72,8 @@ export class SeeTracksComponent implements OnInit {
                   audioUrl: track.audioUrl,
                   author: author.name,
                   imageUrl: playlist.imageUrl,
-                  playlist: playlist.name
+                  playlist: playlist.name,
+                  isNowPlaying: false
                 });
               }
             });
@@ -128,8 +127,8 @@ export class SeeTracksComponent implements OnInit {
       });
   }
 
-  public playTrack(track: Track): void {
-    this.audioService.setCurrentTrack(track);
+  public playTrack(index: number): void {
+    this.audioService.setTracks(this.tracks, index);
   }
 
   private handleError(summary: string, error: any): void {

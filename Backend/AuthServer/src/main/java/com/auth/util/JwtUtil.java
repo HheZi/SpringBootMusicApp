@@ -1,5 +1,6 @@
 package com.auth.util;
 
+import java.time.Instant;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
@@ -29,10 +30,12 @@ public class JwtUtil {
 		return Jwts.builder()
 				.claim("id", userId)
 				.issuedAt(new Date())
-				.expiration(new Date(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(EXPIRATION_TIME_IN_MINUTES)))
+				.expiration(Date.from(Instant.now().plusMillis(TimeUnit.MINUTES.toMillis(EXPIRATION_TIME_IN_MINUTES))))
 				.signWith(getSingingKey())
 				.compact();
+	
 	}
+	
 	
 	public Claims getClaims(String token) {
 		return (Claims) Jwts.parser().decryptWith(getSingingKey()).build().parse(token).getPayload();

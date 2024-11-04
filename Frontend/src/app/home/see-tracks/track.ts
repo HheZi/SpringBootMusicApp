@@ -3,5 +3,6 @@ export interface Track {
    playlist: string,
    audioUrl: string 
    author: string
-   imageUrl: string
+   imageUrl: string,
+   isNowPlaying: boolean 
 }
