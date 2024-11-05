@@ -11,22 +11,24 @@ import { Title } from '@angular/platform-browser';
   styleUrl: './create-playlist.component.css'
 })
 export class CreatePlaylistComponent implements OnInit {
-  playlistForm: FormGroup;
+  public playlistForm: FormGroup;
 
   public playlistTypes: string[] = [];
 
   public authors: string[] = [];
 
-  constructor(private fb: FormBuilder, private playlistService: 
-    PlaylistService, private authorService: AuthorService,
-     private messageService: MessageService, private title: Title) {
-
+  constructor(
+    private fb: FormBuilder, 
+    private playlistService:PlaylistService, 
+    private authorService: AuthorService,
+    private messageService: MessageService, 
+    private title: Title
+  ) {
     this.playlistForm = this.fb.group({
       title: ['', Validators.required],
       cover: [null],
       playlistType: ['', Validators.required]
     });
-
   }
 
   ngOnInit(): void {
@@ -48,15 +50,15 @@ export class CreatePlaylistComponent implements OnInit {
   }
 
   onSubmit(): void {
-    if (this.playlistForm.valid) { 
+    if (this.playlistForm.valid) {
       const formData = new FormData();
       formData.append("cover", this.playlistForm.get("cover")?.value);
       formData.append("name", this.playlistForm.get("title")?.value);
       formData.append("playlistType", this.playlistForm.get("playlistType")?.value);
 
       this.playlistService.createPlaylist(formData).subscribe({
-        next: (data) => this.messageService.add({closable: true, detail: "Playlist created", severity: "success"}),
-        error: (err) =>  this.messageService.add({closable: true, detail: err.error, severity: "error", summary: "Something went wrong"})
+        next: (data) => this.messageService.add({ closable: true, detail: "Playlist created", severity: "success" }),
+        error: (err) => this.messageService.add({ closable: true, detail: err.error, severity: "error", summary: "Something went wrong" })
       });
     }
   }

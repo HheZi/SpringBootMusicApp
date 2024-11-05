@@ -19,6 +19,10 @@ export class AuthService {
     localStorage.setItem(this.REFRESH_TOKEN_KEY_NAME, value.refreshToken);
   }
 
+  public saveJwtToken(value: string){
+    localStorage.setItem(this.TOKEN_KEY_NAME, value);
+  }
+
   public refreshToken(): Observable<Object>{
     return this.httpClient.post(AppConts.BASE_URL + "/api/auth/refresh", {refreshToken: this.getRefreshToken()});
   }

@@ -14,8 +14,9 @@ export class TrackService {
   constructor(private httpClient: HttpClient, private authService: AuthService) { }
   
   public getTracks(header: any) : Observable<Object>{
-    if(header === null)
+    if(!header){
       return this.httpClient.get(this.TRACK_URL);
+    }
     return this.httpClient.get(this.TRACK_URL, {params: header});
   }
   

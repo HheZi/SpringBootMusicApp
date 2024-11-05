@@ -20,9 +20,10 @@ export class CreateAuthorComponent {
   }
 
   public onSubmit(): void{
-    this.authorService.createAuthor({name: this.name}).subscribe({
-      next: (data) => this.messageService.add({closable: true, detail: "You have created the author", severity: "success"}),
-      error: (err) => this.messageService.add({closable: true, detail: err.error, summary: "Something went wrong", severity: "error"})
-    })
+    if(this.name)
+      this.authorService.createAuthor({name: this.name}).subscribe({
+        next: (data) => this.messageService.add({closable: true, detail: "You have created the author", severity: "success"}),
+        error: (err) => this.messageService.add({closable: true, detail: err.error, summary: "Something went wrong", severity: "error"})
+      })
   }
 }

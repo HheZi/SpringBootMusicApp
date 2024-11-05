@@ -35,15 +35,16 @@ export class SeeTracksComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.searchValue = '';
     this.activatedRoute.queryParams.subscribe(params => {
       this.searchValue = params['name'] || null;
       if (this.searchValue) {
         this.getTracksByName();
       }
+      else{
+        this.getTracks();
+      }
     });
-    if (!this.searchValue) {
-      this.getTracks();
-    }
   }
 
   public getTracks(headers: HttpParams | null = null): void {
@@ -83,8 +84,6 @@ export class SeeTracksComponent implements OnInit {
   }
 
   public getTracksByName(): void {
-    console.log(this.radioVal);
-
     if (this.radioVal === "Track") {
       var params = new HttpParams();
       this.getTracks(params.append("name", this.searchValue))

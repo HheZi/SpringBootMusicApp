@@ -12,7 +12,7 @@ import { Title } from '@angular/platform-browser';
   styleUrl: './create-track.component.css'
 })
 export class CreateTrackComponent implements  OnInit{
-  
+
   public trackForm: FormGroup;
   
   public authors: string[] = [];
@@ -22,6 +22,8 @@ export class CreateTrackComponent implements  OnInit{
   constructor(private fb: FormBuilder, private authorService: AuthorService, 
     private playlistService: PlaylistService, private trackService: TrackService, private messageService: MessageService,
     private title: Title) {
+    
+
     this.trackForm = this.fb.group({
       title: ['', Validators.required],
       author: [null, Validators.required],
