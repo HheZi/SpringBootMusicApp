@@ -33,7 +33,7 @@ public class PlaylistController {
 	private final PlaylistService playlistService;
 
 	@GetMapping("/{id}")
-	public Mono<ResponseNamePlaylist> getPlaylists(@PathVariable("id") Integer id) {
+	public Mono<ResponseNamePlaylist> getPlaylist(@PathVariable("id") Integer id) {
 		return playlistService.getPlatlistById(id);
 	}
 

@@ -1,0 +1,17 @@
+<div class="container mt-4">
+    <div class="playlist-header d-flex align-items-center mb-4">
+        <img [src]="playlist.imageUrl" alt="Cover" class="playlist-cover me-3" />
+        <div>
+            <h2>{{ playlist.name }}</h2>
+        </div>
+    </div>
+    <div class="track-list">
+        <div *ngFor="let track of tracks;  let i = index" class="track-item d-flex align-items-center p-2 mb-2 border-bottom">
+            <p-button icon="pi pi-play" (click)="playTrack(i)" class="me-2"></p-button>
+            <div class="flex-grow-1">
+                <h5 class="track-title mb-1">{{ track.title }}</h5>
+                <p class="track-artist mb-0">{{ track.author }}</p>
+            </div>
+        </div>
+    </div>
+</div>

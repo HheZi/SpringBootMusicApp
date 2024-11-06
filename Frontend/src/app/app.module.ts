@@ -32,6 +32,7 @@ import { RadioButtonModule } from 'primeng/radiobutton';
 import { CreateAuthorComponent } from './home/create-author/create-author.component';
 import { MenuModule } from 'primeng/menu';
 import { AuthorizationInterceptorService } from './interceptor/authorization-interceptor.service';
+import { SeePlaylistComponent } from './home/see-playlist/see-playlist.component';
 
 
 @NgModule({
@@ -45,7 +46,8 @@ import { AuthorizationInterceptorService } from './interceptor/authorization-int
     CreatePlaylistComponent,
     CreateTrackComponent,
     HeaderComponent,
-    CreateAuthorComponent
+    CreateAuthorComponent,
+    SeePlaylistComponent
   ],
   imports: [
     BrowserModule,

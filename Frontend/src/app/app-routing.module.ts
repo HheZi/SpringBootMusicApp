@@ -8,6 +8,7 @@ import { CreatePlaylistComponent } from './home/create-playlist/create-playlist.
 import { CustomReuseStrategy } from './custome-routes/custom-reuse-strategy';
 import { CreateTrackComponent } from './home/create-track/create-track.component';
 import { CreateAuthorComponent } from './home/create-author/create-author.component';
+import { SeePlaylistComponent } from './home/see-playlist/see-playlist.component';
 
 const routes: Routes = [
 {
@@ -21,10 +22,13 @@ const routes: Routes = [
 {
   path: '', 
   component: HomeComponent,
-  children: [{path: 'tracks/see', component: SeeTracksComponent}, 
+  children: [
+  {path: 'tracks/see', component: SeeTracksComponent}, 
   {path: 'playlists/create', component: CreatePlaylistComponent},
   {path: 'tracks/create', component: CreateTrackComponent},
-  {path: 'authors/create', component: CreateAuthorComponent}]
+  {path: 'authors/create', component: CreateAuthorComponent},
+  {path: 'playlist/see', component: SeePlaylistComponent}
+]
 }];
 
 @NgModule({

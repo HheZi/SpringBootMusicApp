@@ -9,12 +9,12 @@ import { TrackService } from '../track/track.service';
   providedIn: 'root'
 })
 export class PlaylistService {
-
+  
   private readonly PLAYLIST_URL: string = AppConts.BASE_URL + "/api/playlists/";
-
+  
   constructor(private httpClient: HttpClient, private authService: AuthService, private trackService: TrackService) {}
 
-  public getPlaylists(id: number): Observable<Object>{
+  public getPlaylistsById(id: number): Observable<Object>{
     return this.httpClient.get(this.PLAYLIST_URL + id, { responseType: "json"})
   }
 

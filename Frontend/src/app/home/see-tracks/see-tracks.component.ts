@@ -66,7 +66,7 @@ export class SeeTracksComponent implements OnInit {
       tracksResp.forEach((track: any) => {
         this.authorService.getAuthorsById(track.authorId).subscribe({
           next: (author: any) => {
-            this.playlistService.getPlaylists(track.playlistId).subscribe({
+            this.playlistService.getPlaylistsById(track.playlistId).subscribe({
               next: (playlist: any) => {
                 this.tracks.push({
                   title: track.title,
