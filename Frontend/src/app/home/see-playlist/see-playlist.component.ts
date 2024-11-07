@@ -4,6 +4,7 @@ import { AudioService } from '../../services/audio/audio.service';
 import { PlaylistService } from '../../services/playlist/playlist.service';
 import { Playlist } from './playlist';
 import { Track } from '../see-tracks/track';
+import { TrackService } from '../../services/track/track.service';
 
 @Component({
   selector: 'app-see-playlist',
@@ -18,13 +19,13 @@ export class SeePlaylistComponent {
     private route: ActivatedRoute,
     private playlistService: PlaylistService,
     private audioService: AudioService,
+    private trackService: TrackService
   ) {}
 
   ngOnInit(): void {
     this.route.queryParams.subscribe((params: any) => {
       const playlistId = params['id'] || null;
-      console.log(playlistId);
-      
+
       if (playlistId) {
         this.loadPlaylist(parseInt(playlistId));
       }
@@ -35,6 +36,18 @@ export class SeePlaylistComponent {
     this.playlistService.getPlaylistsById(playlistId).subscribe((playlist: any) => {
       this.playlist = playlist;
     });
+    this.trackService.getTracksByPlaylistId(playlistId).subscribe((tracks: any) =>{
+      tracks.forEach((track: any) => {
+        this.tracks.push({
+          title: track.title,
+          audioUrl: track.audioUrl,
+          author: track.author.name,  
+          imageUrl: track.playlist.imageUrl,  
+          playlist: track.playlist.name,  
+          isNowPlaying: false
+        });
+      });
+    })
   }
 
 
