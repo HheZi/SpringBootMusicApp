@@ -42,6 +42,11 @@ public class PlaylistService {
 				.map(playlistMapper::fromPlaylistToResponseNamePlaylist);
 	}
 	
+	public Flux<ResponseNamePlaylist> getPlaylistsByIds(List<Integer> ids){
+		return playlistRepository.findAllById(ids)
+				.map(playlistMapper::fromPlaylistToResponseNamePlaylist);
+	}
+	
 	public Flux<ResponseNamePlaylist> findPlaylistsBySymbol(String symbol){
 		return playlistRepository.findByNameContainingIgnoreCase(symbol)
 				.map(playlistMapper::fromPlaylistToResponseNamePlaylist);

@@ -9,6 +9,8 @@ import lombok.Data;
 @Data
 public class ResponseTrack {
 	
+	private Long id;
+	
 	private String title;
 	
 	private Long playlistId;

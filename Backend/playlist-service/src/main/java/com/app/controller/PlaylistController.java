@@ -36,7 +36,12 @@ public class PlaylistController {
 	public Mono<ResponseNamePlaylist> getPlaylist(@PathVariable("id") Integer id) {
 		return playlistService.getPlatlistById(id);
 	}
-
+	
+	@GetMapping
+	public Flux<ResponseNamePlaylist> getPlaylistsByIds(@RequestParam("id[]") List<Integer> ids){
+		return playlistService.getPlaylistsByIds(ids);
+	}
+	
 	@GetMapping("/types")
 	public Flux<PlaylistType> getPlaylistTypes() {
 		return playlistService.getPlaylistTypes();

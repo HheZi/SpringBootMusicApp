@@ -25,6 +25,7 @@ public class TrackMapper {
 	
 	public ResponseTrack fromTrackToResponseTrack(Track track) {
 		return ResponseTrack.builder()
+				.id(track.getId())
 				.title(track.getTitle())
 				.audioUrl(String.format(AUDIO_URL, track.getAudioName().toString()))
 				.playlistId(track.getPlaylistId())

@@ -1,7 +1,6 @@
 package com.gateway.config.filter;
 
-import static org.springframework.http.HttpMethod.GET;
-import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.http.HttpMethod.*;
 
 import java.util.List;
 import java.util.stream.Stream;

@@ -33,6 +33,11 @@ public class AuthorService {
 				.map(authorMapper::fromAuthorToAuthorResponse);
 	}
 	
+	public Flux<AuthorResponse> getAuthorsByIds(List<Integer> ids){
+		return authorRepository.findAllById(ids)
+				.map(authorMapper::fromAuthorToAuthorResponse);
+	}
+	
 	public Flux<AuthorResponse> getAuthorByFirstSymbols(String symbols){
 		return authorRepository
 				.findByNameStartingWithIgnoreCase(symbols)
