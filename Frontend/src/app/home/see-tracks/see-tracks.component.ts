@@ -20,7 +20,7 @@ export class SeeTracksComponent implements OnInit {
   public isNotFound: boolean = false;
   public tracks: Track[] = [];
   public radioVal: string = "Track";
-  public searchValue!: string;
+  public searchValue: string = '';
 
   constructor(
     private trackService: TrackService,
@@ -35,7 +35,6 @@ export class SeeTracksComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.searchValue = '';
     this.activatedRoute.queryParams.subscribe(params => {
       this.searchValue = params['name'] || null;
       if (this.searchValue) {
@@ -62,26 +61,21 @@ export class SeeTracksComponent implements OnInit {
   private populateTracks(tracksResp: any): void {
     this.tracks = [];
     this.checkIfTracksNotFound(tracksResp);
-    if (!this.isNotFound)
+  
+    if (!this.isNotFound) {
       tracksResp.forEach((track: any) => {
-        this.authorService.getAuthorsById(track.authorId).subscribe({
-          next: (author: any) => {
-            this.playlistService.getPlaylistsById(track.playlistId).subscribe({
-              next: (playlist: any) => {
-                this.tracks.push({
-                  title: track.title,
-                  audioUrl: track.audioUrl,
-                  author: author.name,
-                  imageUrl: playlist.imageUrl,
-                  playlist: playlist.name,
-                  isNowPlaying: false
-                });
-              }
-            });
-          }
+        this.tracks.push({
+          title: track.title,
+          audioUrl: track.audioUrl,
+          author: track.author.name,  
+          imageUrl: track.playlist.imageUrl,  
+          playlist: track.playlist.name,  
+          isNowPlaying: false
         });
       });
+    }
   }
+  
 
   public getTracksByName(): void {
     if (this.radioVal === "Track") {

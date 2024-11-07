@@ -34,12 +34,12 @@ public class TracksAggregationFilter implements GatewayFilter {
 
 	@Override
 	public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
-		Flux<ResponseTrackFromAPI> tracks = fetchTracksFromService();
+		Flux<ResponseTrackFromAPI> tracks = fetchTracksFromService(exchange);
 		
 		Flux<ResponseAuthorFromAPI> authors = fetchAuthorsFromService(tracks);
 		Flux<ResponsePlaylistFromAPI> playlists = fetchPlaylistsFromService(tracks);
 		
-		Flux<Object> result = Mono.zip(tracks.collectList(), authors.collectList(), playlists.collectList())
+		Flux<ResponseTracks> result = Mono.zip(tracks.collectList(), authors.collectList(), playlists.collectList())
 		.flatMapMany(t -> collectTracks(t.getT1(), t.getT2(), t.getT3()));
 		
 		exchange.getResponse().getHeaders().setContentType(MediaType.APPLICATION_JSON);
@@ -79,9 +79,13 @@ public class TracksAggregationFilter implements GatewayFilter {
 			});
 	}
 	
-	private Flux<ResponseTrackFromAPI> fetchTracksFromService(){
+	private Flux<ResponseTrackFromAPI> fetchTracksFromService(ServerWebExchange exchange){
+		String path = exchange.getRequest().getURI().toString();
+		int indexOf = path.indexOf('?');
+		String substring = indexOf == -1 ?  "" : path.substring(indexOf);
+		
 		return builder
-				.baseUrl("http://track-service/api/tracks/")
+				.baseUrl("http://track-service/api/tracks/" + substring)
 				.build()
 				.get()
 				.accept(MediaType.APPLICATION_JSON)
