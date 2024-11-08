@@ -31,3 +31,7 @@
 .icon:hover{
   cursor: pointer;
 }
+
+.selected{
+  color: #007bff;
+}

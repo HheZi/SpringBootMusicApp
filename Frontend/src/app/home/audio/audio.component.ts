@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, numberAttribute, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import Plyr from 'plyr';
 import { Track } from '../see-tracks/track';
 import { Subscription } from 'rxjs';
@@ -18,14 +18,17 @@ export class AudioComponent implements OnInit, OnDestroy {
   public author: string = 'Author';
   public title: string = 'Title';
   public coverUrl: string = 'http://localhost:8080/api/images/default';
-  private subscription: Subscription | null = null;
+  public isStopped: boolean = true;
+  public isRepeated: boolean = false;
+  public isRandom: boolean = false;
 
   private tracksToPlay!: TracksToPlay;
+  private excludedIndices: number[] = [];
+  private indexOfExcludedIndices: number = 0;
+  constructor(private audioService: AudioService) { }
 
-  constructor(private audioService: AudioService){}
-
-  ngOnInit(): void { 
-    this.plyr = new Plyr(this.audioPlayerRef.nativeElement, { controls: ['play', 'progress', 'current-time', 'mute', 'volume'] });
+  ngOnInit(): void {
+    this.plyr = new Plyr(this.audioPlayerRef.nativeElement, { controls: ['progress', 'current-time', 'mute', 'volume'] });
     this.audioService.TracksToPlay$.subscribe({
       next: (value) => {
         let tracksToPlay = value as TracksToPlay;
@@ -42,6 +45,7 @@ export class AudioComponent implements OnInit, OnDestroy {
     let track = this.tracksToPlay.tracks[this.tracksToPlay.indexOfCurrentTrack];
     this.makeAllTracksIsNotPlayingProperty();
     track.isNowPlaying = true;
+    this.isStopped = false
 
     this.plyr.source = {
       type: 'audio',
@@ -59,34 +63,106 @@ export class AudioComponent implements OnInit, OnDestroy {
         title: track.title,
         artist: track.author + "",
         album: track.playlist + "",
-        artwork: [{src: track.imageUrl, type: "mpeg"}]
+        artwork: [{ src: track.imageUrl, type: "mpeg" }]
       });
       this.plyr.play();
     }
   }
 
-  public playNextTrack(){
-    if(this.tracksToPlay && this.tracksToPlay.indexOfCurrentTrack < this.tracksToPlay.tracks.length - 1){
-      this.updateTracksToPlayAndPlayTrack(1);
+  private playNextRandomTrack(): void {
+    if (this.excludedIndices.length >= this.tracksToPlay.tracks.length) {
+      this.isStopped = true;
+      this.makeAllTracksIsNotPlayingProperty();
+      return;
+    }
+
+    let randomIndex;
+    do {
+      randomIndex = Math.floor(Math.random() * this.tracksToPlay.tracks.length );
+    } while (this.excludedIndices.includes(randomIndex));
+
+    this.excludedIndices.push(randomIndex);
+    this.indexOfExcludedIndices++;
+    this.tracksToPlay.indexOfCurrentTrack = randomIndex;
+    this.playAudio();
+  }
+
+  private playPreviousRandomTrack(): void{
+    if(this.indexOfExcludedIndices > 0){
+      this.indexOfExcludedIndices--;
+      this.tracksToPlay.indexOfCurrentTrack = this.indexOfExcludedIndices;
+      this.playAudio();
     }
   }
 
-  public playPreviousTrack(){
-    if(this.tracksToPlay && this.tracksToPlay.indexOfCurrentTrack > 0){
+  public makeRandomPlayTracks(): void {
+    if (!this.tracksToPlay) return;
+
+    this.excludedIndices = [this.tracksToPlay.indexOfCurrentTrack];
+    let randomIndex;
+    do {
+      randomIndex = Math.floor(Math.random() * this.tracksToPlay.tracks.length );
+    } while (this.excludedIndices.includes(randomIndex) && this.excludedIndices.length != this.tracksToPlay.tracks.length);
+
+    this.isRandom = !this.isRandom;
+  }
+
+  public playOrStopTrack(): void {
+    if (!this.tracksToPlay) return;
+
+    this.isStopped = !this.isStopped;
+    if (this.isStopped) {
+      this.plyr.pause();
+    }
+    else {
+      this.plyr.play();
+    }
+  }
+
+  public playNextTrack() {
+    if (!this.tracksToPlay)
+      return;
+
+    if (this.isRepeated) {
+      this.playAudio();
+    }
+    else if (this.isRandom) {
+      this.playNextRandomTrack();
+    }
+    else if (this.tracksToPlay.indexOfCurrentTrack < this.tracksToPlay.tracks.length - 1) {
+      this.updateTracksToPlayAndPlayTrack(1);
+    }
+    else {
+      this.makeAllTracksIsNotPlayingProperty();
+      this.isStopped = true;
+    }
+  }
+
+  public playPreviousTrack() {
+    if (!this.tracksToPlay) return;
+
+    if (this.isRepeated) {
+      this.playAudio();
+    }
+    else if(this.isRandom){
+      this.playPreviousRandomTrack();
+    }
+    else if (this.tracksToPlay.indexOfCurrentTrack > 0) {
       this.updateTracksToPlayAndPlayTrack(-1);
     }
   }
 
-  private updateTracksToPlayAndPlayTrack(value: number){
+  private updateTracksToPlayAndPlayTrack(value: number) {
     this.tracksToPlay.indexOfCurrentTrack += value;
     this.playAudio();
   }
 
-  private makeAllTracksIsNotPlayingProperty(){
+  private makeAllTracksIsNotPlayingProperty() {
     for (let index = 0; index < this.tracksToPlay.tracks.length; index++) {
       this.tracksToPlay.tracks[index].isNowPlaying = false;
     }
   }
+
 
   ngOnDestroy(): void {
     if (this.plyr)
