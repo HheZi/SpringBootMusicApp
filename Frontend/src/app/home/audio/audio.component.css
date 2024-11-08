@@ -19,6 +19,7 @@
 }
 
 .track-title {
+  max-width: 250px;
   font-weight: bold;
   font-size: 14px;
 }
@@ -34,4 +35,8 @@
 
 .selected{
   color: #007bff;
+}
+
+.audio-controlls{
+  max-width: 60%;
 }

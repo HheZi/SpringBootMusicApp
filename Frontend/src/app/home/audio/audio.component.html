@@ -1,12 +1,13 @@
 <footer class="mainAudio d-flex align-items-center">
-        <div class="d-flex align-items-center col-auto">
+        <div class="d-flex align-items-center col-auto position-absolute">
                 <img src="{{coverUrl}}" alt="Cover" class="track-cover me-3" />
                 <div>
                         <p class="track-title mb-1">{{ title }}</p>
                         <p class="track-artist mb-0">{{ author }}</p>
                 </div>
         </div>
-        <div class="flex-grow-1">
+        <div></div>
+        <div class="flex-grow-1 justify-content-center audio-controlls ">
                 <div class="text-center mb-0 ">
                     <i class="bi bi-shuffle icon me-3" [ngClass]="{'selected': isRandom}" (click)="makeRandomPlayTracks()"></i>
                     <i class="pi pi-step-backward-alt icon me-3" (click)="playPreviousTrack()"></i>
@@ -17,5 +18,8 @@
                 <div class="audio">
                         <audio #audioPlayer controls type="audio/mpeg"></audio>
                 </div>
+        </div>
+        <div>
+
         </div>
 </footer>

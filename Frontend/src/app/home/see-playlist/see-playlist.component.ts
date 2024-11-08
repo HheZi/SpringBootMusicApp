@@ -39,11 +39,14 @@ export class SeePlaylistComponent {
     this.trackService.getTracksByPlaylistId(playlistId).subscribe((tracks: any) =>{
       tracks.forEach((track: any) => {
         this.tracks.push({
+          id: track.id,
           title: track.title,
           audioUrl: track.audioUrl,
           author: track.author.name,  
+          authorId: track.author.id,
           imageUrl: track.playlist.imageUrl,  
           playlist: track.playlist.name,  
+          playlistId: track.playlist.id,
           isNowPlaying: false
         });
       });

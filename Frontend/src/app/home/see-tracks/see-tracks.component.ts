@@ -5,7 +5,7 @@ import { Track } from './track';
 import { Title } from '@angular/platform-browser';
 import { AuthorService } from '../../services/author/author.service';
 import { PlaylistService } from '../../services/playlist/playlist.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { HttpParams } from '@angular/common/http';
 import { AudioService } from '../../services/audio/audio.service';
 
@@ -29,7 +29,8 @@ export class SeeTracksComponent implements OnInit {
     private authorService: AuthorService,
     private playlistService: PlaylistService,
     private activatedRoute: ActivatedRoute,
-    private audioService: AudioService
+    private audioService: AudioService,
+    private router: Router
   ) {
     this.titleService.setTitle("Tracks");
   }
@@ -65,17 +66,19 @@ export class SeeTracksComponent implements OnInit {
     if (!this.isNotFound) {
       tracksResp.forEach((track: any) => {
         this.tracks.push({
+          id: track.id,
           title: track.title,
           audioUrl: track.audioUrl,
           author: track.author.name,  
+          authorId: track.author.id,
           imageUrl: track.playlist.imageUrl,  
           playlist: track.playlist.name,  
+          playlistId: track.playlist.id,
           isNowPlaying: false
         });
       });
     }
   }
-  
 
   public getTracksByName(): void {
     if (this.radioVal === "Track") {
@@ -122,6 +125,10 @@ export class SeeTracksComponent implements OnInit {
 
   public playTrack(index: number): void {
     this.audioService.setTracks(this.tracks, index);
+  }
+
+  public seePlaylist(value: number): void{
+    this.router.navigate(["/playlist/see"], {queryParams: {"id": value}});
   }
 
   private handleError(summary: string, error: any): void {

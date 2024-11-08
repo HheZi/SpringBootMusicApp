@@ -1,7 +1,7 @@
 import { Component, ElementRef, numberAttribute, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import Plyr from 'plyr';
 import { Track } from '../see-tracks/track';
-import { Subscription } from 'rxjs';
+import { max, Subscription } from 'rxjs';
 import { AudioService } from '../../services/audio/audio.service';
 import { TracksToPlay } from '../../services/audio/tracks-to-play';
 
@@ -70,27 +70,20 @@ export class AudioComponent implements OnInit, OnDestroy {
   }
 
   private playNextRandomTrack(): void {
-    if (this.excludedIndices.length >= this.tracksToPlay.tracks.length) {
+    if (this.indexOfExcludedIndices < this.excludedIndices.length - 1) {
+      this.indexOfExcludedIndices++;
+      this.tracksToPlay.indexOfCurrentTrack = this.excludedIndices[this.indexOfExcludedIndices];
+      this.playAudio();
+    } else {
       this.isStopped = true;
       this.makeAllTracksIsNotPlayingProperty();
-      return;
     }
-
-    let randomIndex;
-    do {
-      randomIndex = Math.floor(Math.random() * this.tracksToPlay.tracks.length );
-    } while (this.excludedIndices.includes(randomIndex));
-
-    this.excludedIndices.push(randomIndex);
-    this.indexOfExcludedIndices++;
-    this.tracksToPlay.indexOfCurrentTrack = randomIndex;
-    this.playAudio();
   }
 
-  private playPreviousRandomTrack(): void{
-    if(this.indexOfExcludedIndices > 0){
+  private playPreviousRandomTrack(): void {
+    if (this.indexOfExcludedIndices > 0) {
       this.indexOfExcludedIndices--;
-      this.tracksToPlay.indexOfCurrentTrack = this.indexOfExcludedIndices;
+      this.tracksToPlay.indexOfCurrentTrack = this.excludedIndices[this.indexOfExcludedIndices];
       this.playAudio();
     }
   }
@@ -98,14 +91,32 @@ export class AudioComponent implements OnInit, OnDestroy {
   public makeRandomPlayTracks(): void {
     if (!this.tracksToPlay) return;
 
-    this.excludedIndices = [this.tracksToPlay.indexOfCurrentTrack];
-    let randomIndex;
-    do {
-      randomIndex = Math.floor(Math.random() * this.tracksToPlay.tracks.length );
-    } while (this.excludedIndices.includes(randomIndex) && this.excludedIndices.length != this.tracksToPlay.tracks.length);
-
     this.isRandom = !this.isRandom;
+    if (this.isRandom) {
+      this.generateRandomIndices();
+      this.indexOfExcludedIndices = 0;
+    } else {
+      this.excludedIndices = [];
+    }
+
   }
+
+  private generateRandomIndices(): void {
+    const max = this.tracksToPlay.tracks.length;
+    const currentTrackIndex = this.tracksToPlay.indexOfCurrentTrack;
+
+    
+    this.excludedIndices = Array.from({ length: max }, (_, i) => i)
+      .filter(index => index !== currentTrackIndex)
+      .sort(() => Math.random() - 0.5); 
+
+    
+    this.excludedIndices.unshift(currentTrackIndex);
+
+    
+    this.indexOfExcludedIndices = 0;
+  }
+
 
   public playOrStopTrack(): void {
     if (!this.tracksToPlay) return;
@@ -144,7 +155,7 @@ export class AudioComponent implements OnInit, OnDestroy {
     if (this.isRepeated) {
       this.playAudio();
     }
-    else if(this.isRandom){
+    else if (this.isRandom) {
       this.playPreviousRandomTrack();
     }
     else if (this.tracksToPlay.indexOfCurrentTrack > 0) {
