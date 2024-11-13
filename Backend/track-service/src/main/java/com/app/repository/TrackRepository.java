@@ -4,6 +4,10 @@ import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 
 import com.app.model.Track;
 
+import reactor.core.publisher.Mono;
+
 public interface TrackRepository extends ReactiveCrudRepository<Track, Long>{
+	
+	public Mono<Long> countByPlaylistId(Long playlistId);
 	
 }

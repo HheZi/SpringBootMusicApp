@@ -13,7 +13,7 @@ export class HeaderComponent {
     {label: "Playlist", routerLink: "playlists/create"},
     {label: "Author", routerLink: "authors/create"},
   ];
-  public butLabel: string|undefined = "Create";
+  public butLabel: string = "Create";
   
   public constructor(private router: Router){}
 

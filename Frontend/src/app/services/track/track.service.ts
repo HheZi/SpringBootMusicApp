@@ -33,4 +33,8 @@ export class TrackService {
   public createTracks(tracks: any): Observable<Object>{
     return this.httpClient.post(this.TRACK_URL, tracks);
   }
+
+  public getTrackInPlaylist(playlistId: number): Observable<Object>{
+    return this.httpClient.get(this.TRACK_URL + "count/"+playlistId);
+  }
 }

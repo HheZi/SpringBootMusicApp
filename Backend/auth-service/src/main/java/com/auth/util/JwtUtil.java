@@ -24,7 +24,7 @@ public class JwtUtil {
 	@Value("${token.secret}")
 	private String SECRET_KEY;
 	
-	private final Long EXPIRATION_TIME_IN_MINUTES = 15L;
+	private final Long EXPIRATION_TIME_IN_MINUTES = 60L;
 	
 	public String createJwtToken(Integer userId) {
 		return Jwts.builder()

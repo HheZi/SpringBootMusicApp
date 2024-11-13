@@ -85,5 +85,9 @@ public class TrackService {
         .subscribe();
 		
 	}
+	
+	public Mono<Long> countTracksByPlaylistId(Long playlistId){
+		return repository.countByPlaylistId(playlistId);
+	}
 
 }

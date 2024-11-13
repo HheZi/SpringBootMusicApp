@@ -2,7 +2,9 @@
     <div class="playlist-header d-flex align-items-center mb-4">
         <img [src]="playlist.imageUrl" alt="Cover" class="playlist-cover me-3" />
         <div>
-            <h2>{{ playlist.name }}</h2>
+            <h4>{{playlist.playlistType}}</h4>
+            <h1>{{ playlist.name }}</h1>
+            <h5 id="tracks_in_playlist">{{playlist.numberOfTrack}} Tracks</h5>
         </div>
     </div>
     <div class="track-list">

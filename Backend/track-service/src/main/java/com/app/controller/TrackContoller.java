@@ -1,10 +1,13 @@
 package com.app.controller;
 
+import java.net.URLDecoder;
+import java.nio.charset.Charset;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,7 +36,16 @@ public class TrackContoller {
 			@RequestParam(value = "authorId", required = false) List<Integer> authorId,
 			@RequestParam(value = "playlistId", required = false) List<Integer> playlistId
 		){
-		return trackService.getTracks(trackName, authorId, playlistId);
+		return trackService.getTracks(
+				trackName != null ? URLDecoder.decode(trackName, Charset.defaultCharset()) : trackName, 
+						authorId, 
+						playlistId
+					);
+	}
+
+	@GetMapping("/count/{playlistId}")
+	public Mono<Long> countTracks(@PathVariable("playlistId") Long playlistId){
+		return trackService.countTracksByPlaylistId(playlistId);
 	}
 	
 	@PostMapping
@@ -43,5 +55,6 @@ public class TrackContoller {
 		) {
 		return dto.flatMap(t -> trackService.createTrack(t, userId));
 	}
+	
 
 }

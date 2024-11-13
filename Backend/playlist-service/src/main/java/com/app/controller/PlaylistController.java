@@ -12,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.net.URLDecoder;
+import java.nio.charset.Charset;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
@@ -49,7 +51,7 @@ public class PlaylistController {
 	
 	@GetMapping("/symbol/{symbol}")
 	public Flux<ResponseNamePlaylist> getPlaylitsBySymbol(@PathVariable("symbol") String symbol){
-		return playlistService.findPlaylistsBySymbol(symbol);
+		return playlistService.findPlaylistsBySymbol(URLDecoder.decode(symbol, Charset.defaultCharset()));
 	}
 
 	@PostMapping

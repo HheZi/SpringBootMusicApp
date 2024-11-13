@@ -1,6 +1,8 @@
 package com.app.controller;
 
 
+import java.net.URLDecoder;
+import java.nio.charset.Charset;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -43,7 +45,7 @@ public class AuthorController {
 	
 	@GetMapping("/symbol/{symbol}")
 	public Flux<AuthorResponse> getAuthorsBySymbols(@PathVariable("symbol") String symbol){
-		return authorService.getAuthorByFirstSymbols(symbol);
+		return authorService.getAuthorByFirstSymbols(URLDecoder.decode(symbol, Charset.defaultCharset()));
 	}
 	
 	@PostMapping

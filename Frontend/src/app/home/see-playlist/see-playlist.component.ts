@@ -5,6 +5,7 @@ import { PlaylistService } from '../../services/playlist/playlist.service';
 import { Playlist } from './playlist';
 import { Track } from '../see-tracks/track';
 import { TrackService } from '../../services/track/track.service';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-see-playlist',
@@ -12,14 +13,15 @@ import { TrackService } from '../../services/track/track.service';
   styleUrl: './see-playlist.component.css'
 })
 export class SeePlaylistComponent {
-  public playlist: Playlist = {id: 0, imageUrl:"", name: ""};
+  public playlist: Playlist = {id: 0, imageUrl:"", name: "", numberOfTrack: 0, playlistType: ""};
   public tracks: Track[] = [];
 
   constructor(
     private route: ActivatedRoute,
     private playlistService: PlaylistService,
     private audioService: AudioService,
-    private trackService: TrackService
+    private trackService: TrackService,
+    private title: Title
   ) {}
 
   ngOnInit(): void {
@@ -35,6 +37,10 @@ export class SeePlaylistComponent {
   private loadPlaylist(playlistId: number): void {
     this.playlistService.getPlaylistsById(playlistId).subscribe((playlist: any) => {
       this.playlist = playlist;
+      this.title.setTitle(this.playlist.name);
+      this.trackService.getTrackInPlaylist(playlistId).subscribe((val: any) =>{
+        this.playlist.numberOfTrack = val;
+      });
     });
     this.trackService.getTracksByPlaylistId(playlistId).subscribe((tracks: any) =>{
       tracks.forEach((track: any) => {
@@ -52,7 +58,6 @@ export class SeePlaylistComponent {
       });
     })
   }
-
 
   public playTrack(index: number): void {
     this.audioService.setTracks(this.tracks, index);
