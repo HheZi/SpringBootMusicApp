@@ -34,7 +34,6 @@ public class ImageController {
 	@GetMapping("/{name}")
 	public ResponseEntity<byte[]> getImage(@PathVariable("name") String name) {
 		return ResponseEntity.status(HttpStatus.OK)
-				.cacheControl(CacheControl.maxAge(1, TimeUnit.DAYS))
 				.header(HttpHeaders.CONTENT_TYPE, MediaType.IMAGE_JPEG_VALUE)
 				.body(imageService.getImage(name));
 	}

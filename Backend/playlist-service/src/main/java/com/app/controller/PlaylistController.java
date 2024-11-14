@@ -5,7 +5,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.app.model.enums.PlaylistType;
 import com.app.payload.request.RequestPlaylist;
-import com.app.payload.response.ResponseNamePlaylist;
+import com.app.payload.request.RequestToUpdatePlaylist;
+import com.app.payload.response.ResponsePlaylist;
 import com.app.service.PlaylistService;
 
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -34,12 +37,12 @@ public class PlaylistController {
 	private final PlaylistService playlistService;
 
 	@GetMapping
-	public Flux<ResponseNamePlaylist> getPlaylistsByIds(@RequestParam("id[]") List<Integer> ids){
+	public Flux<ResponsePlaylist> getPlaylistsByIds(@RequestParam("id[]") List<Integer> ids){
 		return playlistService.getPlaylistsByIds(ids);
 	}
 	
 	@GetMapping("/{id}")
-	public Mono<ResponseNamePlaylist> getPlaylist(@PathVariable("id") Integer id) {
+	public Mono<ResponsePlaylist> getPlaylist(@PathVariable("id") Integer id) {
 		return playlistService.getPlatlistById(id);
 	}
 	
@@ -49,7 +52,7 @@ public class PlaylistController {
 	}
 	
 	@GetMapping("/symbol/{symbol}")
-	public Flux<ResponseNamePlaylist> getPlaylitsBySymbol(@PathVariable("symbol") String symbol){
+	public Flux<ResponsePlaylist> getPlaylitsBySymbol(@PathVariable("symbol") String symbol){
 		return playlistService.findPlaylistsBySymbol(URLDecoder.decode(symbol, Charset.defaultCharset()));
 	}
 
@@ -63,13 +66,19 @@ public class PlaylistController {
 	
 	@PostMapping
 	public Mono<ResponseEntity<Integer>> createPlaylist(
-			@RequestPart(value = "cover", required = false) Mono<FilePart> cover, 
 			@ModelAttribute Mono<RequestPlaylist> mono,
 			@RequestHeader("userId") Integer userId
 		) {
-		return Mono.zip(mono, cover)
-				.flatMap(t -> playlistService.createPlaylist(t.getT1(), t.getT2(), userId));
+		return mono.flatMap(t -> playlistService.createPlaylist(t, userId));
 	}
 	
+	@PutMapping("/{id}")
+	public Mono<ResponsePlaylist> updatePlaylist(
+			@ModelAttribute Mono<RequestToUpdatePlaylist> dto, 
+			@PathVariable("id") Integer id,
+			@RequestHeader("userId") Integer userId
+		){
+		return dto.flatMap(t -> playlistService.updatePlaylist(t, id, userId));
+	}
 	
 }

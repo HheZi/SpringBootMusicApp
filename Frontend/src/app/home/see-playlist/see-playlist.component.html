@@ -5,7 +5,7 @@
             <h4>{{playlist.playlistType}}</h4>
             <h1>
                 {{ playlist.name }} 
-                <span *ngIf="isOwnerOfPlaylist">
+                <span *ngIf="isOwnerOfPlaylist" (click)="editDialogVisible = true">
                     <i class="pi pi-pencil icon"></i>
                 </span>
             </h1> 
@@ -22,4 +22,20 @@
             <span *ngIf="isOwnerOfPlaylist"><i class="pi pi-trash icon" style="color: red;" (click)="deleteTrackFromPlaylist(track.id)"></i></span>
         </div>
     </div>
+    <p-dialog [(visible)]="editDialogVisible" [header]="'Edit Playlist'" [modal]="true" [closable]="true" [style]="{width: '500px'}">
+        <ng-template pTemplate="footer">
+            <button type="button" class="btn btn-secondary me-2" (click)="editDialogVisible = false">Cancel</button>
+            <button type="button" class="btn btn-primary" (click)="saveChanges()">Save</button>
+        </ng-template>
+    
+        <div class="form-group mt-2">
+            <input type="text" id="playlistName" class="form-control" [(ngModel)]="editablePlaylist.name" placeholder="Name"/>
+        </div>
+    
+        <div class="form-group">
+            <label for="playlistCover">Cover Image</label>
+            <input type="file" id="playlistCover" class="form-control" (change)="onFileChange($event)"/>
+            <img *ngIf="previewImage" [src]="previewImage" alt="Cover Preview" class="img-thumbnail mt-2" style="max-width: 250px;"/>
+        </div>
+    </p-dialog>
 </div>

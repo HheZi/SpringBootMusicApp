@@ -11,7 +11,7 @@ import lombok.Data;
 @Data
 @Builder
 @AllArgsConstructor
-public class ResponseNamePlaylist {
+public class ResponsePlaylist {
 
 	private Integer id;
 	

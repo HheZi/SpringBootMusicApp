@@ -1,6 +1,5 @@
 package com.app.service;
 
-import static java.nio.file.StandardOpenOption.CREATE_NEW;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -11,7 +10,6 @@ import org.springframework.stereotype.Service;
 import com.app.payload.RequestImage;
 
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 
 @Service
 public class ImageService {
@@ -34,7 +32,7 @@ public class ImageService {
 	
 	@SneakyThrows
 	public void saveImage(RequestImage image) {
-		Files.write(Path.of(imagePath, image.getName()), image.getContent(), CREATE_NEW);
+		Files.write(Path.of(imagePath, image.getName()), image.getContent());
 	}
 	
 }

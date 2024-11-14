@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import com.app.model.Playlist;
 import com.app.model.enums.PlaylistType;
 import com.app.payload.request.RequestPlaylist;
-import com.app.payload.response.ResponseNamePlaylist;
+import com.app.payload.response.ResponsePlaylist;
 
 @Component
 public class PlaylistMapper {
@@ -25,8 +25,8 @@ public class PlaylistMapper {
 				.build();
 	}
 	
-	public ResponseNamePlaylist fromPlaylistToResponseNamePlaylist(Playlist playlist) {
-		return ResponseNamePlaylist.builder()
+	public ResponsePlaylist fromPlaylistToResponsePlaylist(Playlist playlist) {
+		return ResponsePlaylist.builder()
 				.id(playlist.getId())
 				.name(playlist.getName())
 				.playlistType(playlist.getPlaylistType())

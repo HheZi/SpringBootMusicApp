@@ -1,22 +1,18 @@
 package com.app.payload.request;
 
-import java.util.List;
-
 import org.springframework.http.codec.multipart.FilePart;
 
-import com.app.model.enums.PlaylistType;
-
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import reactor.core.publisher.Flux;
 
 @Data
+@AllArgsConstructor
 @NoArgsConstructor
-public class RequestPlaylist {
+public class RequestToUpdatePlaylist {
 
 	private String name;
 	
-	private PlaylistType playlistType;
-	
 	private FilePart cover;
+	
 }

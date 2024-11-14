@@ -7,6 +7,7 @@ import { Track } from '../see-tracks/track';
 import { TrackService } from '../../services/track/track.service';
 import { Title } from '@angular/platform-browser';
 import { MessageService } from 'primeng/api';
+import { AppConts } from '../../app.consts';
 
 @Component({
   selector: 'app-see-playlist',
@@ -14,9 +15,14 @@ import { MessageService } from 'primeng/api';
   styleUrl: './see-playlist.component.css'
 })
 export class SeePlaylistComponent {
-  public playlist: Playlist = {id: 0, imageUrl:"", name: "", numberOfTrack: 0, playlistType: ""};
+  public playlist: Playlist = {id: 0, imageUrl:AppConts.BASE_URL + "/api/images/default", name: "", numberOfTrack: 0, playlistType: ""};
   public tracks: Track[] = [];
   public isOwnerOfPlaylist = false;
+
+  public editDialogVisible = false;
+  public editablePlaylist: Playlist = { id: 0, imageUrl: "", name: "", numberOfTrack: 0, playlistType: "" };
+  private selectedFile: File | null = null;
+  public previewImage: string | ArrayBuffer | null = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -51,6 +57,7 @@ export class SeePlaylistComponent {
       });
     });
     this.trackService.getTracksByPlaylistId(playlistId).subscribe((tracks: any) =>{
+      this.tracks = [];
       tracks.forEach((track: any) => {
         this.tracks.push({
           id: track.id,
@@ -77,5 +84,30 @@ export class SeePlaylistComponent {
 
   public playTrack(index: number): void {
     this.audioService.setTracks(this.tracks, index);
+  }
+
+  onFileChange(event: any): void {
+    this.selectedFile = event.target.files[0];
+    if (this.selectedFile) {
+      const reader = new FileReader();
+      reader.onload = (e: any) => (this.previewImage = e.target.result);
+      reader.readAsDataURL(this.selectedFile);
+    }
+  }
+
+  saveChanges() {
+    const formData = new FormData();
+    formData.append('name', this.editablePlaylist.name);
+    if (this.selectedFile) {
+      formData.append('cover', this.selectedFile, this.selectedFile.name);
+    }
+
+    this.playlistService.updatePlaylist(this.playlist.id, formData).subscribe(
+      () => {
+        this.messageService.add({ severity: 'success', summary: 'Playlist updated successfully' });
+        this.editDialogVisible = false;
+        this.loadPlaylist(this.playlist.id);
+      },
+    );
   }
 }
