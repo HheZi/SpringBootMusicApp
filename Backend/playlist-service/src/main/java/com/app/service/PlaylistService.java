@@ -12,6 +12,7 @@ import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.app.model.Playlist;
 import com.app.model.enums.PlaylistType;
@@ -86,4 +87,9 @@ public class PlaylistService {
 		return Flux.fromArray(PlaylistType.values());
 	}
 
+	public Mono<Boolean> userIsOwnerOfPlaylist(Integer playlistId, Integer userId){
+		return playlistRepository.findById(playlistId)
+				.flatMap(t -> t.getCreatedBy() == userId ? Mono.just(true) : Mono.just(false));
+	}
+	
 }

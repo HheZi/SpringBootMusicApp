@@ -1,3 +1,7 @@
 .playlist-cover{
     max-width: 226px;
 }
+.icon:hover{
+    cursor: pointer;
+    color: #c7c7c7;
+}

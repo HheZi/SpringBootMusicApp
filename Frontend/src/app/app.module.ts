@@ -33,6 +33,7 @@ import { CreateAuthorComponent } from './home/create-author/create-author.compon
 import { MenuModule } from 'primeng/menu';
 import { AuthorizationInterceptorService } from './interceptor/authorization-interceptor.service';
 import { SeePlaylistComponent } from './home/see-playlist/see-playlist.component';
+import { DialogModule } from 'primeng/dialog';
 
 
 @NgModule({
@@ -69,7 +70,8 @@ import { SeePlaylistComponent } from './home/see-playlist/see-playlist.component
     DropdownModule,
     MenubarModule,
     RadioButtonModule,
-    MenuModule 
+    MenuModule,
+    DialogModule
   ],
   providers: [ {provide: HTTP_INTERCEPTORS, useClass: AuthorizationInterceptorService, multi: true}],
   bootstrap: [AppComponent]

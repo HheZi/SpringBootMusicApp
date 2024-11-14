@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -34,14 +33,14 @@ public class PlaylistController {
 
 	private final PlaylistService playlistService;
 
-	@GetMapping("/{id}")
-	public Mono<ResponseNamePlaylist> getPlaylist(@PathVariable("id") Integer id) {
-		return playlistService.getPlatlistById(id);
-	}
-	
 	@GetMapping
 	public Flux<ResponseNamePlaylist> getPlaylistsByIds(@RequestParam("id[]") List<Integer> ids){
 		return playlistService.getPlaylistsByIds(ids);
+	}
+	
+	@GetMapping("/{id}")
+	public Mono<ResponseNamePlaylist> getPlaylist(@PathVariable("id") Integer id) {
+		return playlistService.getPlatlistById(id);
 	}
 	
 	@GetMapping("/types")
@@ -54,6 +53,14 @@ public class PlaylistController {
 		return playlistService.findPlaylistsBySymbol(URLDecoder.decode(symbol, Charset.defaultCharset()));
 	}
 
+	@GetMapping("/owner/{id}")
+	public Mono<Boolean> getIsOwner(
+			@PathVariable("id") Integer id, 
+			@RequestHeader("userId") Integer userId
+		){
+		return playlistService.userIsOwnerOfPlaylist(id, userId);
+	}
+	
 	@PostMapping
 	public Mono<ResponseEntity<Integer>> createPlaylist(
 			@RequestPart(value = "cover", required = false) Mono<FilePart> cover, 
@@ -63,5 +70,6 @@ public class PlaylistController {
 		return Mono.zip(mono, cover)
 				.flatMap(t -> playlistService.createPlaylist(t.getT1(), t.getT2(), userId));
 	}
-
+	
+	
 }

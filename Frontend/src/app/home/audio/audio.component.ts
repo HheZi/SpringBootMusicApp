@@ -37,7 +37,7 @@ export class AudioComponent implements OnInit, OnDestroy {
       }
     })
     this.plyr.on('ended', () => {
-      this.playNextTrack();
+      this.playNextTrack(false);
     })
   }
 
@@ -130,11 +130,11 @@ export class AudioComponent implements OnInit, OnDestroy {
     }
   }
 
-  public playNextTrack() {
+  public playNextTrack(buttonPressed:  boolean) {
     if (!this.tracksToPlay)
       return;
 
-    if (this.isRepeated) {
+    if (this.isRepeated && !buttonPressed) {
       this.playAudio();
     }
     else if (this.isRandom) {
@@ -152,10 +152,7 @@ export class AudioComponent implements OnInit, OnDestroy {
   public playPreviousTrack() {
     if (!this.tracksToPlay) return;
 
-    if (this.isRepeated) {
-      this.playAudio();
-    }
-    else if (this.isRandom) {
+    if (this.isRandom) {
       this.playPreviousRandomTrack();
     }
     else if (this.tracksToPlay.indexOfCurrentTrack > 0) {

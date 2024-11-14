@@ -12,7 +12,7 @@
                     <i class="bi bi-shuffle icon me-3" [ngClass]="{'selected': isRandom}" (click)="makeRandomPlayTracks()"></i>
                     <i class="pi pi-step-backward-alt icon me-3" (click)="playPreviousTrack()"></i>
                     <i class="pi icon me-3" [ngClass]="{'pi-play': isStopped, 'pi-pause': !isStopped}" (click)="playOrStopTrack()"></i>  
-                    <i class="pi pi-step-forward-alt icon me-3" (click)="playNextTrack()"></i>  
+                    <i class="pi pi-step-forward-alt icon me-3" (click)="playNextTrack(true)"></i>  
                     <i class="bi bi-repeat icon me-3" [ngClass]="{'selected': isRepeated}" (click)="isRepeated = !isRepeated"></i>  
                 </div>
                 <div class="audio">

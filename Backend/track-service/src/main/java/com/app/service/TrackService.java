@@ -1,6 +1,7 @@
 package com.app.service;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
@@ -88,6 +89,21 @@ public class TrackService {
 	
 	public Mono<Long> countTracksByPlaylistId(Long playlistId){
 		return repository.countByPlaylistId(playlistId);
+	}
+	
+	public Mono<Void> deleteTrack(Long id){
+		return repository.findById(id)
+		.doOnNext(t -> deleteTrackFile(t.getAudioName()))
+		.flatMap(repository::delete);
+	}
+	
+	private void deleteTrackFile(UUID trackName) {
+		webClient.baseUrl("http://audio-service/api/audio/" + trackName.toString())
+		.build()
+		.delete()
+		.exchangeToMono(t -> t.releaseBody())
+		.subscribe();
+		
 	}
 
 }

@@ -47,14 +47,20 @@ public class AudioService {
 		}
 
 	}
-
+	
+	private String createRangeHeaderValue(long startRange, long endRange, long contentLength) {
+		return String.format("bytes %d-%d/%d", startRange, endRange, contentLength);
+	}
+	
 	@SneakyThrows
 	public void saveAudio(SaveAudioDTO dto) {
 		Path path = Path.of(audioPath).resolve(dto.getName());
 		Files.write(path, dto.getContent(), CREATE_NEW);
 	}
 
-	private String createRangeHeaderValue(long startRange, long endRange, long contentLength) {
-		return String.format("bytes %d-%d/%d", startRange, endRange, contentLength);
+	@SneakyThrows
+	public void deleteAudio(String name) {
+		Files.delete(Path.of(audioPath).resolve(name));
 	}
+	
 }

@@ -3,7 +3,12 @@
         <img [src]="playlist.imageUrl" alt="Cover" class="playlist-cover me-3" />
         <div>
             <h4>{{playlist.playlistType}}</h4>
-            <h1>{{ playlist.name }}</h1>
+            <h1>
+                {{ playlist.name }} 
+                <span *ngIf="isOwnerOfPlaylist">
+                    <i class="pi pi-pencil icon"></i>
+                </span>
+            </h1> 
             <h5 id="tracks_in_playlist">{{playlist.numberOfTrack}} Tracks</h5>
         </div>
     </div>
@@ -14,6 +19,7 @@
                 <h5 class="track-title mb-1">{{ track.title }}</h5>
                 <p class="track-artist mb-0">{{ track.author }}</p>
             </div>
+            <span *ngIf="isOwnerOfPlaylist"><i class="pi pi-trash icon" style="color: red;" (click)="deleteTrackFromPlaylist(track.id)"></i></span>
         </div>
     </div>
 </div>

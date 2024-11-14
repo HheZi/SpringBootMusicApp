@@ -22,6 +22,10 @@ export class PlaylistService {
     return this.httpClient.get(this.PLAYLIST_URL + "symbol/" + symbol);
   }
 
+  public getIsUserIsOwnerOfPlaylist(playlistId: number){
+    return this.httpClient.get(this.PLAYLIST_URL + "owner/" + playlistId);
+  }
+
   public getPlaylistTypes(): Observable<Object>{
     return this.httpClient.get(this.PLAYLIST_URL + "types",  {responseType: "json"});
   }

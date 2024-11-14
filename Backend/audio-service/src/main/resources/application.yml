@@ -3,7 +3,7 @@ spring:
     name: audio-service
 server:
   port: 0
-audio.path: /Programming/Java/StreamingService/Backend/AudioService/audio
+audio.path: /Programming/Java/StreamingService/Backend/audio-service/audio
 logging:
   level:
     '[org.springframework.web]': debug

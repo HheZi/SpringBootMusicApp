@@ -22,16 +22,20 @@ export class TrackService {
     return this.httpClient.get(this.TRACK_URL_TO_GET_FROM_AGGREGATION, {params: header});
   }
   
-  getTracksByAuthorId(id: any) : Observable<Object>{
+  public getTracksByAuthorId(id: any) : Observable<Object>{
     return this.httpClient.get(this.TRACK_URL_TO_GET_FROM_AGGREGATION, {params: {authorId: id}});
   }
 
-  getTracksByPlaylistId(id: any) : Observable<Object> {
+  public getTracksByPlaylistId(id: any) : Observable<Object> {
     return this.httpClient.get(this.TRACK_URL_TO_GET_FROM_AGGREGATION, {params: {playlistId: id}});
   }
 
   public createTracks(tracks: any): Observable<Object>{
     return this.httpClient.post(this.TRACK_URL, tracks);
+  }
+
+  public deleteTrack(id: number){
+    return this.httpClient.delete(this.TRACK_URL + id);
   }
 
   public getTrackInPlaylist(playlistId: number): Observable<Object>{
