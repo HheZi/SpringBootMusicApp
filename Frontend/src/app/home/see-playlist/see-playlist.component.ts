@@ -15,12 +15,12 @@ import { AppConts } from '../../app.consts';
   styleUrl: './see-playlist.component.css'
 })
 export class SeePlaylistComponent {
-  public playlist: Playlist = {id: 0, imageUrl:AppConts.BASE_URL + "/api/images/default", name: "", numberOfTrack: 0, playlistType: ""};
+  public playlist: Playlist = {id: 0, imageUrl:"", name: "", numberOfTrack: 0, playlistType: "", releaseDate: null};
   public tracks: Track[] = [];
   public isOwnerOfPlaylist = false;
 
   public editDialogVisible = false;
-  public editablePlaylist: Playlist = { id: 0, imageUrl: "", name: "", numberOfTrack: 0, playlistType: "" };
+  public editablePlaylist: Playlist = { id: 0, imageUrl: "", name: "", numberOfTrack: 0, playlistType: "", releaseDate: null};
   private selectedFile: File | null = null;
   public previewImage: string | ArrayBuffer | null = null;
 
@@ -95,12 +95,14 @@ export class SeePlaylistComponent {
     }
   }
 
-  saveChanges() {
+  public saveChanges() {
     const formData = new FormData();
     formData.append('name', this.editablePlaylist.name);
     if (this.selectedFile) {
       formData.append('cover', this.selectedFile, this.selectedFile.name);
     }
+    
+    formData.append("releaseDate", this.parseReleasDate())
 
     this.playlistService.updatePlaylist(this.playlist.id, formData).subscribe(
       () => {
@@ -109,5 +111,14 @@ export class SeePlaylistComponent {
         this.loadPlaylist(this.playlist.id);
       },
     );
+  }
+
+  private parseReleasDate(): string{
+    if (this.editablePlaylist.releaseDate){
+      var d = this.editablePlaylist.releaseDate as Date;
+      d.setDate(d.getDate()+1)
+      return d.toISOString().split("T")[0];
+    }
+    return "";
   }
 }

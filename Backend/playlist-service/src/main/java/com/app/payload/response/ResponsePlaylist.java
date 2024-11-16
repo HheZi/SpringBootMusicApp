@@ -1,5 +1,7 @@
 package com.app.payload.response;
 
+import java.time.LocalDate;
+
 import com.app.model.enums.PlaylistType;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonFormat.Shape;
@@ -18,6 +20,9 @@ public class ResponsePlaylist {
 	private String name;
 	
 	private String imageUrl;
+	
+	@JsonFormat(shape = Shape.STRING, pattern = "yyyy-MM-dd")
+	private LocalDate releaseDate;
 	
 	@JsonFormat(shape = Shape.STRING)
 	private PlaylistType playlistType;

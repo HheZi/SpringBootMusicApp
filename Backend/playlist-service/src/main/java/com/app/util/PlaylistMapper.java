@@ -22,6 +22,7 @@ public class PlaylistMapper {
 				.imageName(coverIsPresent ?  UUID.randomUUID() : null)
 				.createdBy(userId)
 				.playlistType(dto.getPlaylistType())
+				.releaseDate(dto.getReleaseDate())
 				.build();
 	}
 	
@@ -30,6 +31,7 @@ public class PlaylistMapper {
 				.id(playlist.getId())
 				.name(playlist.getName())
 				.playlistType(playlist.getPlaylistType())
+				.releaseDate(playlist.getReleaseDate())
 				.imageUrl(playlist.getImageName() != null ? IMAGE_URL + playlist.getImageName().toString() : DEFAULT_IMAGE_URL)
 				.build();
 	}

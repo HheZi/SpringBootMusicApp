@@ -29,9 +29,8 @@ public class UserController {
 	private final UserService service;
 
 	@PostMapping
-	public Mono<ResponseEntity<?>> createUser(@Validated @RequestBody(required = true) Mono<UserFormRequest> entity) {
-		return entity.doOnNext(service::createNewUser)
-				.flatMap(t -> Mono.just(ResponseEntity.status(HttpStatus.CREATED).build()));
+	public Mono<ResponseEntity<?>> createUser(@Validated @RequestBody(required = true) Mono<UserFormRequest> dto) {
+		return dto.flatMap(service::createNewUser);
 
 	}
 

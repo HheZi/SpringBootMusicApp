@@ -24,7 +24,6 @@ import com.app.repository.PlaylistRepository;
 import com.app.util.PlaylistMapper;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -55,7 +54,7 @@ public class PlaylistService {
 	}
 
 	public Mono<ResponseEntity<Integer>> createPlaylist(RequestPlaylist dto, Integer userId) {
-		boolean coverIsPresent = dto.getCover().filename() != null && !dto.getCover().filename().isEmpty();
+		boolean coverIsPresent = dto.getCover() != null && !dto.getCover().filename().isEmpty();
 		
 		Playlist playlist = playlistMapper.fromRequestPlaylistToPlaylist(dto, userId, coverIsPresent);
 
@@ -102,6 +101,9 @@ public class PlaylistService {
 				.flatMap(t -> {
 					if (dto.getName() != null) {
 						t.setName(dto.getName());
+					}
+					if (dto.getReleaseDate() != null) {
+						t.setReleaseDate(dto.getReleaseDate());
 					}
 					return playlistRepository.save(t);
 				})

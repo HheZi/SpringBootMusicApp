@@ -1,5 +1,7 @@
 package com.app.payload.request;
 
+import java.time.LocalDate;
+
 import org.springframework.http.codec.multipart.FilePart;
 
 import lombok.AllArgsConstructor;
@@ -12,6 +14,8 @@ import lombok.NoArgsConstructor;
 public class RequestToUpdatePlaylist {
 
 	private String name;
+	
+	private LocalDate releaseDate;
 	
 	private FilePart cover;
 	

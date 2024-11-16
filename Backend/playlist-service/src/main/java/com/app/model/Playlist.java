@@ -1,6 +1,6 @@
 package com.app.model;
 
-import java.time.Instant;
+import java.time.LocalDate;
 import java.util.UUID;
 
 import org.springframework.data.annotation.Id;
@@ -35,4 +35,6 @@ public class Playlist {
 	@Column("created_by")
 	private Integer createdBy;
 	
+	@Column("release_date")
+	private LocalDate releaseDate;
 }

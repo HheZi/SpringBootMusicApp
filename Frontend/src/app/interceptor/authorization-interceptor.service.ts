@@ -56,7 +56,6 @@ export class AuthorizationInterceptorService implements HttpInterceptor {
         }),
         catchError((err) => {
             this.isRefreshing = false;
-            // this.authService.logout();
             this.router.navigate(['/login']);
             return throwError(() => err); 
         })

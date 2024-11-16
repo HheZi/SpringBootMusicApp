@@ -3,6 +3,7 @@ package com.user.service;
 import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -39,9 +40,9 @@ public class UserService {
 
 	}
 
-	public void createNewUser(UserFormRequest formRequest) {
+	public Mono<ResponseEntity<?>> createNewUser(UserFormRequest formRequest) {
 		User user = userMapper.fromUserFormRequestToUser(formRequest, encoder.encode(formRequest.getPassword()));
 
-		userRepository.save(user);
+		return userRepository.save(user).map(t -> ResponseEntity.status(HttpStatus.CREATED).build());
 	}
 }

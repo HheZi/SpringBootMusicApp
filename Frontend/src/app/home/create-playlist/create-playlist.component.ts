@@ -27,6 +27,7 @@ export class CreatePlaylistComponent implements OnInit {
     this.playlistForm = this.fb.group({
       title: ['', Validators.required],
       cover: [null],
+      releaseDate: [null],
       playlistType: ['', Validators.required]
     });
   }
@@ -52,15 +53,25 @@ export class CreatePlaylistComponent implements OnInit {
   onSubmit(): void {
     if (this.playlistForm.valid) {
       const formData = new FormData();
-      formData.append("cover", this.playlistForm.get("cover")?.value);
+
+      if(this.playlistForm.get("cover")?.value)
+        formData.append("cover", this.playlistForm.get("cover")?.value);
+      
       formData.append("name", this.playlistForm.get("title")?.value);
       formData.append("playlistType", this.playlistForm.get("playlistType")?.value);
+      formData.append("releaseDate", this.parseReleasDate());
 
       this.playlistService.createPlaylist(formData).subscribe({
         next: (data) => this.messageService.add({ closable: true, detail: "Playlist created", severity: "success" }),
         error: (err) => this.messageService.add({ closable: true, detail: err.error, severity: "error", summary: "Something went wrong" })
       });
     }
+  }
+
+  private parseReleasDate(): string{
+    var d = this.playlistForm.get("releaseDate")?.value as Date;
+    d.setDate(d.getDate()+1)
+    return d.toISOString().split("T")[0];
   }
 
   onCoverSelected(event: any): void {
@@ -70,5 +81,9 @@ export class CreatePlaylistComponent implements OnInit {
       const file = input.files[0];
       this.playlistForm.patchValue({ cover: file });
     }
+  }
+
+  public isAlbum(): boolean{
+    return this.playlistForm.get("playlistType")?.value == "ALBUM";
   }
 }

@@ -15,6 +15,10 @@
       <p-dropdown formControlName="playlistType" [options]="playlistTypes" placeholder="Select a playlist type" />
     </div>
 
+    <div *ngIf="isAlbum()">
+      <p-calendar formControlName="releaseDate" dateFormat="dd.mm.yy" placeholder="Release Date"/>
+    </div>
+
     <div class="mb-3">
       <label for="cover" class="form-label">Cover Image</label>
       <input type="file" id="cover" (change)="onCoverSelected($event)" class="form-control" accept="image/*"/>

@@ -9,7 +9,10 @@
                     <i class="pi pi-pencil icon"></i>
                 </span>
             </h1> 
-            <h5 id="tracks_in_playlist">{{playlist.numberOfTrack}} Tracks</h5>
+            <h5 id="tracks_in_playlist">
+                {{playlist.numberOfTrack}} Tracks 
+                <span class="ms-2">{{playlist.releaseDate}}</span>
+            </h5>
         </div>
     </div>
     <div class="track-list">
@@ -22,12 +25,17 @@
             <span *ngIf="isOwnerOfPlaylist"><i class="pi pi-trash icon" style="color: red;" (click)="deleteTrackFromPlaylist(track.id)"></i></span>
         </div>
     </div>
+
     <p-dialog [(visible)]="editDialogVisible" [header]="'Edit Playlist'" [modal]="true" [closable]="true" [style]="{width: '500px'}">
         
         <div class="form-group mt-2">
             <input type="text" id="playlistName" class="form-control" [(ngModel)]="editablePlaylist.name" placeholder="Name"/>
         </div>
-        
+
+        <div class="mt-2">
+            <p-calendar [(ngModel)]="editablePlaylist.releaseDate" dateFormat="yy.mm.dd" [touchUI]="true"  placeholder="Release Date"/>
+        </div>
+
         <div class="form-group">
             <label for="playlistCover">Cover Image</label>
             <input type="file" id="playlistCover" class="form-control" (change)="onFileChange($event)"/>

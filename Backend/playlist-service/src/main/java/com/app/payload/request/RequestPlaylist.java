@@ -1,5 +1,6 @@
 package com.app.payload.request;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.http.codec.multipart.FilePart;
@@ -17,6 +18,8 @@ public class RequestPlaylist {
 	private String name;
 	
 	private PlaylistType playlistType;
+	
+	private LocalDate releaseDate;
 	
 	private FilePart cover;
 }

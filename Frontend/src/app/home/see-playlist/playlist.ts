@@ -4,4 +4,5 @@ export interface Playlist{
     name: string;
     imageUrl: string;
     numberOfTrack: number,
+    releaseDate: Date | null | string
 }
