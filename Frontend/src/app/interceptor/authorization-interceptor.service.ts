@@ -51,7 +51,7 @@ export class AuthorizationInterceptorService implements HttpInterceptor {
         switchMap((tokenResp: any) => {
             this.isRefreshing = false;
             this.refreshTokenSubject.next(tokenResp.token);
-            this.authService.saveJwtToken(tokenResp.token);
+            this.authService.saveJwtToken(tokenResp);
             return next.handle(this.addTokenHeader(request, tokenResp.token));
         }),
         catchError((err) => {

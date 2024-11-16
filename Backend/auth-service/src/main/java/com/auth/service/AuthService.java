@@ -67,19 +67,19 @@ public class AuthService {
 				.map(t -> new AuthResponse(jwtToken, t.getToken().toString()));
 	}
 
-	public Mono<JwtTokenResponse> refreshJWTToken(RefreshTokenRequest refreshToken) {
-		if (refreshToken.getRefreshToken() == null) {
+	public Mono<AuthResponse> refreshJWTToken(RefreshTokenRequest refreshToken) {
+		if (refreshToken.getRefreshToken() == null) 
 			return Mono.error(() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "You need to login"));
-		}
+		
+		
 		return refreshTokenRepository.findByToken(UUID.fromString(refreshToken.getRefreshToken()))
+				.filter(t -> t.getExpirationDate().compareTo(Instant.now()) > 0)
 				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "You need to login")))
 				.flatMap(t -> {
-					if (t.getExpirationDate().compareTo(Instant.now()) < 0) {
-						return Mono.error(() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "You need to login"));
-					}
-					return Mono.just(t);
+					t.setToken(UUID.randomUUID());
+					return refreshTokenRepository.save(t);
 				})
-				.map(t -> new JwtTokenResponse(jwtUtil.createJwtToken(t.getUserId())));
+				.map(t -> new AuthResponse(jwtUtil.createJwtToken(t.getUserId()), t.getToken().toString()));
 	}
 	
 }

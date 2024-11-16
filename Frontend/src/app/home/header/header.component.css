@@ -6,3 +6,8 @@
 .nav-link:hover{
   cursor: pointer;
 }
+
+.icon:hover{
+  cursor: pointer;
+  color: red;
+}

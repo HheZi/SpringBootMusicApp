@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { MenuItem } from 'primeng/api';
+import { AuthService } from '../../services/auth/auth.service';
 
 @Component({
   selector: 'app-header',
@@ -15,7 +16,10 @@ export class HeaderComponent {
   ];
   public butLabel: string = "Create";
   
-  public constructor(private router: Router){}
+  public constructor(
+    private router: Router,
+    private authService: AuthService
+  ){}
 
   public textInput: string = '';
 
@@ -25,6 +29,11 @@ export class HeaderComponent {
   
   navigateTo(arg0: string) {
     this.router.navigate([arg0])
+  }
+
+  public logout(){
+    this.authService.logout();
+    this.router.navigate(['login'])
   }
 
 }

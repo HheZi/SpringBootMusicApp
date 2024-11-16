@@ -49,13 +49,7 @@ export class SeeTracksComponent implements OnInit {
 
   public getTracks(headers: HttpParams | null = null): void {
     this.trackService.getTracks(headers).subscribe({
-      next: tracksResp => this.populateTracks(tracksResp),
-      error: err => this.messageService.add({
-        closable: true,
-        summary: "Error while loading tracks",
-        detail: err.error,
-        severity: "error"
-      })
+      next: tracksResp => this.populateTracks(tracksResp)
     });
   }
 

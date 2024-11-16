@@ -158,6 +158,8 @@ export class AudioComponent implements OnInit, OnDestroy {
     else if (this.tracksToPlay.indexOfCurrentTrack > 0) {
       this.updateTracksToPlayAndPlayTrack(-1);
     }
+    else
+      this.playAudio();
   }
 
   private updateTracksToPlayAndPlayTrack(value: number) {

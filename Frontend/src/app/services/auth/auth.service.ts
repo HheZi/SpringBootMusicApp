@@ -7,36 +7,37 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class AuthService {
-
+  
   private readonly TOKEN_KEY_NAME = 'token';
-
+  
   private readonly  REFRESH_TOKEN_KEY_NAME = "refreshToken";
-
+  
   constructor(private httpClient: HttpClient) { }
-
+  
   public saveAuthToken(value: any): void{
     localStorage.setItem(this.TOKEN_KEY_NAME, value.token);  
     localStorage.setItem(this.REFRESH_TOKEN_KEY_NAME, value.refreshToken);
   }
-
-  public saveJwtToken(value: string){
-    localStorage.setItem(this.TOKEN_KEY_NAME, value);
+  
+  public saveJwtToken(tokenToSave: any){
+    localStorage.setItem(this.TOKEN_KEY_NAME, tokenToSave.token);
+    localStorage.setItem(this.REFRESH_TOKEN_KEY_NAME, tokenToSave.refreshToken);
   }
-
+  
   public refreshToken(): Observable<Object>{
     return this.httpClient.post(AppConts.BASE_URL + "/api/auth/refresh", {refreshToken: this.getRefreshToken()});
   }
-
+  
   public getAuthToken(): string | null{
     return localStorage.getItem(this.TOKEN_KEY_NAME);
   }
-
+  
   private getRefreshToken(): string |  null{
     return localStorage.getItem(this.REFRESH_TOKEN_KEY_NAME);
   }
-
-  public deleteAuthToken(): void{
-    localStorage.removeItem(this.TOKEN_KEY_NAME); 
+  
+  public logout() {
+    localStorage.removeItem(this.REFRESH_TOKEN_KEY_NAME);
+    localStorage.removeItem(this.TOKEN_KEY_NAME);
   }
-
 }
