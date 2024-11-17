@@ -97,11 +97,19 @@ public class TrackService {
 		.flatMap(repository::delete);
 	}
 	
+	public Mono<Void> deleteTracksByPlaylistId(Integer playlistId) {
+		return repository.findByPlaylistId(playlistId)
+		.doOnNext(t -> deleteTrackFile(t.getAudioName()))
+		.collectList()
+		.flatMap(repository::deleteAll);
+	}
+	
 	private void deleteTrackFile(UUID trackName) {
 		webClient.baseUrl("http://audio-service/api/audio/" + trackName.toString())
 		.build()
 		.delete()
-		.exchangeToMono(t -> t.releaseBody())
+		.retrieve()
+		.bodyToMono(Void.class)
 		.subscribe();
 		
 	}

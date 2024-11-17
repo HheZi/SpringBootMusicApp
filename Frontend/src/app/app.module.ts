@@ -35,6 +35,7 @@ import { AuthorizationInterceptorService } from './interceptor/authorization-int
 import { SeePlaylistComponent } from './home/see-playlist/see-playlist.component';
 import { DialogModule } from 'primeng/dialog';
 import { CalendarModule } from 'primeng/calendar';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
 
 @NgModule({
@@ -73,7 +74,8 @@ import { CalendarModule } from 'primeng/calendar';
     RadioButtonModule,
     MenuModule,
     DialogModule,
-    CalendarModule 
+    CalendarModule,
+    ConfirmDialogModule 
   ],
   providers: [ {provide: HTTP_INTERCEPTORS, useClass: AuthorizationInterceptorService, multi: true}],
   bootstrap: [AppComponent]

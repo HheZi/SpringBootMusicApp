@@ -35,4 +35,9 @@ public class ImageService {
 		Files.write(Path.of(imagePath, image.getName()), image.getContent());
 	}
 	
+	@SneakyThrows
+	public void deleteImage(String name) {
+		Files.delete(Path.of(imagePath, name));
+	}
+	
 }

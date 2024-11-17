@@ -1,6 +1,7 @@
 package com.app.service;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.http.HttpHeaders;
@@ -108,5 +109,36 @@ public class PlaylistService {
 					return playlistRepository.save(t);
 				})
 				.map(playlistMapper::fromPlaylistToResponsePlaylist);
+	}
+	
+	public Mono<Void> deletePlaylist(Integer id){
+		return playlistRepository.findById(id)
+				.doOnNext(t -> {
+					deletePlaylistCover(t.getImageName());
+					deleteAllTrackByPlaylistId(t.getId());
+				})
+				.flatMap(playlistRepository::delete);
+	}
+	
+	private void deletePlaylistCover(UUID cover) {
+		if (cover == null) return;
+			
+		builder
+		.baseUrl("http://image-service/api/images/" + cover.toString())
+		.build()
+		.delete()
+		.retrieve()
+		.bodyToMono(Void.class)
+		.subscribe();
+	}
+	
+	private void deleteAllTrackByPlaylistId(Integer id) {
+		builder
+		.baseUrl("http://track-service/api/tracks/?playlistId=" + id)
+		.build()
+		.delete()
+		.retrieve()
+		.bodyToMono(Void.class)
+		.subscribe();
 	}
 }

@@ -61,4 +61,9 @@ public class TrackContoller {
 	public Mono<Void> deleteTrack(@PathVariable("id") Long id){
 		return trackService.deleteTrack(id);
 	}
+	
+	@DeleteMapping
+	public Mono<Void> deleteTrack(@RequestParam("playlistId") Integer id){
+		return trackService.deleteTracksByPlaylistId(id);
+	} 
 }

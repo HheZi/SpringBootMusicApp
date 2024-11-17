@@ -37,5 +37,9 @@ export class PlaylistService {
   updatePlaylist(id: number, editPlaylist: FormData) {
     return this.httpClient.put(this.PLAYLIST_URL + id, editPlaylist);
   }
+
+  public deletePlaylist(id: number){
+    return this.httpClient.delete(this.PLAYLIST_URL + id);
+  }
 }
 

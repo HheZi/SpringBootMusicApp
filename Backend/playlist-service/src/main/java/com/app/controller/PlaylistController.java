@@ -19,6 +19,7 @@ import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.codec.multipart.FilePart;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -80,5 +81,11 @@ public class PlaylistController {
 		){
 		return dto.flatMap(t -> playlistService.updatePlaylist(t, id, userId));
 	}
+	
+	@DeleteMapping("/{id}")
+	public Mono<Void> deletePlaylist(@PathVariable("id") Integer id){
+		return playlistService.deletePlaylist(id);
+	}
+	
 	
 }

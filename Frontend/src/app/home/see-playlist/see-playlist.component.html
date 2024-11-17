@@ -22,7 +22,7 @@
                 <h5 class="track-title mb-1">{{ track.title }}</h5>
                 <p class="track-artist mb-0">{{ track.author }}</p>
             </div>
-            <span *ngIf="isOwnerOfPlaylist"><i class="pi pi-trash icon" style="color: red;" (click)="deleteTrackFromPlaylist(track.id)"></i></span>
+            <span *ngIf="isOwnerOfPlaylist"><i class="pi pi-trash icon" style="color: red;" (click)="confirmDeletionOfTrack(track.id)"></i></span>
         </div>
     </div>
 
@@ -43,8 +43,11 @@
         </div>
         
         <ng-template pTemplate="footer">
+            <button type="button" class="btn btn-danger me-2" (click)="confirmDeletionOfPlaylist()">Delete</button>
             <button type="button" class="btn btn-secondary me-2" (click)="editDialogVisible = false">Cancel</button>
             <button type="button" class="btn btn-primary" (click)="saveChanges()">Save</button>
         </ng-template>
     </p-dialog>
+
+    <p-confirmDialog [style]="{width: '20vw'}"/>
 </div>

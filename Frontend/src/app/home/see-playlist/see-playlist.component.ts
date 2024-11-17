@@ -1,18 +1,19 @@
 import { Component } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Route, Router } from '@angular/router';
 import { AudioService } from '../../services/audio/audio.service';
 import { PlaylistService } from '../../services/playlist/playlist.service';
 import { Playlist } from './playlist';
 import { Track } from '../see-tracks/track';
 import { TrackService } from '../../services/track/track.service';
 import { Title } from '@angular/platform-browser';
-import { MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { AppConts } from '../../app.consts';
 
 @Component({
   selector: 'app-see-playlist',
   templateUrl: './see-playlist.component.html',
-  styleUrl: './see-playlist.component.css'
+  styleUrl: './see-playlist.component.css',
+  providers: [ConfirmationService] 
 })
 export class SeePlaylistComponent {
   public playlist: Playlist = {id: 0, imageUrl:"", name: "", numberOfTrack: 0, playlistType: "", releaseDate: null};
@@ -25,16 +26,18 @@ export class SeePlaylistComponent {
   public previewImage: string | ArrayBuffer | null = null;
 
   constructor(
-    private route: ActivatedRoute,
+    private activeRoute: ActivatedRoute,
+    private route: Router,
     private playlistService: PlaylistService,
     private audioService: AudioService,
     private trackService: TrackService,
     private title: Title,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private confirmationService: ConfirmationService
   ) {}
 
   ngOnInit(): void {
-    this.route.queryParams.subscribe((params: any) => {
+    this.activeRoute.queryParams.subscribe((params: any) => {
       const playlistId = params['id'] || null;
 
       if (playlistId) {
@@ -74,7 +77,7 @@ export class SeePlaylistComponent {
     })
   }
 
-  public deleteTrackFromPlaylist(trackId: number){
+  private deleteTrackFromPlaylist(trackId: number){
     this.trackService.deleteTrack(trackId).subscribe(() => {
       this.messageService.add({closable: true, severity: "success", data: "Track deleted"});
       this.playlist.numberOfTrack--;
@@ -102,7 +105,7 @@ export class SeePlaylistComponent {
       formData.append('cover', this.selectedFile, this.selectedFile.name);
     }
     
-    formData.append("releaseDate", this.parseReleasDate())
+    formData.append("releaseDate", this.parseReleaseDate())
 
     this.playlistService.updatePlaylist(this.playlist.id, formData).subscribe(
       () => {
@@ -113,7 +116,7 @@ export class SeePlaylistComponent {
     );
   }
 
-  private parseReleasDate(): string{
+  private parseReleaseDate(): string{
     if (this.editablePlaylist.releaseDate){
       var d = this.editablePlaylist.releaseDate as Date;
       d.setDate(d.getDate()+1)
@@ -121,4 +124,29 @@ export class SeePlaylistComponent {
     }
     return "";
   }
+
+  private deletePlaylist(){
+    this.playlistService.deletePlaylist(this.playlist.id).subscribe(() => {
+      this.messageService.add({closable: true, summary: "The playlist deleted", severity: "success"});
+      this.route.navigate(["/tracks/see"]);
+    });
+  }
+
+  public confirmDeletionOfPlaylist(){
+    this.confirmDeletion(() => this.deletePlaylist());
+  }
+
+  public confirmDeletionOfTrack(id: number){
+    this.confirmDeletion(() => this.deleteTrackFromPlaylist(id));
+  }
+
+  private confirmDeletion(func: Function){
+    this.confirmationService.confirm({
+      message: "You want to delete?",
+      header: "Confirmation",
+      icon: "pi pi-exclamation-triangle",
+      accept: func
+    });
+  } 
+
 }
