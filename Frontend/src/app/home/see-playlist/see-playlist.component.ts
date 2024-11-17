@@ -131,6 +131,11 @@ export class SeePlaylistComponent {
       this.route.navigate(["/tracks/see"]);
     });
   }
+  public removeCover(){
+    this.playlistService.deleteCover(this.playlist.id).subscribe(() => {
+      this.loadPlaylist(this.playlist.id);
+    });
+  }
 
   public confirmDeletionOfPlaylist(){
     this.confirmDeletion(() => this.deletePlaylist());
@@ -139,6 +144,7 @@ export class SeePlaylistComponent {
   public confirmDeletionOfTrack(id: number){
     this.confirmDeletion(() => this.deleteTrackFromPlaylist(id));
   }
+
 
   private confirmDeletion(func: Function){
     this.confirmationService.confirm({

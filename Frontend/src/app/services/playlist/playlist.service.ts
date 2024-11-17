@@ -41,5 +41,9 @@ export class PlaylistService {
   public deletePlaylist(id: number){
     return this.httpClient.delete(this.PLAYLIST_URL + id);
   }
+
+  public deleteCover(id: number){
+    return this.httpClient.patch(this.PLAYLIST_URL + id, null);
+  }
 }
 

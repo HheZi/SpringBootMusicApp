@@ -43,6 +43,7 @@
         </div>
         
         <ng-template pTemplate="footer">
+            <button type="button" class="btn btn-danger me-2" (click)="removeCover()">Remove Cover</button>
             <button type="button" class="btn btn-danger me-2" (click)="confirmDeletionOfPlaylist()">Delete</button>
             <button type="button" class="btn btn-secondary me-2" (click)="editDialogVisible = false">Cancel</button>
             <button type="button" class="btn btn-primary" (click)="saveChanges()">Save</button>

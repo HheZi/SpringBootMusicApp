@@ -60,14 +60,14 @@ public class PlaylistService {
 		Playlist playlist = playlistMapper.fromRequestPlaylistToPlaylist(dto, userId, coverIsPresent);
 
 		if (coverIsPresent) 
-			savePlaylistCover(playlist.getImageName().toString(), dto.getCover());			
+			savePlaylistCover(playlist.getImageName(), dto.getCover());			
 
 		return playlistRepository.save(playlist)
 				.map(t -> ResponseEntity.status(HttpStatus.CREATED).body(t.getId()));
 	}
 
-	private void savePlaylistCover(String name, FilePart filePart) {
-		if (filePart == null) return;
+	private void savePlaylistCover(UUID name, FilePart filePart) {
+		if (filePart == null || name == null) return;
 
 		DataBufferUtils.join(filePart.content())
 	    .map(dataBuffer -> {
@@ -78,7 +78,7 @@ public class PlaylistService {
 	    })
 	    .doOnNext(t -> {
 	    	builder.build().post().uri("http://image-service/api/images/")
-	    	.bodyValue(new RequestImage(name, t))
+	    	.bodyValue(new RequestImage(name.toString(), t))
 	    	.retrieve()
 	    	.bodyToMono(Void.class).subscribe();
 	    }).subscribe();
@@ -98,7 +98,6 @@ public class PlaylistService {
 		return playlistRepository.findById(playlistId)
 				.filter(t -> t.getCreatedBy() == userId)
 				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "You are not a creator of the playlist")))
-				.doOnNext(t -> savePlaylistCover(t.getImageName().toString(), dto.getCover()))
 				.flatMap(t -> {
 					if (dto.getName() != null) {
 						t.setName(dto.getName());
@@ -106,8 +105,12 @@ public class PlaylistService {
 					if (dto.getReleaseDate() != null) {
 						t.setReleaseDate(dto.getReleaseDate());
 					}
+					if (dto.getCover() != null && t.getImageName() == null) {
+						t.setImageName(UUID.randomUUID());
+					}
 					return playlistRepository.save(t);
 				})
+				.doOnNext(t -> savePlaylistCover(t.getImageName(), dto.getCover()))
 				.map(playlistMapper::fromPlaylistToResponsePlaylist);
 	}
 	
@@ -118,6 +121,16 @@ public class PlaylistService {
 					deleteAllTrackByPlaylistId(t.getId());
 				})
 				.flatMap(playlistRepository::delete);
+	}
+	
+	public Mono<Void> deleteCoverById(Integer id) {
+		return playlistRepository.findById(id)
+				.doOnNext(t -> {
+					deletePlaylistCover(t.getImageName());
+					t.setImageName(null);
+				})
+				.flatMap(playlistRepository::save)
+				.then();
 	}
 	
 	private void deletePlaylistCover(UUID cover) {
