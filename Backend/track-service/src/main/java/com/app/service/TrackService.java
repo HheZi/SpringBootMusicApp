@@ -16,10 +16,12 @@ import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.app.model.Track;
 import com.app.payload.request.CreateTrackDto;
 import com.app.payload.request.RequestSaveAudio;
+import com.app.payload.request.UpdateTrackRequest;
 import com.app.payload.response.ResponseTrack;
 import com.app.repository.TrackRepository;
 import com.app.util.TrackMapper;
@@ -134,6 +136,21 @@ public class TrackService {
 		.bodyToMono(Void.class)
 		.subscribe();
 		
+	}
+	
+	@Transactional
+	public Mono<Void> updateTrackTitle(UpdateTrackRequest updateTrack, Long trackId, Integer userId){
+		return repository.findById(trackId)
+		.filter(t -> t.getCreatedBy() == userId)
+		.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "You can't update the title")))
+		.doOnNext(t -> {
+			String title = updateTrack.getTitle();
+			if (title != null && !title.isEmpty() && !title.isBlank()) {
+				t.setTitle(title);
+			}
+		})
+		.flatMap(repository::save)
+		.then();
 	}
 
 }

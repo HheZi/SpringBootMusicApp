@@ -9,4 +9,5 @@ export interface Track {
    imageUrl: string,
    isNowPlaying: boolean 
    duration: string;
+   isEditing: boolean;
 }

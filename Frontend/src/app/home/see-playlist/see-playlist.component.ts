@@ -24,6 +24,8 @@ export class SeePlaylistComponent {
   public editablePlaylist: Playlist = { id: 0, imageUrl: "", name: "", numberOfTrack: 0, playlistType: "", releaseDate: null};
   private selectedFile: File | null = null;
   public previewImage: string | ArrayBuffer | null = null;
+  public newTitle: string = "";
+  public indexOfEditingTrack: number = -1;
 
   constructor(
     private activeRoute: ActivatedRoute,
@@ -72,7 +74,8 @@ export class SeePlaylistComponent {
           playlist: track.playlist.name,  
           playlistId: track.playlist.id,
           isNowPlaying: false,
-          duration: track.duration
+          duration: track.duration,
+          isEditing: false
         });
       });
     })
@@ -155,5 +158,24 @@ export class SeePlaylistComponent {
       accept: func
     });
   } 
+
+  public updateTrackTitle(track: Track){
+    this.trackService.updateTrackTitle(track.id, this.newTitle).subscribe(() => {
+      this.messageService.add({severity: "success", summary: "You have updated the track title", closable: true});
+      track.title = this.newTitle;
+      this.makeTrackEditableOrNot(track);
+    });
+  }
+
+  public makeTrackEditableOrNot(track: Track){
+    var isTheSameIndex = this.indexOfEditingTrack == track.id;
+
+    if(this.indexOfEditingTrack != -1 && !isTheSameIndex) return
+
+    this.newTitle = ""
+    track.isEditing = !track.isEditing;
+
+    this.indexOfEditingTrack = isTheSameIndex ? -1 : track.id;
+  }
 
 }

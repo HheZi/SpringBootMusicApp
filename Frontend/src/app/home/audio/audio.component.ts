@@ -42,6 +42,8 @@ export class AudioComponent implements OnInit, OnDestroy {
   }
 
   public playAudio(): void {
+    if (!this.tracksToPlay) return
+    
     let track = this.tracksToPlay.tracks[this.tracksToPlay.indexOfCurrentTrack];
     this.makeAllTracksIsNotPlayingProperty();
     track.isNowPlaying = true;

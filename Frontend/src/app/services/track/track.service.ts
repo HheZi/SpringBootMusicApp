@@ -34,11 +34,15 @@ export class TrackService {
     return this.httpClient.post(this.TRACK_URL, tracks);
   }
 
-  public deleteTrack(id: number){
+  public deleteTrack(id: number): Observable<Object>{
     return this.httpClient.delete(this.TRACK_URL + id);
   }
 
   public getTrackInPlaylist(playlistId: number): Observable<Object>{
     return this.httpClient.get(this.TRACK_URL + "count/"+playlistId);
+  }
+
+  public updateTrackTitle(id: number, title: string): Observable<Object>{
+    return this.httpClient.patch(this.TRACK_URL + id, {"title": title});
   }
 }

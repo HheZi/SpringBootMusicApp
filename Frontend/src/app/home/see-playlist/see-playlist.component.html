@@ -19,9 +19,17 @@
         <div *ngFor="let track of tracks;  let i = index" class="track-item d-flex align-items-center p-2 mb-2 border-bottom">
             <p-button icon="pi pi-play" (click)="playTrack(i)" class="me-2"></p-button>
             <div class="flex-grow-1">
-                <h5 class="track-title mb-1">{{ track.title }}</h5>
+                <ng-container *ngIf="!track.isEditing; else editMode">
+                    <h5>{{ track.title }}</h5>
+                    </ng-container>
+                <ng-template #editMode>
+                    <form (ngSubmit)="updateTrackTitle(track)">
+                        <input name="newTitle" type="text" placeholder="Change Title" [(ngModel)]="newTitle"/>
+                    </form>
+                </ng-template>
                 <p class="track-artist mb-0">{{ track.author }}</p>
             </div>
+            <span *ngIf="isOwnerOfPlaylist"><i class="pi icon me-3" [ngClass]="{'pi-pen-to-square': !track.isEditing, 'pi-times': track.isEditing}" (click)="makeTrackEditableOrNot(track)"></i></span>
             <span *ngIf="isOwnerOfPlaylist"><i class="pi pi-trash icon" style="color: red;" (click)="confirmDeletionOfTrack(track.id)"></i></span>
         </div>
     </div>
