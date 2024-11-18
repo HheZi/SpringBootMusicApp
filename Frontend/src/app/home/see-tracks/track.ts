@@ -8,4 +8,5 @@ export interface Track {
    author: string,
    imageUrl: string,
    isNowPlaying: boolean 
+   duration: string;
 }

@@ -42,7 +42,7 @@ public class TracksAggregationFilter implements GatewayFilter {
 		Flux<ResponseTracks> result = Mono.zip(tracks.collectList(), authors.collectList(), playlists.collectList())
 		.flatMapMany(t -> collectTracks(t.getT1(), t.getT2(), t.getT3()));
 		
-		exchange.getResponse().getHeaders().setContentType(MediaType.APPLICATION_JSON);
+		
 		
 		Mono<DataBuffer> dataBuffer = result.collectList().map(t -> {
 				try {
@@ -54,6 +54,7 @@ public class TracksAggregationFilter implements GatewayFilter {
 		})
 		.map(b -> exchange.getResponse().bufferFactory().wrap(b));
 
+		exchange.getResponse().getHeaders().setContentType(MediaType.APPLICATION_JSON);
 		
 		return exchange.getResponse().writeWith(dataBuffer);
 	}
@@ -75,7 +76,7 @@ public class TracksAggregationFilter implements GatewayFilter {
 						.filter(p -> t.getPlaylistId() == p.getId())
 						.findFirst().orElseGet(ResponsePlaylistFromAPI::new);
 				
-				return new ResponseTracks(t.getId(), t.getTitle(), playlist, author, t.getAudioUrl());
+				return new ResponseTracks(t.getId(), t.getTitle(), playlist, author, t.getAudioUrl(), t.getDuration());
 			});
 	}
 	

@@ -19,4 +19,6 @@ public class ResponseTracks {
 	
 	private String audioUrl;
 	
+	private String duration;
+	
 }

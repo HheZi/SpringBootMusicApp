@@ -68,7 +68,8 @@ export class SeeTracksComponent implements OnInit {
           imageUrl: track.playlist.imageUrl,  
           playlist: track.playlist.name,  
           playlistId: track.playlist.id,
-          isNowPlaying: false
+          isNowPlaying: false,
+          duration: track.duration
         });
       });
     }

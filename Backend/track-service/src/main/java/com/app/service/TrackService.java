@@ -1,8 +1,11 @@
 package com.app.service;
 
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
 import org.springframework.data.relational.core.query.Criteria;
@@ -20,8 +23,12 @@ import com.app.payload.request.RequestSaveAudio;
 import com.app.payload.response.ResponseTrack;
 import com.app.repository.TrackRepository;
 import com.app.util.TrackMapper;
+import com.mpatric.mp3agic.InvalidDataException;
+import com.mpatric.mp3agic.Mp3File;
+import com.mpatric.mp3agic.UnsupportedTagException;
 
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -37,6 +44,10 @@ public class TrackService {
 
 	private final R2dbcEntityTemplate template;
 	
+	@Value("${file.temp}")
+	private String tempFolder;
+	
+	@Transactional
 	public Flux<ResponseTrack> getTracks(
 			String trackName, 
 			List<Integer> authorId, 
@@ -63,9 +74,18 @@ public class TrackService {
 		
 	}
 	
+	private Mono<Mp3File> saveAudioInTemp(FilePart audio) {
+		Path path = Path.of(tempFolder, audio.filename());
+		
+		return audio.transferTo(path)
+				.then(Mono.fromCallable(() -> new Mp3File(path.toString())))
+				.doFinally(t -> path.toFile().delete());
+	}
+
 	@Transactional
 	public Mono<ResponseEntity<?>> createTrack(CreateTrackDto dto, Integer userId) {
-		return repository.save(mapper.fromCreateTrackDtoToTrack(dto, userId))
+		return saveAudioInTemp(dto.getAudio())
+				.flatMap(t -> repository.save(mapper.fromCreateTrackDtoToTrack(dto, userId, t)))
 				.doOnNext(t -> saveAudio(t.getAudioName().toString(), dto.getAudio()))
 				.map(t -> ResponseEntity.status(HttpStatus.CREATED).build());
 	}
@@ -78,11 +98,11 @@ public class TrackService {
             DataBufferUtils.release(dataBuffer);  
             return content;
         })
-        .doOnNext(t -> webClient.build().post().uri("http://audio-service/api/audio")
+        .flatMap(t -> webClient.build()
+        	.post().uri("http://audio-service/api/audio")
             .bodyValue(new RequestSaveAudio(name, t))
             .retrieve()
-            .bodyToMono(Void.class)
-            .subscribe())
+            .bodyToMono(Void.class))
         .subscribe();
 		
 	}
@@ -90,13 +110,15 @@ public class TrackService {
 	public Mono<Long> countTracksByPlaylistId(Long playlistId){
 		return repository.countByPlaylistId(playlistId);
 	}
-	
+
+	@Transactional
 	public Mono<Void> deleteTrack(Long id){
 		return repository.findById(id)
 		.doOnNext(t -> deleteTrackFile(t.getAudioName()))
 		.flatMap(repository::delete);
 	}
 	
+	@Transactional
 	public Mono<Void> deleteTracksByPlaylistId(Integer playlistId) {
 		return repository.findByPlaylistId(playlistId)
 		.doOnNext(t -> deleteTrackFile(t.getAudioName()))

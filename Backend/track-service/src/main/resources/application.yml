@@ -13,3 +13,4 @@ server:
 logging:
   level:
     '[org.springframework.web]': debug
+file.temp: \Programming\Java\StreamingService\Backend\track-service\temp

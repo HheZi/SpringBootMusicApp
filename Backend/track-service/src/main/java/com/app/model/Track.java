@@ -28,12 +28,14 @@ public class Track {
 	private Integer authorId;
 	
 	@Column("playlist_id")
-	private Long playlistId;
+	private Integer playlistId;
 	
 	@Column("audio_name")
 	private UUID audioName;
 
 	@Column("created_by")
 	private Integer createdBy;
+	
+	private String duration;
 	
 }

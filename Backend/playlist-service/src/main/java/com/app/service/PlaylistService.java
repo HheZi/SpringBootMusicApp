@@ -50,7 +50,7 @@ public class PlaylistService {
 	}
 	
 	public Flux<ResponsePlaylist> findPlaylistsBySymbol(String symbol){
-		return playlistRepository.findByNameContainingIgnoreCase(symbol)
+		return playlistRepository.findByNameIsStartingWithAllIgnoreCase(symbol)
 				.map(playlistMapper::fromPlaylistToResponsePlaylist);
 	}
 

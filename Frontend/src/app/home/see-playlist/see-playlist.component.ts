@@ -71,7 +71,8 @@ export class SeePlaylistComponent {
           imageUrl: track.playlist.imageUrl,  
           playlist: track.playlist.name,  
           playlistId: track.playlist.id,
-          isNowPlaying: false
+          isNowPlaying: false,
+          duration: track.duration
         });
       });
     })
@@ -79,7 +80,7 @@ export class SeePlaylistComponent {
 
   private deleteTrackFromPlaylist(trackId: number){
     this.trackService.deleteTrack(trackId).subscribe(() => {
-      this.messageService.add({closable: true, severity: "success", data: "Track deleted"});
+      this.messageService.add({closable: true, severity: "success", summary: "Track deleted"});
       this.playlist.numberOfTrack--;
       this.tracks.splice(this.tracks.findIndex(t => t.id == trackId), 1);
     });

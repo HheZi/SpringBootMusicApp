@@ -13,9 +13,11 @@ public class ResponseTrack {
 	
 	private String title;
 	
-	private Long playlistId;
+	private Integer playlistId;
 	
 	private String audioUrl;
 	
 	private Integer authorId;
+	
+	private String duration;
 }

@@ -77,6 +77,7 @@ public class AuthService {
 				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "You need to login")))
 				.flatMap(t -> {
 					t.setToken(UUID.randomUUID());
+					t.setExpirationDate(Instant.now().plus(EXPIRATION_DATE_OF_REFRESH_TOKEN_IN_DAYS, ChronoUnit.DAYS));
 					return refreshTokenRepository.save(t);
 				})
 				.map(t -> new AuthResponse(jwtUtil.createJwtToken(t.getUserId()), t.getToken().toString()));

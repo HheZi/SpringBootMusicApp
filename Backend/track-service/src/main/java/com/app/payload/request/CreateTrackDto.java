@@ -11,7 +11,7 @@ public class CreateTrackDto {
 
 	private String title;
 	
-	private Long playlistId;
+	private Integer playlistId;
 	
 	private Integer authorId;
 	

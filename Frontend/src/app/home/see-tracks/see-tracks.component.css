@@ -21,7 +21,7 @@
 
 .now-playing-icon i {
     font-size: 1.2rem;
-    color: #007bff; /* Adjust to your theme color */
+    color: #007bff; 
     animation: pulse 1.5s infinite;
 }
 
