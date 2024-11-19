@@ -27,7 +27,7 @@
                         <input name="newTitle" type="text" placeholder="Change Title" [(ngModel)]="newTitle"/>
                     </form>
                 </ng-template>
-                <p class="track-artist mb-0">{{ track.author }}</p>
+                <a class="track-artist mb-0 link" (click)="seeAuthor(track.authorId)" class="link">{{ track.author }}</a>
             </div>
             <span *ngIf="isOwnerOfPlaylist"><i class="pi icon me-3" [ngClass]="{'pi-pen-to-square': !track.isEditing, 'pi-times': track.isEditing}" (click)="makeTrackEditableOrNot(track)"></i></span>
             <span *ngIf="isOwnerOfPlaylist"><i class="pi pi-trash icon" style="color: red;" (click)="confirmDeletionOfTrack(track.id)"></i></span>

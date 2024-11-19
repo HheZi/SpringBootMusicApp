@@ -25,4 +25,12 @@ export class AuthorService {
     return this.httpClient.post(this.AUTHOR_URL, body, { responseType: "json"});
   }
 
+  public canModify(id: number): Observable<Object>{
+    return this.httpClient.get(this.AUTHOR_URL + "owner/" + id);
+  }
+
+  public updateAuthor(data: FormData, id: number){
+    return this.httpClient.put(this.AUTHOR_URL + id, data);
+  }
+
 }

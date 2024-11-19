@@ -26,4 +26,7 @@ public class Author {
 	@Column("image_name")
 	private UUID imageName;
 	
+	@Column("created_by")
+	private Integer createdBy;
+	
 }

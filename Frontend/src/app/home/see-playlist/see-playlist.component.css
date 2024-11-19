@@ -5,3 +5,11 @@
     cursor: pointer;
     color: #c7c7c7;
 }
+
+.link{
+    color: black;
+}
+
+.link:hover{
+    cursor: pointer;
+}

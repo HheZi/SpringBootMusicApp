@@ -7,6 +7,7 @@ import { TrackService } from '../../services/track/track.service';
 import { Track } from '../see-tracks/track';
 import { AudioService } from '../../services/audio/audio.service';
 import { Title } from '@angular/platform-browser';
+import { Author } from './author';
 
 @Component({
   selector: 'app-see-author',
@@ -16,9 +17,15 @@ import { Title } from '@angular/platform-browser';
 export class SeeAuthorComponent implements OnInit{
   
   
-  public author: any = { id: 0, name: '', imageUrl: '' };
+  public author: Author = { id: 0, name: '', imageUrl: '' };
   public playlists: any[] = [];
   public tracks: Track[] = [];
+  public canModify: boolean = false;
+  public updateDialog:  boolean = false;
+
+  public editableAuthor: Author ={ id: 0, name: '', imageUrl: '' };
+  public previewImage: string | ArrayBuffer | null = null;
+  private selectedFile: File | null = null;
   
   constructor(
     private activeRoute: ActivatedRoute,
@@ -39,9 +46,12 @@ export class SeeAuthorComponent implements OnInit{
   }
   
   private loadAuthor(authorId: number): void {
-    this.authorService.getAuthorsById(authorId).subscribe((author) => {
+    this.authorService.getAuthorsById(authorId).subscribe((author: any) => {
       this.author = author;
       this.title.setTitle(this.author.name);
+      this.authorService.canModify(this.author.id).subscribe((resp:any)=>{
+        this.canModify = resp;
+      })
     });
     
     this.trackService.getTracksByAuthorId(authorId).subscribe((tracksResp: any) => {
@@ -69,8 +79,35 @@ export class SeeAuthorComponent implements OnInit{
     
   }
   
+  onFileChange(event: any): void {
+    this.selectedFile = event.target.files[0];
+    if (this.selectedFile) {
+      const reader = new FileReader();
+      reader.onload = (e: any) => (this.previewImage = e.target.result);
+      reader.readAsDataURL(this.selectedFile);
+    }
+  }
+
+  public openOrCloseDialog(){
+    this.updateDialog = !this.updateDialog;
+  }
+
   editAuthor(): void {
-    console.log('Edit author:', this.author);
+    var formData = new FormData();
+
+    if(this.editableAuthor.name){
+      formData.append("name", this.editableAuthor.name);
+    }
+      
+    if (this.selectedFile){
+      formData.append("file", this.selectedFile);
+    }
+
+    this.authorService.updateAuthor(formData, this.author.id).subscribe(() => {
+      this.messageService.add({ severity: 'success', summary: 'Playlist updated successfully' });
+      this.updateDialog = false;
+      this.loadAuthor(this.author.id);
+    })
   }
   
   deletePlaylist(playlistId: number): void {
@@ -99,6 +136,6 @@ export class SeeAuthorComponent implements OnInit{
   }
 
   public seePlaylist(playlistId: number) {
-    this.router.navigate(["playlist/see/"+playlistId]);
+    this.router.navigate(["playlist/"+playlistId]);
   }
 }

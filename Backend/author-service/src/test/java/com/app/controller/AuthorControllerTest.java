@@ -8,7 +8,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
-import com.app.payload.request.AuthorCreateRequest;
+import com.app.payload.request.AuthorCreateOrUpdateRequest;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -53,7 +53,7 @@ class AuthorControllerTest {
 	@Test
 	void test_create_author_method() throws JsonProcessingException {
 		
-		AuthorCreateRequest request = new AuthorCreateRequest("New", null);
+		AuthorCreateOrUpdateRequest request = new AuthorCreateOrUpdateRequest("New", null);
 		
 		testClient.post()
 		.uri("/api/authors/")

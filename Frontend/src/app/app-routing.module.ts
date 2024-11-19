@@ -24,12 +24,12 @@ const routes: Routes = [
   path: '', 
   component: HomeComponent,
   children: [
-  {path: 'tracks/see', component: SeeTracksComponent}, 
+  {path: 'tracks', component: SeeTracksComponent}, 
   {path: 'playlists/create', component: CreatePlaylistComponent},
   {path: 'tracks/create', component: CreateTrackComponent},
   {path: 'authors/create', component: CreateAuthorComponent},
-  {path: 'playlist/see/:id', component: SeePlaylistComponent},
-  {path: 'author/see/:id', component: SeeAuthorComponent}
+  {path: 'playlist/:id', component: SeePlaylistComponent},
+  {path: 'author/:id', component: SeeAuthorComponent}
 ]
 }];
 

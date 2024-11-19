@@ -2,11 +2,10 @@ package com.app.util;
 
 import java.util.UUID;
 
-import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Component;
 
 import com.app.model.Author;
-import com.app.payload.request.AuthorCreateRequest;
+import com.app.payload.request.AuthorCreateOrUpdateRequest;
 import com.app.payload.response.AuthorResponse;
 
 @Component
@@ -16,10 +15,11 @@ public class AuthorMapper {
 	
 	private final String IMAGE_URL_DEFAULT = IMAGE_URL_FORMAT + "default";
 	
-	public Author fromAuthorRequestToAuthor(AuthorCreateRequest dto, boolean isFilePresent) {	
+	public Author fromAuthorRequestToAuthor(AuthorCreateOrUpdateRequest dto, Integer userId,boolean isFilePresent) {	
 		return Author.builder()
 				.name(dto.getName())
 				.imageName(isFilePresent ? UUID.randomUUID() : null)
+				.createdBy(userId)
 				.build();
 	}
 	

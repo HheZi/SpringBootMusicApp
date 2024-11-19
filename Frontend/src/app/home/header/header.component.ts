@@ -24,7 +24,7 @@ export class HeaderComponent {
   public textInput: string = '';
 
   onSearch() {  
-    this.router.navigate(['tracks/see'], {queryParams: {'name': this.textInput}})
+    this.router.navigate(['tracks'], {queryParams: {'name': this.textInput}})
   }
   
   navigateTo(arg0: string) {

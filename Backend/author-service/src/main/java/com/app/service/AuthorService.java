@@ -11,7 +11,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.app.model.Author;
-import com.app.payload.request.AuthorCreateRequest;
+import com.app.payload.request.AuthorCreateOrUpdateRequest;
 import com.app.payload.request.SaveAutorImageRequest;
 import com.app.payload.response.AuthorResponse;
 import com.app.repository.AuthorRepository;
@@ -49,15 +49,36 @@ public class AuthorService {
 				.map(authorMapper::fromAuthorToAuthorResponse);
 	}
 
-	public Mono<Integer> saveAuthor(AuthorCreateRequest dto) {
-		Author author = authorMapper.fromAuthorRequestToAuthor(dto, dto.getFile() != null);
-		
-		System.err.println(author);
+	public Mono<Integer> saveAuthor(AuthorCreateOrUpdateRequest dto, Integer userId) {
+		Author author = authorMapper.fromAuthorRequestToAuthor(dto,  userId, dto.getFile() != null);
 		
 		return authorRepository
 				.save(author)
 				.doOnNext(t -> saveAuthorImage(t.getImageName(), dto.getFile()))
 				.map(Author::getId);
+	}
+	
+	public Mono<Void> updateAuthor(AuthorCreateOrUpdateRequest dto, Integer id, Integer userId){
+		return authorRepository.findById(id)
+		.filter(t -> t.getCreatedBy() == userId)
+		.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "You can't update the author")))
+		.doOnNext(t -> {
+			if (dto.getName() != null) {
+				t.setName(dto.getName());
+			}
+			if (t.getImageName() == null && dto.getFile() != null) {
+				t.setImageName(UUID.randomUUID());
+			}
+			saveAuthorImage(t.getImageName(), dto.getFile());
+		})
+		.flatMap(authorRepository::save)
+		.then();
+		
+	}
+	
+	public Mono<Boolean> canUserModify(Integer id, Integer userId) {
+		return authorRepository.findById(id)
+		.map(t -> t.getCreatedBy() == userId);
 	}
 	
 	private void saveAuthorImage(UUID name, FilePart filePart) {

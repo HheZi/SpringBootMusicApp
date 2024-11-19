@@ -1,7 +1,7 @@
 .author-image {
     width: 225px;
     object-fit: cover;
-    border-radius: 50%;
+    border-radius: 10%;
 }
 
 
@@ -60,5 +60,9 @@ button {
 }
 .link{
     color: black;
+}
 
+.icon:hover {
+    cursor: pointer;
+    color: #dfdfdf;
 }

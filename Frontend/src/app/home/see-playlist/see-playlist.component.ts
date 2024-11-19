@@ -29,7 +29,7 @@ export class SeePlaylistComponent {
 
   constructor(
     private activeRoute: ActivatedRoute,
-    private route: Router,
+    private router: Router,
     private playlistService: PlaylistService,
     private audioService: AudioService,
     private trackService: TrackService,
@@ -40,7 +40,6 @@ export class SeePlaylistComponent {
 
   ngOnInit(): void {
     const playlistId = this.activeRoute.snapshot.paramMap.get('id');
-    // const playlistId = params['id'] || null;
     if (playlistId) {
       this.loadPlaylist(parseInt(playlistId));
     }
@@ -130,7 +129,7 @@ export class SeePlaylistComponent {
   private deletePlaylist(){
     this.playlistService.deletePlaylist(this.playlist.id).subscribe(() => {
       this.messageService.add({closable: true, summary: "The playlist deleted", severity: "success"});
-      this.route.navigate(["/tracks/see"]);
+      this.router.navigate(["/tracks/see"]);
     });
   }
   public removeCover(){
@@ -175,5 +174,9 @@ export class SeePlaylistComponent {
 
     this.indexOfEditingTrack = isTheSameIndex ? -1 : track.id;
   }
+
+    public seeAuthor(value: number){
+      this.router.navigate(["author/" + value]);
+    }
 
 }
