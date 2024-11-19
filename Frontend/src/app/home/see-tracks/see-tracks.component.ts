@@ -124,7 +124,11 @@ export class SeeTracksComponent implements OnInit {
   }
 
   public seePlaylist(value: number): void{
-    this.router.navigate(["/playlist/see"], {queryParams: {"id": value}});
+    this.router.navigate(["/playlist/see/"+ value]);
+  }
+
+  public seeAuthor(value: number){
+    this.router.navigate(["author/see/" + value]);
   }
 
   private handleError(summary: string, error: any): void {

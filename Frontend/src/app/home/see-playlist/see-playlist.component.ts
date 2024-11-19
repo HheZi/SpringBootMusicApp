@@ -39,13 +39,11 @@ export class SeePlaylistComponent {
   ) {}
 
   ngOnInit(): void {
-    this.activeRoute.queryParams.subscribe((params: any) => {
-      const playlistId = params['id'] || null;
-
-      if (playlistId) {
-        this.loadPlaylist(parseInt(playlistId));
-      }
-    });
+    const playlistId = this.activeRoute.snapshot.paramMap.get('id');
+    // const playlistId = params['id'] || null;
+    if (playlistId) {
+      this.loadPlaylist(parseInt(playlistId));
+    }
   }
 
   private loadPlaylist(playlistId: number): void {

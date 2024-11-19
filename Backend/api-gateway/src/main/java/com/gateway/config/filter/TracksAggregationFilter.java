@@ -115,7 +115,7 @@ public class TracksAggregationFilter implements GatewayFilter {
 							.baseUrl("http://playlist-service/api/playlists/")
 							.build()
 							.get()
-							.uri(u -> u.queryParam("id[]", t).build())
+							.uri(u -> u.queryParam("ids", t).build())
 							.accept(MediaType.APPLICATION_JSON)
 							.exchangeToFlux(e -> e.bodyToFlux(ResponsePlaylistFromAPI.class));
 				});

@@ -39,7 +39,7 @@ public class PlaylistController {
 	private final PlaylistService playlistService;
 
 	@GetMapping
-	public Flux<ResponsePlaylist> getPlaylistsByIds(@RequestParam("id[]") List<Integer> ids){
+	public Flux<ResponsePlaylist> getPlaylistsByIds(@RequestParam("ids") List<Integer> ids){
 		return playlistService.getPlaylistsByIds(ids);
 	}
 	

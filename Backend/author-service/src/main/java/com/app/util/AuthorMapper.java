@@ -14,6 +14,8 @@ public class AuthorMapper {
 
 	private final String IMAGE_URL_FORMAT = "http://localhost:8080/api/images/";
 	
+	private final String IMAGE_URL_DEFAULT = IMAGE_URL_FORMAT + "default";
+	
 	public Author fromAuthorRequestToAuthor(AuthorCreateRequest dto, boolean isFilePresent) {	
 		return Author.builder()
 				.name(dto.getName())
@@ -25,7 +27,7 @@ public class AuthorMapper {
 		return AuthorResponse.builder()
 				.id(author.getId())
 				.name(author.getName())
-				.imageUrl(author.getName() == null ? null : IMAGE_URL_FORMAT + author.getImageName())
+				.imageUrl(author.getImageName() == null ? IMAGE_URL_DEFAULT : IMAGE_URL_FORMAT + author.getImageName())
 				.build();
 	}
 	

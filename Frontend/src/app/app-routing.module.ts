@@ -9,6 +9,7 @@ import { CustomReuseStrategy } from './custome-routes/custom-reuse-strategy';
 import { CreateTrackComponent } from './home/create-track/create-track.component';
 import { CreateAuthorComponent } from './home/create-author/create-author.component';
 import { SeePlaylistComponent } from './home/see-playlist/see-playlist.component';
+import { SeeAuthorComponent } from './home/see-author/see-author.component';
 
 const routes: Routes = [
 {
@@ -27,7 +28,8 @@ const routes: Routes = [
   {path: 'playlists/create', component: CreatePlaylistComponent},
   {path: 'tracks/create', component: CreateTrackComponent},
   {path: 'authors/create', component: CreateAuthorComponent},
-  {path: 'playlist/see', component: SeePlaylistComponent}
+  {path: 'playlist/see/:id', component: SeePlaylistComponent},
+  {path: 'author/see/:id', component: SeeAuthorComponent}
 ]
 }];
 

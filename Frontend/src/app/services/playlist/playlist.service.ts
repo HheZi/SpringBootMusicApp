@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { AuthService } from '../auth/auth.service';
 import { AppConts } from '../../app.consts';
@@ -18,14 +18,19 @@ export class PlaylistService {
     return this.httpClient.get(this.PLAYLIST_URL + id, { responseType: "json"})
   }
   
+  public getPlaylistsByIds(ids: number[]): Observable<Object>{
+    const params = { ids: ids.map(id => id.toString()) };
+    return this.httpClient.get(this.PLAYLIST_URL, { params, responseType: "json" });
+  }
+
   public getPlaylistsBySymbol(symbol: string): Observable<Object>{
     return this.httpClient.get(this.PLAYLIST_URL + "symbol/" + symbol);
   }
   
-  public getIsUserIsOwnerOfPlaylist(playlistId: number){
+  public getIsUserIsOwnerOfPlaylist(playlistId: number): Observable<Object>{
     return this.httpClient.get(this.PLAYLIST_URL + "owner/" + playlistId);
   }
-  
+
   public getPlaylistTypes(): Observable<Object>{
     return this.httpClient.get(this.PLAYLIST_URL + "types",  {responseType: "json"});
   }
@@ -34,7 +39,7 @@ export class PlaylistService {
     return this.httpClient.post(this.PLAYLIST_URL, formData, );
   }  
 
-  updatePlaylist(id: number, editPlaylist: FormData) {
+  public updatePlaylist(id: number, editPlaylist: FormData) {
     return this.httpClient.put(this.PLAYLIST_URL + id, editPlaylist);
   }
 
