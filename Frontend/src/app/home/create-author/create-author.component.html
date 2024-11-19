@@ -4,11 +4,14 @@
             <h3>Create autor</h3>
         </div>
         <div class="card-body">
-            <form (ngSubmit)="onSubmit()">
+            <form (ngSubmit)="onSubmit()" [formGroup]="authorFormGroup">
                 <div class="form-group">
-                    <input  type="text" class="form-control" name="name" [(ngModel)]="name" placeholder="Enter the name">
+                    <input  type="text" class="form-control" name="name" formControlName="name" placeholder="Enter the name">
                 </div>
-                <button class="btn btn-primary mt-2">Submit</button>
+                <div class="form-group mt-3 mb-3">
+                    <input type="file"  class="form-control" accept="image/jpeg" name="file" (change)="onFileChange($event)" formControlName="file">
+                </div>
+                <button class="btn btn-primary mt-2" [disabled]="authorFormGroup.invalid">Submit</button>
             </form>
         </div>
     </div>

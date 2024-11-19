@@ -53,7 +53,7 @@ class AuthorControllerTest {
 	@Test
 	void test_create_author_method() throws JsonProcessingException {
 		
-		AuthorCreateRequest request = new AuthorCreateRequest("New");
+		AuthorCreateRequest request = new AuthorCreateRequest("New", null);
 		
 		testClient.post()
 		.uri("/api/authors/")

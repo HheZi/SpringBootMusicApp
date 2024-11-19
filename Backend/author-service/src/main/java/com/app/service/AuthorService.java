@@ -1,20 +1,23 @@
 package com.app.service;
 
 import java.util.List;
+import java.util.UUID;
 
+import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.app.model.Author;
 import com.app.payload.request.AuthorCreateRequest;
+import com.app.payload.request.SaveAutorImageRequest;
 import com.app.payload.response.AuthorResponse;
 import com.app.repository.AuthorRepository;
 import com.app.util.AuthorMapper;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -25,6 +28,8 @@ public class AuthorService {
 	private final AuthorRepository authorRepository;
 
 	private final AuthorMapper authorMapper;
+	
+	private final WebClient.Builder builder;
 	
 	public Mono<AuthorResponse> getAuthorById(Integer id) {
 		return authorRepository
@@ -45,9 +50,35 @@ public class AuthorService {
 	}
 
 	public Mono<Integer> saveAuthor(AuthorCreateRequest dto) {
-		Author author = new Author(null, dto.getName());
+		Author author = authorMapper.fromAuthorRequestToAuthor(dto, dto.getFile() != null);
 		
-		return authorRepository.save(author).map(Author::getId);
+		System.err.println(author);
+		
+		return authorRepository
+				.save(author)
+				.doOnNext(t -> saveAuthorImage(t.getImageName(), dto.getFile()))
+				.map(Author::getId);
+	}
+	
+	private void saveAuthorImage(UUID name, FilePart filePart) {
+		if (name ==  null || filePart == null) return;			
+		
+		DataBufferUtils.join(filePart.content())
+	    .map(dataBuffer -> {
+	    	byte[] bs = new byte[dataBuffer.readableByteCount()];
+	    	dataBuffer.read(bs);
+	    	DataBufferUtils.release(dataBuffer);
+	    	return bs;
+	    })
+	    .flatMap(t -> {
+	    	return builder.build()
+	    			.post()
+	    			.uri("http://image-service/api/images/")
+	    			.bodyValue(new SaveAutorImageRequest(name.toString(), t))
+	    			.retrieve()
+	    			.bodyToMono(Void.class);
+	    }).subscribe();
+		
 	}
 	
 }

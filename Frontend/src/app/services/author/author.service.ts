@@ -21,7 +21,7 @@ export class AuthorService {
     return this.httpClient.get(this.AUTHOR_URL + "symbol/" + symbol, { responseType: "json"});
   }
 
-  public createAuthor(body: any): Observable<Object>{
+  public createAuthor(body: FormData): Observable<Object>{
     return this.httpClient.post(this.AUTHOR_URL, body, { responseType: "json"});
   }
 

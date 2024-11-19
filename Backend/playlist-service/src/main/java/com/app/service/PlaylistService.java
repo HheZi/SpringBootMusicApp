@@ -76,11 +76,11 @@ public class PlaylistService {
 	    	DataBufferUtils.release(dataBuffer);
 	    	return bs;
 	    })
-	    .doOnNext(t -> {
-	    	builder.build().post().uri("http://image-service/api/images/")
+	    .flatMap(t -> {
+	    	 return builder.build().post().uri("http://image-service/api/images/")
 	    	.bodyValue(new RequestImage(name.toString(), t))
 	    	.retrieve()
-	    	.bodyToMono(Void.class).subscribe();
+	    	.bodyToMono(Void.class);
 	    }).subscribe();
 
 	}

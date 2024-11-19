@@ -1,10 +1,8 @@
 package com.app.model;
 
-import java.time.Instant;
+import java.util.UUID;
 
-import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
@@ -24,5 +22,8 @@ public class Author {
 	private Integer id;
 	
 	private String name;
+	
+	@Column("image_name")
+	private UUID imageName;
 	
 }
