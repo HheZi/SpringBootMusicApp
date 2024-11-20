@@ -1,0 +1,15 @@
+.album-cover{
+    max-width: 225px;
+}
+.icon:hover{
+    cursor: pointer;
+    color: #c7c7c7;
+}
+
+.link{
+    color: black;
+}
+
+.link:hover{
+    cursor: pointer;
+}

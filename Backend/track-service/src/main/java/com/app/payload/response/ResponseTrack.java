@@ -13,7 +13,7 @@ public class ResponseTrack {
 	
 	private String title;
 	
-	private Integer playlistId;
+	private Integer albumId;
 	
 	private String audioUrl;
 	

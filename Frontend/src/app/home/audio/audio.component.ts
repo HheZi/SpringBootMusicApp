@@ -64,7 +64,7 @@ export class AudioComponent implements OnInit, OnDestroy {
       navigator.mediaSession.metadata = new MediaMetadata({
         title: track.title,
         artist: track.author + "",
-        album: track.playlist + "",
+        album: track.albumName + "",
         artwork: [{ src: track.imageUrl, type: "mpeg" }]
       });
       this.plyr.play();

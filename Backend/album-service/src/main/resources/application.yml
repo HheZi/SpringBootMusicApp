@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: album-service
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/AlbumDB
+    username: postgres
+    password: postgres
+server:
+  port: 0
+logging:
+  level:
+    '[org.springframework.web]': debug

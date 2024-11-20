@@ -16,10 +16,10 @@
           </div>
           
           <div class="form-group">
-            <label for="playlist">Playlist</label>
+            <label for="album">Album</label>
             <div>
-                <p-autoComplete  id="playlist"  formControlName="playlist" field="name" [suggestions]="playlists" 
-                    (completeMethod)="searchPlaylists($event)"/>
+                <p-autoComplete  id="album"  formControlName="album" field="name" [suggestions]="albums" 
+                    (completeMethod)="searchAuthors($event)"/>
             </div>
           </div>
 

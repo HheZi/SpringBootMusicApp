@@ -34,7 +34,7 @@ public class AuthorService {
 	public Mono<AuthorResponse> getAuthorById(Integer id) {
 		return authorRepository
 				.findById(id)
-				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "The author is not found")))
+				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)))
 				.map(authorMapper::fromAuthorToAuthorResponse);
 	}
 	
@@ -46,6 +46,7 @@ public class AuthorService {
 	public Flux<AuthorResponse> getAuthorByFirstSymbols(String symbols){
 		return authorRepository
 				.findByNameStartingWithIgnoreCase(symbols)
+				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)))
 				.map(authorMapper::fromAuthorToAuthorResponse);
 	}
 
@@ -78,6 +79,7 @@ public class AuthorService {
 	
 	public Mono<Boolean> canUserModify(Integer id, Integer userId) {
 		return authorRepository.findById(id)
+				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)))
 		.map(t -> t.getCreatedBy() == userId);
 	}
 	

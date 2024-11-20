@@ -15,7 +15,7 @@ import org.springframework.web.server.ServerWebExchange;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gateway.payload.response.ResponseAuthorFromAPI;
-import com.gateway.payload.response.ResponsePlaylistFromAPI;
+import com.gateway.payload.response.ResponseAlbumFromAPI;
 import com.gateway.payload.response.ResponseTrackFromAPI;
 import com.gateway.payload.response.ResponseTracks;
 
@@ -37,9 +37,9 @@ public class TracksAggregationFilter implements GatewayFilter {
 		Flux<ResponseTrackFromAPI> tracks = fetchTracksFromService(exchange);
 		
 		Flux<ResponseAuthorFromAPI> authors = fetchAuthorsFromService(tracks);
-		Flux<ResponsePlaylistFromAPI> playlists = fetchPlaylistsFromService(tracks);
+		Flux<ResponseAlbumFromAPI> albums = fetchAlbumsFromService(tracks);
 		
-		Flux<ResponseTracks> result = Mono.zip(tracks.collectList(), authors.collectList(), playlists.collectList())
+		Flux<ResponseTracks> result = Mono.zip(tracks.collectList(), authors.collectList(), albums.collectList())
 		.flatMapMany(t -> collectTracks(t.getT1(), t.getT2(), t.getT3()));
 		
 		
@@ -62,7 +62,7 @@ public class TracksAggregationFilter implements GatewayFilter {
 	private Flux<ResponseTracks> collectTracks(
 			List<ResponseTrackFromAPI> tracks, 
 			List<ResponseAuthorFromAPI> authors,  
-			List<ResponsePlaylistFromAPI> playlists
+			List<ResponseAlbumFromAPI> albums
 		){
 		
 		return Flux.fromIterable(tracks)
@@ -72,11 +72,11 @@ public class TracksAggregationFilter implements GatewayFilter {
 						.filter(a -> t.getAuthorId() == a.getId())
 						.findFirst().orElseGet(ResponseAuthorFromAPI::new);
 				
-				ResponsePlaylistFromAPI playlist = playlists.stream()
-						.filter(p -> t.getPlaylistId() == p.getId())
-						.findFirst().orElseGet(ResponsePlaylistFromAPI::new);
+				ResponseAlbumFromAPI album = albums.stream()
+						.filter(p -> t.getAlbumId() == p.getId())
+						.findFirst().orElseGet(ResponseAlbumFromAPI::new);
 				
-				return new ResponseTracks(t.getId(), t.getTitle(), playlist, author, t.getAudioUrl(), t.getDuration());
+				return new ResponseTracks(t.getId(), t.getTitle(), album, author, t.getAudioUrl(), t.getDuration());
 			});
 	}
 	
@@ -101,23 +101,23 @@ public class TracksAggregationFilter implements GatewayFilter {
 							.baseUrl("http://author-service/api/authors/")
 							.build()
 							.get()
-							.uri(u -> u.queryParam("id[]", t).build())
+							.uri(u -> u.queryParam("ids", t).build())
 							.accept(MediaType.APPLICATION_JSON)
 							.exchangeToFlux(e -> e.bodyToFlux(ResponseAuthorFromAPI.class));
 				});
 	}
 			
-	private Flux<ResponsePlaylistFromAPI> fetchPlaylistsFromService(Flux<ResponseTrackFromAPI> tracks){
-		return tracks.map(ResponseTrackFromAPI::getPlaylistId)
+	private Flux<ResponseAlbumFromAPI> fetchAlbumsFromService(Flux<ResponseTrackFromAPI> tracks){
+		return tracks.map(ResponseTrackFromAPI::getAlbumId)
 				.collectList()
 				.flatMapMany(t -> {
 					return builder
-							.baseUrl("http://playlist-service/api/playlists/")
+							.baseUrl("http://album-service/api/albums/")
 							.build()
 							.get()
 							.uri(u -> u.queryParam("ids", t).build())
 							.accept(MediaType.APPLICATION_JSON)
-							.exchangeToFlux(e -> e.bodyToFlux(ResponsePlaylistFromAPI.class));
+							.exchangeToFlux(e -> e.bodyToFlux(ResponseAlbumFromAPI.class));
 				});
 	}
 }

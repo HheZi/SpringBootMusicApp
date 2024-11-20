@@ -9,12 +9,12 @@
                 inputId="track" />
         <label for="track" class="ms-1 me-3">Track name</label>
         <p-radioButton 
-                value="Playlist" 
+                value="Album" 
                 [(ngModel)]="radioVal"
                 variant="filled" 
                 (onClick)="getTracksByName()"
-                inputId="playlist" />
-        <label for="playlist" class="ms-1 me-3">Playlist name</label>
+                inputId="album" />
+        <label for="album" class="ms-1 me-3"><A></A>Album name</label>
         <p-radioButton 
                 value="Author" 
                 [(ngModel)]="radioVal"
@@ -35,8 +35,8 @@
                 </span>
             </div>
             <div class="flex-grow-1 d-flex justify-content-center align-items-center track-info-container">
-                <span class="playlist-name text-center">
-                    <a (click)="seePlaylist(track.playlistId)" class="link">{{ track.playlist }}</a>
+                <span class="album-name text-center">
+                    <a (click)="seeAlbum(track.albumId)" class="link">{{ track.albumName }}</a>
                 </span>
             </div>
             <div class="d-flex align-items-center track-duration-container">

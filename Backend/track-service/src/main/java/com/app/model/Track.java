@@ -27,8 +27,8 @@ public class Track {
 	@Column("author_id")
 	private Integer authorId;
 	
-	@Column("playlist_id")
-	private Integer playlistId;
+	@Column("album_id")
+	private Integer albumId;
 	
 	@Column("audio_name")
 	private UUID audioName;

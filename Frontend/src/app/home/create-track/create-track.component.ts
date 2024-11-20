@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { AuthorService } from '../../services/author/author.service';
-import { PlaylistService } from '../../services/playlist/playlist.service';
+import { AlbumService } from '../../services/album/album.service';
 import { TrackService } from '../../services/track/track.service';
 import { MessageService } from 'primeng/api';
 import { Title } from '@angular/platform-browser';
@@ -17,10 +17,10 @@ export class CreateTrackComponent implements  OnInit{
   
   public authors: string[] = [];
   
-  public playlists: string[] = []; 
+  public albums: string[] = []; 
 
   constructor(private fb: FormBuilder, private authorService: AuthorService, 
-    private playlistService: PlaylistService, private trackService: TrackService, private messageService: MessageService,
+    private albumService: AlbumService, private trackService: TrackService, private messageService: MessageService,
     private title: Title) {
     
 
@@ -28,7 +28,7 @@ export class CreateTrackComponent implements  OnInit{
       title: ['', Validators.required],
       author: [null, Validators.required],
       audio: [null, Validators.required],
-      playlist: [null, Validators.required]
+      album: [null, Validators.required]
     });
   }
 
@@ -47,7 +47,7 @@ export class CreateTrackComponent implements  OnInit{
       formData.append("title", this.trackForm.get("title")?.value);
       formData.append("authorId",  this.trackForm.get("author")?.value.id)
       formData.append("audio", this.trackForm.get("audio")?.value);
-      formData.append("playlistId", this.trackForm.get("playlist")?.value.id);
+      formData.append("albumId", this.trackForm.get("album")?.value.id);
       
       console.log(formData);
       this.trackService.createTracks(formData).subscribe({
@@ -63,10 +63,10 @@ export class CreateTrackComponent implements  OnInit{
     })
   }
   
-  public searchPlaylists(event: any): void{
+  public searchAlbum(event: any): void{
 
-    this.playlistService.getPlaylistsBySymbol(event.query).subscribe({
-      next: (resp: any) => this.playlists = resp
+    this.albumService.getAlbumsBySymbol(event.query).subscribe({
+      next: (resp: any) => this.albums = resp
     });
   }
 

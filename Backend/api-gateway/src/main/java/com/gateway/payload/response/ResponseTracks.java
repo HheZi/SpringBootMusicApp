@@ -13,7 +13,7 @@ public class ResponseTracks {
 	
 	private String title;
 	
-	private ResponsePlaylistFromAPI playlist;
+	private ResponseAlbumFromAPI album;
 	
 	private ResponseAuthorFromAPI author;
 	

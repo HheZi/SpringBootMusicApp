@@ -38,18 +38,18 @@ public class TrackContoller {
 	public Flux<ResponseTrack> getTracks(
 			@RequestParam(value = "name", required = false) String trackName, 
 			@RequestParam(value = "authorId", required = false) List<Integer> authorId,
-			@RequestParam(value = "playlistId", required = false) List<Integer> playlistId
+			@RequestParam(value = "albumId", required = false) List<Integer> albumId
 		){
 		return trackService.getTracks(
 				trackName != null ? URLDecoder.decode(trackName, Charset.defaultCharset()) : trackName, 
 						authorId, 
-						playlistId
+						albumId
 					);
 	}
 
-	@GetMapping("/count/{playlistId}")
-	public Mono<Long> countTracks(@PathVariable("playlistId") Long playlistId){
-		return trackService.countTracksByPlaylistId(playlistId);
+	@GetMapping("/count/{albumId}")
+	public Mono<Long> countTracks(@PathVariable("albumId") Long albumId){
+		return trackService.countTracksByAlbumId(albumId);
 	}
 	
 	@PostMapping
@@ -75,7 +75,7 @@ public class TrackContoller {
 	}
 	
 	@DeleteMapping
-	public Mono<Void> deleteTrack(@RequestParam("playlistId") Integer id){
-		return trackService.deleteTracksByPlaylistId(id);
+	public Mono<Void> deleteTrack(@RequestParam("albumId") Integer id){
+		return trackService.deleteTracksByAlbumId(id);
 	} 
 }

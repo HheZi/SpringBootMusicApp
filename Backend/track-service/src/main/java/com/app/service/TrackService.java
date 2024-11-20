@@ -53,7 +53,7 @@ public class TrackService {
 	public Flux<ResponseTrack> getTracks(
 			String trackName, 
 			List<Integer> authorId, 
-			List<Integer> playlistId
+			List<Integer> albumId
 		){
 		Criteria criteria;
 
@@ -63,8 +63,8 @@ public class TrackService {
 		else if (authorId != null) {
 			criteria = Criteria.where("author_id").in(authorId);
 		}
-		else if (playlistId != null) {
-			criteria = Criteria.where("playlist_id").in(playlistId);
+		else if (albumId != null) {
+			criteria = Criteria.where("album_id").in(albumId);
 		}
 		else {
 			return repository.findAll()
@@ -93,6 +93,8 @@ public class TrackService {
 	}
 
 	private void saveAudio(String name, FilePart audio) {
+		if(name  == null || audio == null) return;
+		
 		DataBufferUtils.join(audio.content())
         .map(dataBuffer -> {
             byte[] content = new byte[dataBuffer.readableByteCount()];
@@ -109,8 +111,8 @@ public class TrackService {
 		
 	}
 	
-	public Mono<Long> countTracksByPlaylistId(Long playlistId){
-		return repository.countByPlaylistId(playlistId);
+	public Mono<Long> countTracksByAlbumId(Long albumId){
+		return repository.countByAlbumId(albumId);
 	}
 
 	@Transactional
@@ -121,8 +123,8 @@ public class TrackService {
 	}
 	
 	@Transactional
-	public Mono<Void> deleteTracksByPlaylistId(Integer playlistId) {
-		return repository.findByPlaylistId(playlistId)
+	public Mono<Void> deleteTracksByAlbumId(Integer albumId) {
+		return repository.findByAlbumId(albumId)
 		.doOnNext(t -> deleteTrackFile(t.getAudioName()))
 		.collectList()
 		.flatMap(repository::deleteAll);

@@ -11,7 +11,7 @@ import { AuthService } from '../../services/auth/auth.service';
 export class HeaderComponent {
   public items: MenuItem[] = [
     {label: "Track", routerLink: "tracks/create"},
-    {label: "Playlist", routerLink: "playlists/create"},
+    {label: "Albums", routerLink: "albums/create"},
     {label: "Author", routerLink: "authors/create"},
   ];
   public butLabel: string = "Create";

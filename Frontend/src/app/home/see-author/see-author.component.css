@@ -5,13 +5,13 @@
 }
 
 
-.playlist-item {
+.album-item {
     display: flex;
     align-items: center;
     justify-content: space-between;
 }
 
-.playlist-item:hover{
+.album-item:hover{
     cursor: pointer;
     background-color: #dfdfdf;
 }
@@ -42,7 +42,7 @@ button {
     font-weight: 500;
 }
 
-.playlist-name {
+.album-name {
     font-size: 0.9rem;
     color: #555;
 }

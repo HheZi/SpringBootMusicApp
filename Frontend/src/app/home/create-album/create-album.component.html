@@ -1,0 +1,28 @@
+<div class="container mt-4">
+  <h2>Create Album</h2>
+  <form [formGroup]="albumForm" (ngSubmit)="onSubmit()">
+    <div class="mb-3">
+      <label for="title" class="form-label">Album Title</label>
+      <input formControlName="title" id="title" class="form-control" />
+      <div
+        *ngIf="albumForm.get('title')?.invalid && (albumForm.get('title')?.touched || albumForm.get('title')?.dirty)"
+        class="text-danger">
+        Title is required.
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <p-dropdown formControlName="albumType" [options]="albumTypes" placeholder="Select a album type" />
+    </div>
+
+    <div >
+      <p-calendar formControlName="releaseDate" dateFormat="dd.mm.yy" placeholder="Release Date"/>
+    </div>
+
+    <div class="mb-3">
+      <label for="cover" class="form-label">Cover Image</label>
+      <input type="file" id="cover" (change)="onCoverSelected($event)" class="form-control" accept="image/*"/>
+    </div>
+    <button type="submit" class="btn btn-primary" [disabled]="albumForm.invalid">Create Album</button>
+  </form>
+</div>

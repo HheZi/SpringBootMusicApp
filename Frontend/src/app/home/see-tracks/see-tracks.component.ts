@@ -4,7 +4,7 @@ import { MessageService } from 'primeng/api';
 import { Track } from './track';
 import { Title } from '@angular/platform-browser';
 import { AuthorService } from '../../services/author/author.service';
-import { PlaylistService } from '../../services/playlist/playlist.service';
+import { AlbumService } from '../../services/album/album.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpParams } from '@angular/common/http';
 import { AudioService } from '../../services/audio/audio.service';
@@ -27,7 +27,7 @@ export class SeeTracksComponent implements OnInit {
     private messageService: MessageService,
     private titleService: Title,
     private authorService: AuthorService,
-    private playlistService: PlaylistService,
+    private albumService: AlbumService,
     private activatedRoute: ActivatedRoute,
     private audioService: AudioService,
     private router: Router
@@ -65,9 +65,9 @@ export class SeeTracksComponent implements OnInit {
           audioUrl: track.audioUrl,
           author: track.author.name,  
           authorId: track.author.id,
-          imageUrl: track.playlist.imageUrl,  
-          playlist: track.playlist.name,  
-          playlistId: track.playlist.id,
+          imageUrl: track.album.imageUrl,  
+          albumName: track.album.name,  
+          albumId: track.album.id,
           isNowPlaying: false,
           duration: track.duration,
           isEditing: false
@@ -85,10 +85,10 @@ export class SeeTracksComponent implements OnInit {
         next: (authors: any) => this.fetchTracksByAuthors(authors),
         error: err => this.handleError("Error while loading authors", err)
       });
-    } else if (this.radioVal === "Playlist") {
-      this.playlistService.getPlaylistsBySymbol(this.searchValue).subscribe({
-        next: (playlists: any) => this.fetchTracksByPlaylists(playlists),
-        error: err => this.handleError("Error while loading playlists", err)
+    } else if (this.radioVal === "Album") {
+      this.albumService.getAlbumsBySymbol(this.searchValue).subscribe({
+        next: (albums: any) => this.fetchTracksByAlbums(albums),
+        error: err => this.handleError("Error while loading albums", err)
       });
     }
   }
@@ -108,13 +108,13 @@ export class SeeTracksComponent implements OnInit {
       });
   }
 
-  private fetchTracksByPlaylists(playlists: any[]): void {
-    this.checkIfTracksNotFound(playlists)
+  private fetchTracksByAlbums(albums: any[]): void {
+    this.checkIfTracksNotFound(albums)
     if (!this.isNotFound)
-      playlists.forEach(playlist => {
-        this.trackService.getTracksByPlaylistId(playlist.id).subscribe({
+      albums.forEach(album => {
+        this.trackService.getTracksByAlbumId(album.id).subscribe({
           next: (tracks: any) => this.populateTracks(tracks),
-          error: (err: any) => this.handleError("Error while loading tracks by playlist", err)
+          error: (err: any) => this.handleError("Error while loading tracks by album", err)
         });
       });
   }
@@ -123,8 +123,8 @@ export class SeeTracksComponent implements OnInit {
     this.audioService.setTracks(this.tracks, index);
   }
 
-  public seePlaylist(value: number): void{
-    this.router.navigate(["/playlist/"+ value]);
+  public seeAlbum(value: number): void{
+    this.router.navigate(["/album/"+ value]);
   }
 
   public seeAuthor(value: number){

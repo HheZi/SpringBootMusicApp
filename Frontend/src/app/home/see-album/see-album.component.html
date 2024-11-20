@@ -1,0 +1,65 @@
+<div class="container mt-4">
+    <div class="album-header d-flex align-items-center mb-4" *ngIf="!isNotFound; else NotFound">
+        <img [src]="album.imageUrl" alt="Cover" class="album-cover me-3" />
+        <div>
+            <h4>{{album.albumType}}</h4>
+            <h1>
+                {{ album.name }} 
+                <span *ngIf="isOwnerOfAlbum" (click)="editDialogVisible = true">
+                    <i class="pi pi-pencil icon"></i>
+                </span>
+            </h1> 
+            <h5 id="tracks_in_album">
+                {{album.numberOfTrack}} Tracks 
+                <span class="ms-2" *ngIf="album.releaseDate">Release Date {{album.releaseDate}}</span>
+            </h5>
+        </div>
+    </div>
+    <ng-template #NotFound>
+        <h1 class="text-center">Album Is Not Found</h1>
+    </ng-template>
+    <div class="track-list">
+        <div *ngFor="let track of tracks;  let i = index" class="track-item d-flex align-items-center p-2 mb-2 border-bottom">
+            <p-button icon="pi pi-play" (click)="playTrack(i)" class="me-2"></p-button>
+            <div class="flex-grow-1">
+                <ng-container *ngIf="!track.isEditing; else editMode">
+                    <h5>{{ track.title }}</h5>
+                    </ng-container>
+                <ng-template #editMode>
+                    <form (ngSubmit)="updateTrackTitle(track)">
+                        <input name="newTitle" type="text" placeholder="Change Title" [(ngModel)]="newTitle"/>
+                    </form>
+                </ng-template>
+                <a class="track-artist mb-0 link" (click)="seeAuthor(track.authorId)" class="link">{{ track.author }}</a>
+            </div>
+            <span *ngIf="isOwnerOfAlbum"><i class="pi icon me-3" [ngClass]="{'pi-pen-to-square': !track.isEditing, 'pi-times': track.isEditing}" (click)="makeTrackEditableOrNot(track)"></i></span>
+            <span *ngIf="isOwnerOfAlbum"><i class="pi pi-trash icon" style="color: red;" (click)="confirmDeletionOfTrack(track.id)"></i></span>
+        </div>
+    </div>
+
+    <p-dialog [(visible)]="editDialogVisible" [header]="'Edit Album'" [modal]="true" [closable]="true" [style]="{width: '500px'}">
+        
+        <div class="form-group mt-2">
+            <input type="text" id="albumName" class="form-control" [(ngModel)]="editableAlbum.name" placeholder="Name"/>
+        </div>
+
+        <div class="mt-2">
+            <p-calendar [(ngModel)]="editableAlbum.releaseDate" dateFormat="yy.mm.dd" [touchUI]="true"  placeholder="Release Date"/>
+        </div>
+
+        <div class="form-group">
+            <label for="albumCover">Cover Image</label>
+            <input type="file" id="albumCover" class="form-control" (change)="onFileChange($event)"/>
+            <img *ngIf="previewImage" [src]="previewImage" alt="Cover Preview" class="img-thumbnail mt-2" style="max-width: 250px;"/>
+        </div>
+        
+        <ng-template pTemplate="footer">
+            <button type="button" class="btn btn-danger me-2" (click)="removeCover()">Remove Cover</button>
+            <button type="button" class="btn btn-danger me-2" (click)="confirmDeletionOfAlbum()">Delete</button>
+            <button type="button" class="btn btn-secondary me-2" (click)="editDialogVisible = false">Cancel</button>
+            <button type="button" class="btn btn-primary" (click)="saveChanges()">Save</button>
+        </ng-template>
+    </p-dialog>
+
+    <p-confirmDialog [style]="{width: '20vw'}"/>
+</div>

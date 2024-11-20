@@ -20,7 +20,7 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { SeeTracksComponent } from './home/see-tracks/see-tracks.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { DataViewModule } from 'primeng/dataview';
-import { CreatePlaylistComponent } from './home/create-playlist/create-playlist.component';
+import { CreateAlbumComponent } from './home/create-album/create-album.component';
 import { FileUploadModule } from 'primeng/fileupload';
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { CascadeSelectModule } from 'primeng/cascadeselect';
@@ -32,7 +32,7 @@ import { RadioButtonModule } from 'primeng/radiobutton';
 import { CreateAuthorComponent } from './home/create-author/create-author.component';
 import { MenuModule } from 'primeng/menu';
 import { AuthorizationInterceptorService } from './interceptor/authorization-interceptor.service';
-import { SeePlaylistComponent } from './home/see-playlist/see-playlist.component';
+import { SeeAlbumComponent } from './home/see-album/see-album.component';
 import { DialogModule } from 'primeng/dialog';
 import { CalendarModule } from 'primeng/calendar';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
@@ -47,11 +47,11 @@ import { SeeAuthorComponent } from './home/see-author/see-author.component';
     HomeComponent,
     AudioComponent,
     SeeTracksComponent,
-    CreatePlaylistComponent,
+    CreateAlbumComponent,
     CreateTrackComponent,
     HeaderComponent,
     CreateAuthorComponent,
-    SeePlaylistComponent,
+    SeeAlbumComponent,
     SeeAuthorComponent
   ],
   imports: [

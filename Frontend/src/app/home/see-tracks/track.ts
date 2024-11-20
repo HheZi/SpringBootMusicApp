@@ -1,8 +1,8 @@
 export interface Track {
    id: number,
    title: string,
-   playlist: string,
-   playlistId: number,
+   albumName: string,
+   albumId: number,
    audioUrl: string ,
    authorId: number,
    author: string,

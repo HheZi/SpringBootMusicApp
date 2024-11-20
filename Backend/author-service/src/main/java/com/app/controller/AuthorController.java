@@ -41,7 +41,7 @@ public class AuthorController {
 	}
 	
 	@GetMapping
-	public Flux<AuthorResponse> getAuthorsByIds(@RequestParam("id[]") List<Integer> ids){
+	public Flux<AuthorResponse> getAuthorsByIds(@RequestParam("ids") List<Integer> ids){
 		return authorService.getAuthorsByIds(ids);
 	}
 	

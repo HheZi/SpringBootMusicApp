@@ -4,11 +4,11 @@ import { LoginComponent } from './login/login.component';
 import { RegistrationComponent } from './registration/registration.component';
 import { HomeComponent } from './home/home.component';
 import { SeeTracksComponent } from './home/see-tracks/see-tracks.component';
-import { CreatePlaylistComponent } from './home/create-playlist/create-playlist.component';
+import { CreateAlbumComponent } from './home/create-album/create-album.component';
 import { CustomReuseStrategy } from './custome-routes/custom-reuse-strategy';
 import { CreateTrackComponent } from './home/create-track/create-track.component';
 import { CreateAuthorComponent } from './home/create-author/create-author.component';
-import { SeePlaylistComponent } from './home/see-playlist/see-playlist.component';
+import { SeeAlbumComponent } from './home/see-album/see-album.component';
 import { SeeAuthorComponent } from './home/see-author/see-author.component';
 
 const routes: Routes = [
@@ -25,10 +25,10 @@ const routes: Routes = [
   component: HomeComponent,
   children: [
   {path: 'tracks', component: SeeTracksComponent}, 
-  {path: 'playlists/create', component: CreatePlaylistComponent},
+  {path: 'albums/create', component: CreateAlbumComponent},
   {path: 'tracks/create', component: CreateTrackComponent},
   {path: 'authors/create', component: CreateAuthorComponent},
-  {path: 'playlist/:id', component: SeePlaylistComponent},
+  {path: 'album/:id', component: SeeAlbumComponent},
   {path: 'author/:id', component: SeeAuthorComponent}
 ]
 }];
