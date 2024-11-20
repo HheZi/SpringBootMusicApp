@@ -2,6 +2,7 @@ package com.app.controller;
 
 import java.util.concurrent.TimeUnit;
 
+import org.springframework.core.io.Resource;
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -33,15 +34,16 @@ public class ImageController {
 	private final ImageService imageService;
 
 	@GetMapping("/{name}")
-	public ResponseEntity<byte[]> getImage(@PathVariable("name") String name) {
+	public ResponseEntity<Resource> getImage(@PathVariable("name") String name) {
 		return ResponseEntity.status(HttpStatus.OK)
-				.header(HttpHeaders.CONTENT_TYPE, MediaType.IMAGE_JPEG_VALUE)
+				.contentType(MediaType.IMAGE_JPEG)
 				.body(imageService.getImage(name));
 	}
 
 	@GetMapping("/default")
-	public ResponseEntity<byte[]> getDefaultCover() {
+	public ResponseEntity<Resource> getDefaultCover() {
 		return ResponseEntity.ok()
+				.contentType(MediaType.IMAGE_PNG)
 				.cacheControl(CacheControl.maxAge(1, TimeUnit.DAYS))
 				.body(imageService.getDefaultImage());
 	}

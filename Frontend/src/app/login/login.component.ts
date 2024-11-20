@@ -28,7 +28,7 @@ export class LoginComponent implements OnInit {
     this.service.loginUser(this.username, this.password).subscribe({
       next: (tokenResp: any) => {
         this.authService.saveAuthToken(tokenResp);
-        this.router.navigate(["/tracks/see"]);
+        this.router.navigate(["/tracks"]);
       },
       error: err => {
         this.messageService.add({ severity: "error", summary: "Error", detail: "Bad credential", closable: true })

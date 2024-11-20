@@ -1,17 +1,24 @@
 package com.app.service;
 
 
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.FileSystemResourceLoader;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 
 import com.app.payload.RequestImage;
 
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
 @Service
+@RequiredArgsConstructor
 public class ImageService {
 
 	@Value("${image.path}")
@@ -20,14 +27,16 @@ public class ImageService {
 	@Value("${image.default}")
 	private String defaultImagePath;
 	
+	private final ResourceLoader loader;
+	
 	@SneakyThrows
-	public byte[] getImage(String name){
-		return Files.readAllBytes(Path.of(imagePath, name));
+	public Resource getImage(String name){
+		return new FileSystemResource(new File(imagePath, name));
 	}
 
 	@SneakyThrows
-	public byte[] getDefaultImage() {
-		return Files.readAllBytes(Path.of(defaultImagePath));
+	public Resource getDefaultImage() {
+		return new FileSystemResource(new File(defaultImagePath));
 	}
 	
 	@SneakyThrows
