@@ -12,7 +12,8 @@ export class HeaderComponent {
   public items: MenuItem[] = [
     {label: "Track", routerLink: "tracks/create"},
     {label: "Albums", routerLink: "albums/create"},
-    {label: "Author", routerLink: "authors/create"},
+    {label: "Playlist", routerLink: "playlist/create"},
+    {label: "Author", routerLink: "authors/create"}
   ];
   public butLabel: string = "Create";
   

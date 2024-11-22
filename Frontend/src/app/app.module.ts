@@ -37,6 +37,7 @@ import { DialogModule } from 'primeng/dialog';
 import { CalendarModule } from 'primeng/calendar';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { SeeAuthorComponent } from './home/see-author/see-author.component';
+import { CreatePlaylistComponent } from './home/create-playlist/create-playlist.component';
 
 
 @NgModule({
@@ -52,7 +53,8 @@ import { SeeAuthorComponent } from './home/see-author/see-author.component';
     HeaderComponent,
     CreateAuthorComponent,
     SeeAlbumComponent,
-    SeeAuthorComponent
+    SeeAuthorComponent,
+    CreatePlaylistComponent
   ],
   imports: [
     BrowserModule,

@@ -1,0 +1,25 @@
+<div class="container mt-4">
+  <h2>Create Playlist</h2>
+  <form [formGroup]="playlistForm" (ngSubmit)="onSubmit()">
+    <div class="mb-3">
+      <label for="name" class="form-label">Playlist Title</label>
+      <input formControlName="name" id="name" class="form-control" />
+      <div
+        *ngIf="playlistForm.get('name')?.invalid && (playlistForm.get('name')?.touched || playlistForm.get('name')?.dirty)"
+        class="text-danger">
+        Name is required.
+      </div>
+    </div>
+
+    <div>
+      <textarea name="description" rows="5" cols="30" pInputTextarea formControlName="description"
+        placeholder="Write description"></textarea>
+    </div>
+
+    <div class="mb-3">
+      <label for="cover" class="form-label">Cover Image</label>
+      <input type="file" id="cover" (change)="onCoverSelected($event)" class="form-control" accept="image/*" />
+    </div>
+    <button type="submit" class="btn btn-primary" [disabled]="playlistForm.invalid">Create Album</button>
+  </form>
+</div>

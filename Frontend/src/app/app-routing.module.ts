@@ -10,6 +10,7 @@ import { CreateTrackComponent } from './home/create-track/create-track.component
 import { CreateAuthorComponent } from './home/create-author/create-author.component';
 import { SeeAlbumComponent } from './home/see-album/see-album.component';
 import { SeeAuthorComponent } from './home/see-author/see-author.component';
+import { CreatePlaylistComponent } from './home/create-playlist/create-playlist.component';
 
 const routes: Routes = [
 {
@@ -29,7 +30,8 @@ const routes: Routes = [
   {path: 'tracks/create', component: CreateTrackComponent},
   {path: 'authors/create', component: CreateAuthorComponent},
   {path: 'album/:id', component: SeeAlbumComponent},
-  {path: 'author/:id', component: SeeAuthorComponent}
+  {path: 'author/:id', component: SeeAuthorComponent},
+  {path: 'playlist/create', component: CreatePlaylistComponent}
 ]
 }];
 

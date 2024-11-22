@@ -45,6 +45,9 @@ public class WebConfig {
 				.route("image-service", 
 						t -> t.path("/api/images/**").filters(f -> f.filter(authenticationGatewayFilter)).uri("lb://image-service"))
 
+				.route("playlist-service", 
+						t -> t.path("/api/playlists/**").filters(f -> f.filter(authenticationGatewayFilter)).uri("lb://playlist-service"))
+				
 				.route(t -> t.path("/tracks").filters(f -> f.filters(authenticationGatewayFilter, aggregationFilter)).uri("http://localhost"))
 				
 				.build();
