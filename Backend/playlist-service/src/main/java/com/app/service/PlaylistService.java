@@ -7,15 +7,20 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.server.ResponseStatusException;
 
+import com.app.model.PlaylistTrack;
 import com.app.payload.request.CreatePlaylist;
 import com.app.payload.request.SavePlaylistImageRequest;
 import com.app.payload.response.ResponsePlaylist;
 import com.app.repository.PlaylistRepository;
+import com.app.repository.PlaylistTrackRepository;
 import com.app.util.PlaylistMapper;
 
 import lombok.RequiredArgsConstructor;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Service
@@ -23,6 +28,8 @@ import reactor.core.publisher.Mono;
 public class PlaylistService {
 
 	private final PlaylistRepository playlistRepository;
+	
+	private final PlaylistTrackRepository playlistTrackRepository;
 	
 	private final PlaylistMapper playlistMapper;
 	
@@ -33,13 +40,27 @@ public class PlaylistService {
 				.map(playlistMapper::fromPlaylistToResponsePlaylist);
 	}
 	
+	public Flux<Long> getTrackIdsByPlaylist(Integer id){
+		return playlistTrackRepository.findByPlaylistId(id)
+				.map(t -> t.getTrackId());
+	}
+	
+	@Transactional
 	public Mono<ResponseEntity<?>> createPlaylist(CreatePlaylist dto, Integer userId){
 		return Mono.just(
-				playlistMapper.fromCreatePlaylistToPlaylist(dto, userId, dto.getCover() == null))
+				playlistMapper.fromCreatePlaylistToPlaylist(dto, userId, dto.getCover() != null))
 				.doOnNext(t -> saveAuthorImage(t.getImageName(), dto.getCover()))
 				.flatMap(playlistRepository::save)
 				.map(t -> ResponseEntity.status(HttpStatus.CREATED).build());
 		
+	}
+	
+	@Transactional
+	public Mono<Void> addTrackToPlaylist(Integer id, Long trackId){
+		return playlistRepository.findById(id)
+				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)))
+				.flatMap(t -> playlistTrackRepository.save(new PlaylistTrack(null, id, trackId)))
+				.then();
 	}
 	
 	private void saveAuthorImage(UUID name, FilePart filePart) {
