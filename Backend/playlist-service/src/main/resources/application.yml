@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: playlist-service
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/PlaylistDB
+    password: postgres
+    username: postgres
+server:
+  port: 0

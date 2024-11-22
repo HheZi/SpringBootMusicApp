@@ -7,8 +7,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class SaveAutorImageRequest {
-	
+public class SavePlaylistImageRequest {
+
 	private String name;
 	
 	private byte[] content;
