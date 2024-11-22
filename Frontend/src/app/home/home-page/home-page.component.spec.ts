@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SeeTracksComponent } from './see-tracks.component';
+import { SeeTracksComponent } from './home-page.component';
 
 describe('SeeTracksComponent', () => {
   let component: SeeTracksComponent;

@@ -34,9 +34,19 @@ public class PlaylistService {
 	private final PlaylistMapper playlistMapper;
 	
 	private final WebClient.Builder builder;
+
+	public Flux<ResponsePlaylist> getPlaylists(){
+		return playlistRepository.findAll()
+				.map(playlistMapper::fromPlaylistToResponsePlaylist);
+	}
 	
 	public Mono<ResponsePlaylist> getPlaylistById(Integer id){
 		return playlistRepository.findById(id)
+				.map(playlistMapper::fromPlaylistToResponsePlaylist);
+	}
+	
+	public Flux<ResponsePlaylist> findPlaylistsBySymbol(String symbol){
+		return playlistRepository.findByNameStartsWithAllIgnoreCase(symbol)
 				.map(playlistMapper::fromPlaylistToResponsePlaylist);
 	}
 	

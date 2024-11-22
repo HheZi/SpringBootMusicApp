@@ -1,7 +1,5 @@
 import { Component, ElementRef, numberAttribute, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import Plyr from 'plyr';
-import { Track } from '../see-tracks/track';
-import { max, Subscription } from 'rxjs';
 import { AudioService } from '../../services/audio/audio.service';
 import { TracksToPlay } from '../../services/audio/tracks-to-play';
 
@@ -145,7 +143,7 @@ export class AudioComponent implements OnInit, OnDestroy {
     else if (this.tracksToPlay.indexOfCurrentTrack < this.tracksToPlay.tracks.length - 1) {
       this.updateTracksToPlayAndPlayTrack(1);
     }
-    else {
+    else if(!buttonPressed){
       this.makeAllTracksIsNotPlayingProperty();
       this.isStopped = true;
     }

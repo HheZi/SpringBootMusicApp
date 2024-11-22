@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { Track } from '../../home/see-tracks/track';
+import { Track } from '../../home/home-page/track';
 import { TracksToPlay } from './tracks-to-play';
 
 @Injectable({

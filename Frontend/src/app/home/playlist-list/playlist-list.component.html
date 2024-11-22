@@ -1,0 +1,7 @@
+<div *ngFor="let playlist of playlists; let i = index">
+    <div class="card m-2 d-inline-flex" style="width: 13rem;">
+        <img class="card-img-top border-bottom" [src]="playlist.imageUrl" alt="Cover">
+        <h5 class="card-title">{{playlist.name}}</h5>
+        <p class="card-text">{{playlist.description}}</p>
+    </div>
+</div>

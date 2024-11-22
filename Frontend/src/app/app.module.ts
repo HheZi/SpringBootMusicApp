@@ -17,7 +17,7 @@ import { RegistrationComponent } from './registration/registration.component';
 import { HomeComponent } from './home/home.component';
 import { AudioComponent } from './home/audio/audio.component';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { SeeTracksComponent } from './home/see-tracks/see-tracks.component';
+import { SeeTracksComponent } from './home/home-page/home-page.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { DataViewModule } from 'primeng/dataview';
 import { CreateAlbumComponent } from './home/create-album/create-album.component';
@@ -38,6 +38,7 @@ import { CalendarModule } from 'primeng/calendar';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { SeeAuthorComponent } from './home/see-author/see-author.component';
 import { CreatePlaylistComponent } from './home/create-playlist/create-playlist.component';
+import { PlaylistListComponent } from './home/playlist-list/playlist-list.component';
 
 
 @NgModule({
@@ -54,7 +55,8 @@ import { CreatePlaylistComponent } from './home/create-playlist/create-playlist.
     CreateAuthorComponent,
     SeeAlbumComponent,
     SeeAuthorComponent,
-    CreatePlaylistComponent
+    CreatePlaylistComponent,
+    PlaylistListComponent
   ],
   imports: [
     BrowserModule,

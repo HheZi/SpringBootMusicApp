@@ -1,0 +1,49 @@
+<div class="text-end m-2" *ngIf="searchValue != null">
+    <h4 class="d-inline me-2">Find by</h4>
+    <div class="d-inline">
+        <p-radioButton [(ngModel)]="radioVal" value="Track" variant="filled" (onClick)="getTracksByName()"
+            inputId="track" />
+        <label for="track" class="ms-1 me-3">Track name</label>
+        <p-radioButton value="Album" [(ngModel)]="radioVal" variant="filled" (onClick)="getTracksByName()"
+            inputId="album" />
+        <label for="album" class="ms-1 me-3"><A></A>Album name</label>
+        <p-radioButton value="Playlist" [(ngModel)]="radioVal" variant="filled" (onClick)="getTracksByName()"
+            inputId="playlist" />
+        <label for="playlist" class="ms-1 me-3">Playlist name</label>
+        <p-radioButton value="Author" [(ngModel)]="radioVal" variant="filled" (onClick)="getTracksByName()"
+            inputId="author" />
+        <label for="author" class="ms-1 me-3">Author name</label>
+    </div>
+</div>
+<div *ngIf="!isNotFound; else noTracks">
+    <app-playlist-list></app-playlist-list>
+    <div>
+        <div class="container" *ngFor="let track of tracks; let i = index">
+            <div class="container border-bottom d-flex align-items-center track-container" (dblclick)="playTrack(i)">
+                <img src="{{track.imageUrl}}" alt="Image" class="img img-thumbnail">
+                <div class="ms-5 me-5 container-fluid">
+                    <h5 class="track-title mb-1">{{ track.title }}</h5>
+                    <span>
+                        <a class="track-artist mb-0 link" (click)="seeAuthor(track.authorId)">{{ track.author }}</a>
+                    </span>
+                </div>
+                <div class="flex-grow-1 d-flex justify-content-center align-items-center track-info-container">
+                    <span class="album-name text-center">
+                        <a (click)="seeAlbum(track.albumId)" class="link">{{ track.albumName }}</a>
+                    </span>
+                </div>
+                <div class="d-flex align-items-center track-duration-container">
+                    <span class="track-duration text-muted me-2">{{ track.duration }}</span>
+                    <span *ngIf="track.isNowPlaying" class="now-playing-icon ms-2">
+                        <i class="pi pi-play-circle"></i>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<ng-template #noTracks>
+    <div class="text-center">
+        <h3>Not found</h3>
+    </div>
+</ng-template>

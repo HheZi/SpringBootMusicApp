@@ -52,6 +52,7 @@ public class AlbumService {
 	
 	public Flux<ResponseAlbum> findAlbumBySymbol(String symbol){
 		return albumRepository.findByNameIsStartingWithAllIgnoreCase(symbol)
+				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)))
 				.map(albumMapper::fromAlbumToResponseAlbum);
 	}
 

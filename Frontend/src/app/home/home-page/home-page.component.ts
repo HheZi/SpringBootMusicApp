@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, ViewChildren } from '@angular/core';
 import { TrackService } from '../../services/track/track.service';
 import { MessageService } from 'primeng/api';
 import { Track } from './track';
@@ -8,14 +8,17 @@ import { AlbumService } from '../../services/album/album.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpParams } from '@angular/common/http';
 import { AudioService } from '../../services/audio/audio.service';
+import { PlaylistListComponent } from '../playlist-list/playlist-list.component';
+import { PlaylistService } from '../../services/playlist/playlist.service';
 
 @Component({
-  selector: 'app-see-tracks',
-  templateUrl: './see-tracks.component.html',
-  styleUrls: ['./see-tracks.component.css'],
+  selector: 'app-home-page',
+  templateUrl: './home-page.component.html',
+  styleUrls: ['./home-page.component.css'],
 })
 export class SeeTracksComponent implements OnInit {
 
+  @ViewChild(PlaylistListComponent, {static: false}) playlistList!: PlaylistListComponent; 
 
   public isNotFound: boolean = false;
   public tracks: Track[] = [];
@@ -30,6 +33,7 @@ export class SeeTracksComponent implements OnInit {
     private albumService: AlbumService,
     private activatedRoute: ActivatedRoute,
     private audioService: AudioService,
+    private playlistService: PlaylistService,
     private router: Router
   ) {
     this.titleService.setTitle("Tracks");
@@ -55,7 +59,7 @@ export class SeeTracksComponent implements OnInit {
 
   private populateTracks(tracksResp: any): void {
     this.tracks = [];
-    this.checkIfTracksNotFound(tracksResp);
+    this.checkIfNotFound(tracksResp);
   
     if (!this.isNotFound) {
       tracksResp.forEach((track: any) => {
@@ -83,22 +87,27 @@ export class SeeTracksComponent implements OnInit {
     } else if (this.radioVal === "Author") {
       this.authorService.getAuthorsBySymbol(this.searchValue).subscribe({
         next: (authors: any) => this.fetchTracksByAuthors(authors),
-        error: err => this.handleError("Error while loading authors", err)
+        error: err => this.isNotFound = true
       });
     } else if (this.radioVal === "Album") {
       this.albumService.getAlbumsBySymbol(this.searchValue).subscribe({
         next: (albums: any) => this.fetchTracksByAlbums(albums),
-        error: err => this.handleError("Error while loading albums", err)
+        error: err => this.isNotFound = true
       });
+    } else if(this.radioVal === "Playlist"){
+      this.playlistService.getTracksBySymbol(this.searchValue).subscribe({
+        next: (playlists: any) => this.fetchPlaylist(playlists),
+        error: err => this.isNotFound = true
+      })
     }
   }
 
-  private checkIfTracksNotFound(value: any): void {
+  private checkIfNotFound(value: any): void {
     this.isNotFound = (value as Array<Object>).length > 0 ? false : true;
   }
 
   private fetchTracksByAuthors(authors: any[]): void {
-    this.checkIfTracksNotFound(authors)
+    this.checkIfNotFound(authors)
     if (!this.isNotFound)
       authors.forEach((author: any) => {
         this.trackService.getTracksByAuthorId(author.id).subscribe({
@@ -109,7 +118,7 @@ export class SeeTracksComponent implements OnInit {
   }
 
   private fetchTracksByAlbums(albums: any[]): void {
-    this.checkIfTracksNotFound(albums)
+    this.checkIfNotFound(albums)
     if (!this.isNotFound)
       albums.forEach(album => {
         this.trackService.getTracksByAlbumId(album.id).subscribe({
@@ -117,6 +126,15 @@ export class SeeTracksComponent implements OnInit {
           error: (err: any) => this.handleError("Error while loading tracks by album", err)
         });
       });
+  }
+
+  private fetchPlaylist(playlists: any[]): void{
+    this.checkIfNotFound(playlists);
+    if(!this.isNotFound){
+      this.tracks = [];
+      this.playlistList.setPlaylists(playlists);
+    }
+
   }
 
   public playTrack(index: number): void {

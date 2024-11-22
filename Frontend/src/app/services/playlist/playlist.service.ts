@@ -14,7 +14,11 @@ export class PlaylistService {
     private httpClient: HttpClient
   ) { }
 
-  public createPlaylist(body: FormData):  Observable<Object>{
+  public getTracksBySymbol(symbol: string): Observable<Object>{
+    return this.httpClient.get(this.PLAYLIST_URL + "symbol/" + symbol);
+  }
+
+  public createPlaylist(body: FormData): Observable<Object>{
     return this.httpClient.post(this.PLAYLIST_URL, body);
   }
 

@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { ActivatedRoute, Route, Router } from '@angular/router';
 import { AudioService } from '../../services/audio/audio.service';
 import { AlbumService } from '../../services/album/album.service';
-import { Track } from '../see-tracks/track';
+import { Track } from '../home-page/track';
 import { TrackService } from '../../services/track/track.service';
 import { Title } from '@angular/platform-browser';
 import { ConfirmationService, MessageService } from 'primeng/api';

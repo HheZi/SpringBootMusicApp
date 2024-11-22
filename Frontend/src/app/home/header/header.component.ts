@@ -11,7 +11,7 @@ import { AuthService } from '../../services/auth/auth.service';
 export class HeaderComponent {
   public items: MenuItem[] = [
     {label: "Track", routerLink: "tracks/create"},
-    {label: "Albums", routerLink: "albums/create"},
+    {label: "Album", routerLink: "albums/create"},
     {label: "Playlist", routerLink: "playlist/create"},
     {label: "Author", routerLink: "authors/create"}
   ];
@@ -25,10 +25,16 @@ export class HeaderComponent {
   public textInput: string = '';
 
   onSearch() {  
-    this.router.navigate(['tracks'], {queryParams: {'name': this.textInput}})
+    if (this.textInput){
+      this.router.navigate(['/'], {queryParams: {'name': this.textInput}});
+    }
+    else{
+      this.router.navigate(['/']);
+    }
   }
   
   navigateTo(arg0: string) {
+    this.textInput = '';
     this.router.navigate([arg0])
   }
 

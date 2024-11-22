@@ -28,6 +28,10 @@
   font-size: 12px;
 }
 
+.icon{
+  font-size: 1.10rem;
+}
+
 .icon:hover{
   cursor: pointer;
   color: #aaa9a9;
