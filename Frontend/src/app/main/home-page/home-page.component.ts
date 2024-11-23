@@ -1,15 +1,14 @@
 import { Component, OnInit, ViewChild, ViewChildren } from '@angular/core';
 import { TrackService } from '../../services/track/track.service';
 import { MessageService } from 'primeng/api';
-import { Track } from './track';
 import { Title } from '@angular/platform-browser';
 import { AuthorService } from '../../services/author/author.service';
 import { AlbumService } from '../../services/album/album.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpParams } from '@angular/common/http';
-import { AudioService } from '../../services/audio/audio.service';
 import { PlaylistListComponent } from '../playlist-list/playlist-list.component';
 import { PlaylistService } from '../../services/playlist/playlist.service';
+import { TrackListComponent } from '../track-list/track-list.component';
 
 @Component({
   selector: 'app-home-page',
@@ -18,10 +17,10 @@ import { PlaylistService } from '../../services/playlist/playlist.service';
 })
 export class SeeTracksComponent implements OnInit {
 
-  @ViewChild(PlaylistListComponent, {static: false}) playlistList!: PlaylistListComponent; 
+  @ViewChild(PlaylistListComponent) playlistList!: PlaylistListComponent; 
+  @ViewChild(TrackListComponent) trackList!: TrackListComponent;
 
   public isNotFound: boolean = false;
-  public tracks: Track[] = [];
   public radioVal: string = "Track";
   public searchValue: string = '';
 
@@ -32,9 +31,7 @@ export class SeeTracksComponent implements OnInit {
     private authorService: AuthorService,
     private albumService: AlbumService,
     private activatedRoute: ActivatedRoute,
-    private audioService: AudioService,
     private playlistService: PlaylistService,
-    private router: Router
   ) {
     this.titleService.setTitle("Tracks");
   }
@@ -58,25 +55,10 @@ export class SeeTracksComponent implements OnInit {
   }
 
   private populateTracks(tracksResp: any): void {
-    this.tracks = [];
     this.checkIfNotFound(tracksResp);
   
     if (!this.isNotFound) {
-      tracksResp.forEach((track: any) => {
-        this.tracks.push({
-          id: track.id,
-          title: track.title,
-          audioUrl: track.audioUrl,
-          author: track.author.name,  
-          authorId: track.author.id,
-          imageUrl: track.album.imageUrl,  
-          albumName: track.album.name,  
-          albumId: track.album.id,
-          isNowPlaying: false,
-          duration: track.duration,
-          isEditing: false
-        });
-      });
+      this.trackList.setTracks(tracksResp);
     }
   }
 
@@ -131,22 +113,9 @@ export class SeeTracksComponent implements OnInit {
   private fetchPlaylist(playlists: any[]): void{
     this.checkIfNotFound(playlists);
     if(!this.isNotFound){
-      this.tracks = [];
       this.playlistList.setPlaylists(playlists);
     }
 
-  }
-
-  public playTrack(index: number): void {
-    this.audioService.setTracks(this.tracks, index);
-  }
-
-  public seeAlbum(value: number): void{
-    this.router.navigate(["/album/"+ value]);
-  }
-
-  public seeAuthor(value: number){
-    this.router.navigate(["author/" + value]);
   }
 
   private handleError(summary: string, error: any): void {

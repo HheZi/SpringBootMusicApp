@@ -6,7 +6,7 @@ import { AppComponent } from './app.component';
 
 import { LoginComponent } from './login/login.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { HTTP_INTERCEPTORS, HttpClientModule, provideHttpClient } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import { ToastModule } from 'primeng/toast';
 import { MessageModule } from 'primeng/message';
 import { CardModule } from 'primeng/card';
@@ -14,31 +14,31 @@ import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
 import { RegistrationComponent } from './registration/registration.component';
-import { HomeComponent } from './home/home.component';
-import { AudioComponent } from './home/audio/audio.component';
+import { MainComponent } from './main/main.component';
+import { AudioComponent } from './main/audio/audio.component';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { SeeTracksComponent } from './home/home-page/home-page.component';
+import { SeeTracksComponent } from './main/home-page/home-page.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { DataViewModule } from 'primeng/dataview';
-import { CreateAlbumComponent } from './home/create-album/create-album.component';
+import { CreateAlbumComponent } from './main/create-album/create-album.component';
 import { FileUploadModule } from 'primeng/fileupload';
 import { AutoCompleteModule } from 'primeng/autocomplete';
-import { CascadeSelectModule } from 'primeng/cascadeselect';
 import { DropdownModule } from 'primeng/dropdown';
-import { CreateTrackComponent } from './home/create-track/create-track.component';
-import { HeaderComponent } from './home/header/header.component';
+import { CreateTrackComponent } from './main/create-track/create-track.component';
+import { HeaderComponent } from './main/header/header.component';
 import { MenubarModule } from 'primeng/menubar';
 import { RadioButtonModule } from 'primeng/radiobutton';
-import { CreateAuthorComponent } from './home/create-author/create-author.component';
+import { CreateAuthorComponent } from './main/create-author/create-author.component';
 import { MenuModule } from 'primeng/menu';
 import { AuthorizationInterceptorService } from './interceptor/authorization-interceptor.service';
-import { SeeAlbumComponent } from './home/see-album/see-album.component';
+import { SeeAlbumComponent } from './main/see-album/see-album.component';
 import { DialogModule } from 'primeng/dialog';
 import { CalendarModule } from 'primeng/calendar';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { SeeAuthorComponent } from './home/see-author/see-author.component';
-import { CreatePlaylistComponent } from './home/create-playlist/create-playlist.component';
-import { PlaylistListComponent } from './home/playlist-list/playlist-list.component';
+import { SeeAuthorComponent } from './main/see-author/see-author.component';
+import { CreatePlaylistComponent } from './main/create-playlist/create-playlist.component';
+import { PlaylistListComponent } from './main/playlist-list/playlist-list.component';
+import { TrackListComponent } from './main/track-list/track-list.component';
 
 
 @NgModule({
@@ -46,7 +46,7 @@ import { PlaylistListComponent } from './home/playlist-list/playlist-list.compon
     AppComponent,
     LoginComponent,
     RegistrationComponent,
-    HomeComponent,
+    MainComponent,
     AudioComponent,
     SeeTracksComponent,
     CreateAlbumComponent,
@@ -56,7 +56,8 @@ import { PlaylistListComponent } from './home/playlist-list/playlist-list.compon
     SeeAlbumComponent,
     SeeAuthorComponent,
     CreatePlaylistComponent,
-    PlaylistListComponent
+    PlaylistListComponent,
+    TrackListComponent
   ],
   imports: [
     BrowserModule,

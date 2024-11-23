@@ -1,13 +1,14 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { AuthorService } from '../../services/author/author.service';
 import { AlbumService } from '../../services/album/album.service';
 import { TrackService } from '../../services/track/track.service';
-import { Track } from '../home-page/track';
+import { Track } from '../track-list/track';
 import { AudioService } from '../../services/audio/audio.service';
 import { Title } from '@angular/platform-browser';
 import { Author } from './author';
+import { TrackListComponent } from '../track-list/track-list.component';
 
 @Component({
   selector: 'app-see-author',
@@ -19,7 +20,6 @@ export class SeeAuthorComponent implements OnInit{
   
   public author: Author = { id: 0, name: '', imageUrl: '' };
   public albums: any[] = [];
-  public tracks: Track[] = [];
   public canModify: boolean = false;
   public updateDialog:  boolean = false;
   public isNotFound: boolean = false;
@@ -28,6 +28,7 @@ export class SeeAuthorComponent implements OnInit{
   public previewImage: string | ArrayBuffer | null = null;
   private selectedFile: File | null = null;
   
+  @ViewChild(TrackListComponent) trackList!: TrackListComponent;
   
   constructor(
     private activeRoute: ActivatedRoute,
@@ -56,22 +57,8 @@ export class SeeAuthorComponent implements OnInit{
           this.canModify = resp;
         })
         this.trackService.getTracksByAuthorId(authorId).subscribe((tracksResp: any) => {
-          tracksResp.forEach((track: any) => {
-            this.tracks.push({
-              id: track.id,
-              title: track.title,
-              audioUrl: track.audioUrl,
-              author: track.author.name,  
-              authorId: track.author.id,
-              imageUrl: track.album.imageUrl,  
-              albumName: track.album.name,  
-              albumId: track.album.id,
-              isNowPlaying: false,
-              duration: track.duration,
-              isEditing: false
-            });
-          });
-          var ids = this.tracks.map(t => t.albumId);
+          this.trackList.setTracks(tracksResp);
+          var ids = tracksResp.map((t: any) => t.album.id);
           
           this.albumService.getAlbumsByIds(ids).subscribe((albums: any) =>{
             this.albums = albums;
@@ -111,31 +98,6 @@ export class SeeAuthorComponent implements OnInit{
       this.updateDialog = false;
       this.loadAuthor(this.author.id);
     })
-  }
-  
-  deleteAlbum(albumId: number): void {
-    this.albumService.deleteAlbum(albumId).subscribe(() => {
-      this.messageService.add({
-        severity: 'success',
-        summary: 'Album Deleted',
-      });
-      this.albums = this.albums.filter((p) => p.id !== albumId);
-    });
-  }
-  
-  deleteTrack(trackId: number): void {
-    this.trackService.deleteTrack(trackId).subscribe(() => {
-      this.messageService.add({
-        severity: 'success',
-        closable: true,
-        summary: 'Track Deleted',
-      });
-      this.tracks = this.tracks.filter((t) => t.id !== trackId);
-    });
-  }
-  
-  public playTrack(trackId: number) {
-    this.audioService.setTracks(this.tracks, trackId);
   }
 
   public seeAlbum(albumId: number) {

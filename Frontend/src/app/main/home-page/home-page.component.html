@@ -1,0 +1,26 @@
+<div class="text-end m-2" *ngIf="searchValue != null">
+    <h4 class="d-inline me-2">Find by</h4>
+    <div class="d-inline">
+        <p-radioButton [(ngModel)]="radioVal" value="Track" variant="filled" (onClick)="getTracksByName()"
+            inputId="track" />
+        <label for="track" class="ms-1 me-3">Track name</label>
+        <p-radioButton value="Album" [(ngModel)]="radioVal" variant="filled" (onClick)="getTracksByName()"
+            inputId="album" />
+        <label for="album" class="ms-1 me-3"><A></A>Album name</label>
+        <p-radioButton value="Playlist" [(ngModel)]="radioVal" variant="filled" (onClick)="getTracksByName()"
+            inputId="playlist" />
+        <label for="playlist" class="ms-1 me-3">Playlist name</label>
+        <p-radioButton value="Author" [(ngModel)]="radioVal" variant="filled" (onClick)="getTracksByName()"
+            inputId="author" />
+        <label for="author" class="ms-1 me-3">Author name</label>
+    </div>
+</div>
+<div *ngIf="!isNotFound; else noTracks">
+    <app-playlist-list></app-playlist-list>
+    <app-track-list></app-track-list>
+</div>
+<ng-template #noTracks>
+    <div class="text-center">
+        <h3>Not found</h3>
+    </div>
+</ng-template>

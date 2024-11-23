@@ -1,0 +1,62 @@
+<div class="container mt-4">
+  <div class="author-header d-flex align-items-center mb-4" *ngIf="!isNotFound; else NotFound">
+    <img [src]="author.imageUrl" alt="Author Image" class="author-image me-4 shadow-sm rounded">
+    <div>
+      <h1 class="author-name mb-1">
+        {{ author.name }}
+        <i *ngIf="canModify" class="pi pi-pencil icon edit-icon ms-2" (click)="openOrCloseDialog()"></i>
+      </h1>
+      <p class="text-muted mb-0">View and explore {{ author.name }}'s albums and tracks</p>
+    </div>
+  </div>
+
+  <ng-template #NotFound>
+    <div class="not-found text-center py-5">
+      <h1 class="text-muted">Author not found</h1>
+    </div>
+  </ng-template>
+
+  <div class="albums-section mt-5">
+    <h3 class="section-title mb-3">Albums</h3>
+    <div *ngIf="albums.length > 0" class="album-list">
+      <div *ngFor="let album of albums" class="album-item d-flex align-items-center p-3 mb-3 shadow-sm rounded"
+        (click)="seeAlbum(album.id)">
+        <img [src]="album.imageUrl" alt="Album Cover" class="album-cover">
+        <div class="album-info flex-grow-1 ms-3">
+          <h5 class="album-title text-truncate mb-1">{{ album.name }}</h5>
+          <p class="album-artist text-muted mb-0">{{ album.artist }}</p>
+        </div>
+        <i class="pi pi-chevron-right album-action"></i>
+      </div>
+    </div>
+    <div *ngIf="albums.length === 0" class="text-center text-muted mt-4">
+      No albums available.
+    </div>
+  </div>
+
+  <div class="tracks-section mt-5">
+    <h3 class="section-title mb-3">Tracks</h3>
+    <app-track-list></app-track-list>
+  </div>
+</div>
+
+
+<p-dialog [(visible)]="updateDialog" [header]="'Edit Author'" [modal]="true" [closable]="true"
+  [style]="{width: '500px'}">
+
+  <div class="form-group mt-2">
+    <input type="text" id="albumName" class="form-control" [(ngModel)]="editableAuthor.name" placeholder="Name" />
+  </div>
+
+  <div class="form-group">
+    <label for="albumCover">Image</label>
+    <input type="file" id="albumCover" class="form-control" (change)="onFileChange($event)" />
+    <img *ngIf="previewImage" [src]="previewImage" alt="Cover Preview" class="img-thumbnail mt-2"
+      style="max-width: 250px;" />
+  </div>
+
+  <ng-template pTemplate="footer">
+    <button type="button" class="btn btn-secondary me-2" (click)="updateDialog = false">Cancel</button>
+    <button type="button" class="btn btn-primary" (click)="editAuthor()">Save</button>
+  </ng-template>
+</p-dialog>

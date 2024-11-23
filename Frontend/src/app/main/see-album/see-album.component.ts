@@ -1,13 +1,14 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { ActivatedRoute, Route, Router } from '@angular/router';
 import { AudioService } from '../../services/audio/audio.service';
 import { AlbumService } from '../../services/album/album.service';
-import { Track } from '../home-page/track';
+import { Track } from '../track-list/track';
 import { TrackService } from '../../services/track/track.service';
 import { Title } from '@angular/platform-browser';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { AppConts } from '../../app.consts';
 import { Album } from './album';
+import { TrackListComponent } from '../track-list/track-list.component';
 
 @Component({
   selector: 'app-see-album',
@@ -17,22 +18,20 @@ import { Album } from './album';
 })
 export class SeeAlbumComponent {
   public album: Album = { id: 0, imageUrl: "", name: "", numberOfTrack: 0, albumType: "", releaseDate: null };
-  public tracks: Track[] = [];
   public isOwnerOfAlbum = false;
   public isNotFound = false;
+
+  @ViewChild(TrackListComponent) trackList!: TrackListComponent;
 
   public editDialogVisible = false;
   public editableAlbum: Album = { id: 0, imageUrl: "", name: "", numberOfTrack: 0, albumType: "", releaseDate: null };
   private selectedFile: File | null = null;
   public previewImage: string | ArrayBuffer | null = null;
-  public newTitle: string = "";
-  public indexOfEditingTrack: number = -1;
 
   constructor(
     private activeRoute: ActivatedRoute,
     private router: Router,
     private albumService: AlbumService,
-    private audioService: AudioService,
     private trackService: TrackService,
     private title: Title,
     private messageService: MessageService,
@@ -58,41 +57,15 @@ export class SeeAlbumComponent {
 
         this.albumService.getIsUserIsOwnerOfAlbum(this.album.id).subscribe((resp: any) => {
           this.isOwnerOfAlbum = resp;
+          this.trackList.setModifiable(this.isOwnerOfAlbum);
         });
 
         this.trackService.getTracksByAlbumId(albumId).subscribe((tracks: any) => {
-          this.tracks = [];
-          tracks.forEach((track: any) => {
-            this.tracks.push({
-              id: track.id,
-              title: track.title,
-              audioUrl: track.audioUrl,
-              author: track.author.name,
-              authorId: track.author.id,
-              imageUrl: track.album.imageUrl,
-              albumName: track.album.name,
-              albumId: track.album.id,
-              isNowPlaying: false,
-              duration: track.duration,
-              isEditing: false
-            });
-          });
+          this.trackList.setTracks(tracks);
         });
       },
       error: () => this.isNotFound = true
     });
-}
-
-  private deleteTrackFromAlbum(trackId: number) {
-    this.trackService.deleteTrack(trackId).subscribe(() => {
-      this.messageService.add({ closable: true, severity: "success", summary: "Track deleted" });
-      this.album.numberOfTrack--;
-      this.tracks.splice(this.tracks.findIndex(t => t.id == trackId), 1);
-    });
-  }
-
-  public playTrack(index: number): void {
-    this.audioService.setTracks(this.tracks, index);
   }
 
   onFileChange(event: any): void {
@@ -137,6 +110,7 @@ export class SeeAlbumComponent {
       this.router.navigate(["/tracks"]);
     });
   }
+
   public removeCover() {
     this.albumService.deleteCover(this.album.id).subscribe(() => {
       this.loadAlbum(this.album.id);
@@ -144,44 +118,12 @@ export class SeeAlbumComponent {
   }
 
   public confirmDeletionOfAlbum() {
-    this.confirmDeletion(() => this.deleteAlbum());
-  }
-
-  public confirmDeletionOfTrack(id: number) {
-    this.confirmDeletion(() => this.deleteTrackFromAlbum(id));
-  }
-
-
-  private confirmDeletion(func: Function) {
     this.confirmationService.confirm({
       message: "You want to delete?",
       header: "Confirmation",
       icon: "pi pi-exclamation-triangle",
-      accept: func
+      accept: () => this.deleteAlbum()
     });
-  }
-
-  public updateTrackTitle(track: Track) {
-    this.trackService.updateTrackTitle(track.id, this.newTitle).subscribe(() => {
-      this.messageService.add({ severity: "success", summary: "You have updated the track title", closable: true });
-      track.title = this.newTitle;
-      this.makeTrackEditableOrNot(track);
-    });
-  }
-
-  public makeTrackEditableOrNot(track: Track) {
-    var isTheSameIndex = this.indexOfEditingTrack == track.id;
-
-    if (this.indexOfEditingTrack != -1 && !isTheSameIndex) return
-
-    this.newTitle = ""
-    track.isEditing = !track.isEditing;
-
-    this.indexOfEditingTrack = isTheSameIndex ? -1 : track.id;
-  }
-
-  public seeAuthor(value: number) {
-    this.router.navigate(["author/" + value]);
   }
 
 }

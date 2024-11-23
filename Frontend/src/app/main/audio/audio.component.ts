@@ -41,7 +41,7 @@ export class AudioComponent implements OnInit, OnDestroy {
 
   public playAudio(): void {
     if (!this.tracksToPlay) return
-    
+
     let track = this.tracksToPlay.tracks[this.tracksToPlay.indexOfCurrentTrack];
     this.makeAllTracksIsNotPlayingProperty();
     track.isNowPlaying = true;
@@ -105,15 +105,15 @@ export class AudioComponent implements OnInit, OnDestroy {
     const max = this.tracksToPlay.tracks.length;
     const currentTrackIndex = this.tracksToPlay.indexOfCurrentTrack;
 
-    
+
     this.excludedIndices = Array.from({ length: max }, (_, i) => i)
       .filter(index => index !== currentTrackIndex)
-      .sort(() => Math.random() - 0.5); 
+      .sort(() => Math.random() - 0.5);
 
-    
+
     this.excludedIndices.unshift(currentTrackIndex);
 
-    
+
     this.indexOfExcludedIndices = 0;
   }
 
@@ -122,6 +122,8 @@ export class AudioComponent implements OnInit, OnDestroy {
     if (!this.tracksToPlay) return;
 
     this.isStopped = !this.isStopped;
+    var val = this.tracksToPlay.tracks[this.tracksToPlay.indexOfCurrentTrack].isNowPlaying;
+    this.tracksToPlay.tracks[this.tracksToPlay.indexOfCurrentTrack].isNowPlaying = !val;
     if (this.isStopped) {
       this.plyr.pause();
     }
@@ -130,7 +132,7 @@ export class AudioComponent implements OnInit, OnDestroy {
     }
   }
 
-  public playNextTrack(buttonPressed:  boolean) {
+  public playNextTrack(buttonPressed: boolean) {
     if (!this.tracksToPlay)
       return;
 
@@ -143,7 +145,7 @@ export class AudioComponent implements OnInit, OnDestroy {
     else if (this.tracksToPlay.indexOfCurrentTrack < this.tracksToPlay.tracks.length - 1) {
       this.updateTracksToPlayAndPlayTrack(1);
     }
-    else if(!buttonPressed){
+    else if (!buttonPressed) {
       this.makeAllTracksIsNotPlayingProperty();
       this.isStopped = true;
     }

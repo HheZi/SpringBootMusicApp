@@ -1,0 +1,99 @@
+/* Основной контейнер */
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 15px;
+    background-color: #ffffff;
+}
+
+/* Заголовок автора */
+.author-header {
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 10px;
+}
+.author-image {
+    width: 220px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+.author-name {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #212529;
+}
+.edit-icon {
+    font-size: 1.2rem;
+    cursor: pointer;
+    color: #007bff;
+}
+.edit-icon:hover {
+    color: #0056b3;
+}
+
+/* Секция альбомов */
+.albums-section .section-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #343a40;
+}
+.album-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+.album-item {
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+}
+.album-item:hover {
+    background-color: #e9ecef;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.album-cover {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+.album-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.album-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #212529;
+}
+.album-title:hover {
+    text-decoration: underline;
+}
+.album-artist {
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+.album-action {
+    font-size: 1.2rem;
+    color: #6c757d;
+    transition: color 0.3s ease;
+}
+.album-action:hover {
+    color: #007bff;
+}
+
+/* Секция треков */
+.tracks-section .section-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #343a40;
+}
+
+/* Не найден */
+.not-found {
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    padding: 40px;
+    color: #6c757d;
+}

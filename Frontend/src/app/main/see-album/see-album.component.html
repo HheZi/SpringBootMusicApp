@@ -18,24 +18,7 @@
     <ng-template #NotFound>
         <h1 class="text-center">Album Is Not Found</h1>
     </ng-template>
-    <div class="track-list">
-        <div *ngFor="let track of tracks;  let i = index" class="track-item d-flex align-items-center p-2 mb-2 border-bottom">
-            <p-button icon="pi pi-play" (click)="playTrack(i)" class="me-2"></p-button>
-            <div class="flex-grow-1">
-                <ng-container *ngIf="!track.isEditing; else editMode">
-                    <h5>{{ track.title }}</h5>
-                    </ng-container>
-                <ng-template #editMode>
-                    <form (ngSubmit)="updateTrackTitle(track)">
-                        <input name="newTitle" type="text" placeholder="Change Title" [(ngModel)]="newTitle"/>
-                    </form>
-                </ng-template>
-                <a class="track-artist mb-0 link" (click)="seeAuthor(track.authorId)" class="link">{{ track.author }}</a>
-            </div>
-            <span *ngIf="isOwnerOfAlbum"><i class="pi icon me-3" [ngClass]="{'pi-pen-to-square': !track.isEditing, 'pi-times': track.isEditing}" (click)="makeTrackEditableOrNot(track)"></i></span>
-            <span *ngIf="isOwnerOfAlbum"><i class="pi pi-trash icon" style="color: red;" (click)="confirmDeletionOfTrack(track.id)"></i></span>
-        </div>
-    </div>
+    <app-track-list></app-track-list>
 
     <p-dialog [(visible)]="editDialogVisible" [header]="'Edit Album'" [modal]="true" [closable]="true" [style]="{width: '500px'}">
         
@@ -60,6 +43,5 @@
             <button type="button" class="btn btn-primary" (click)="saveChanges()">Save</button>
         </ng-template>
     </p-dialog>
-
-    <p-confirmDialog [style]="{width: '20vw'}"/>
 </div>
+<p-confirmDialog [style]="{width: '20vw'}"/>

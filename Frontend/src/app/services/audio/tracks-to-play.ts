@@ -1,4 +1,4 @@
-import { Track } from "../../home/home-page/track";
+import { Track } from "../../main/track-list/track";
 
 export interface TracksToPlay{
     tracks: Track[],

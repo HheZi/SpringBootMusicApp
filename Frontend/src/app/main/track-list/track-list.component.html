@@ -1,0 +1,40 @@
+<div class="container-fluid py-2" *ngFor="let track of tracks; let i = index">
+    <div class="track-container border-bottom d-flex align-items-center py-2">
+
+        <span *ngIf="track.isNowPlaying" class="now-playing-icon me-2">
+            <i class="pi pi-play-circle"></i>
+        </span>
+
+        <img src="{{ track.imageUrl }}" alt="Track Image" class="track-image img-thumbnail rounded" (click)="playTrack(i)">
+
+        <div class="ms-3 flex-grow-1">
+            <ng-container *ngIf="!track.isEditing; else editMode">
+                <h5 class="track-title mb-1 text-truncate">{{ track.title }}</h5>
+                <span class="track-artist d-block text-muted">
+                    <a class="link" (click)="seeAuthor(track.authorId)">{{ track.author }}</a>
+                </span>
+            </ng-container>
+            <ng-template #editMode>
+                <form class="d-flex align-items-center" (ngSubmit)="updateTrackTitle(track)">
+                    <input name="newTitle" class="" type="text" placeholder="Change Title" [(ngModel)]="newTitle" />
+                </form>
+            </ng-template>
+        </div>
+
+        <div class="d-none d-md-flex flex-column align-items-center me-3">
+            <span class="album-name text-center text-muted text-truncate">
+                <a (click)="seeAlbum(track.albumId)" class="link">{{ track.albumName }}</a>
+            </span>
+        </div>
+
+        <div class="d-flex align-items-center me-3">
+            <span class="track-duration text-muted">{{ track.duration }}</span>
+        </div>
+
+        <div class="track-actions d-flex align-items-center" *ngIf="isModifiableList">
+            <i class="pi icon me-3" [ngClass]="{'pi-pen-to-square': !track.isEditing, 'pi-times': track.isEditing}" (click)="makeTrackEditableOrNot(track)"></i>
+            <i class="pi pi-trash icon text-danger" (click)="confirmDeletionOfTrack(track.id)"></i>
+        </div>
+    </div>
+</div>
+<p-confirmDialog [style]="{width: '20vw'}"/>
