@@ -26,4 +26,12 @@ export class PlaylistService {
     return this.httpClient.get(this.PLAYLIST_URL + id);
   }
 
+  public getIsOwnerOfPlaylist(id: number): Observable<Object>{
+    return this.httpClient.get(this.PLAYLIST_URL + id +"/owner");
+  }
+
+  public savePlaylist(formData: FormData, id: number): Observable<Object>{
+    return this.httpClient.put(this.PLAYLIST_URL + id, formData);
+  }
+
 }

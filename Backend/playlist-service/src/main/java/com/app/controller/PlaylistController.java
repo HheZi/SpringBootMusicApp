@@ -6,11 +6,13 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.app.payload.request.CreatePlaylist;
+import com.app.payload.request.CreateOrUpdatePlaylist;
 import com.app.payload.response.ResponsePlaylist;
 import com.app.service.PlaylistService;
 
@@ -40,9 +42,17 @@ public class PlaylistController {
 		return playlistService.findPlaylistsBySymbol(symbol);
 	}
 	
+	@GetMapping("{id}/owner")
+	public Mono<Boolean> getIsCreatorOfPlaylist(
+			@PathVariable("id") Integer id, 
+			@RequestHeader("userId") Integer userId
+		){
+		return playlistService.isCreatorOfPlaylist(id, userId);
+	}
+	
 	@PostMapping
 	public Mono<ResponseEntity<?>> createPlaylist(
-			@ModelAttribute CreatePlaylist dto,
+			@ModelAttribute CreateOrUpdatePlaylist dto,
 			@RequestHeader("userId") Integer userId
 		){
 		return playlistService.createPlaylist(dto, userId);
@@ -54,6 +64,11 @@ public class PlaylistController {
 			@PathVariable("trackId")  Long trackId
 		){
 		return playlistService.addTrackToPlaylist(id, trackId);
+	}
+	
+	@PutMapping("{id}")
+	public Mono<Void> updatePlaylist(@PathVariable("id") Integer id, @ModelAttribute CreateOrUpdatePlaylist dto){
+		return playlistService.updatePlaylist(dto, id);
 	}
 	
 }

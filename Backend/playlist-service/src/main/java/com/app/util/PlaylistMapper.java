@@ -6,7 +6,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Component;
 
 import com.app.model.Playlist;
-import com.app.payload.request.CreatePlaylist;
+import com.app.payload.request.CreateOrUpdatePlaylist;
 import com.app.payload.response.ResponsePlaylist;
 
 @Component
@@ -16,7 +16,7 @@ public class PlaylistMapper {
 	
 	private final String IMAGE_URL_DEFAULT = IMAGE_URL_FORMAT + "default";
 
-	public Playlist fromCreatePlaylistToPlaylist(CreatePlaylist dto, Integer userId,Boolean isCoverPresent) {
+	public Playlist fromCreatePlaylistToPlaylist(CreateOrUpdatePlaylist dto, Integer userId,Boolean isCoverPresent) {
 		return Playlist.builder()
 				.createdBy(userId)
 				.description(dto.getDescription())
@@ -32,6 +32,7 @@ public class PlaylistMapper {
 				.imageUrl(playlist.getImageName() != null ? IMAGE_URL_FORMAT + playlist.getImageName() : IMAGE_URL_DEFAULT)
 				.name(playlist.getName())
 				.trackIds(trackIds)
+				.numberOfTracks(trackIds != null ? trackIds.size() : null)
 				.build();
 	}
 	public ResponsePlaylist fromPlaylistToResponsePlaylist(Playlist playlist) {

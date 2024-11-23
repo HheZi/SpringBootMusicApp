@@ -3,5 +3,6 @@ export interface Playlist{
     name: string,
     imageUrl: string,
     description: string,
-    trackIds	: number[]
+    trackIds: number[],
+    numberOfTracks: number
 }

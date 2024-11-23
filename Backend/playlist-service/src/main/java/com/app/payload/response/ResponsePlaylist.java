@@ -26,4 +26,7 @@ public class ResponsePlaylist {
 	
 	@JsonInclude(value = Include.NON_NULL)
 	private List<Long> trackIds;
+	
+	@JsonInclude(value = Include.NON_NULL)
+	private Integer numberOfTracks;
 }

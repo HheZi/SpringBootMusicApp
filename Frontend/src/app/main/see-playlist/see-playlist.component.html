@@ -2,12 +2,46 @@
     <div class="d-flex align-items-center mb-4" *ngIf="!isNotFound; else NotFound">
         <img [src]="playlist.imageUrl" alt="Playlst Cover" class="me-3 cover">
         <div>
-            <h1>{{playlist.name}}</h1>
+            <h1>
+                {{playlist.name}}
+                <span *ngIf="canModify">
+                    <i class="pi pi-pencil icon" (click)="editDialogeVisible = true"></i>
+                </span>
+            </h1>
             <h5>{{playlist.description}}</h5>
+            <h4>{{playlist.numberOfTracks}} Tracks</h4>
         </div>
     </div>
     <ng-template #NotFound>
         <h1 class="text-center">Playlist Not Found</h1>
     </ng-template>
     <app-track-list></app-track-list>
+
+    <p-dialog [(visible)]="editDialogeVisible" [header]="'Edit Album'" [modal]="true" [closable]="true"
+        [style]="{width: '500px'}">
+
+        <div class="form-group mt-2">
+            <input type="text" id="albumName" class="form-control" [(ngModel)]="editablePlaylist.name"
+                placeholder="Name" />
+        </div>
+
+        <div class="form-group mt-2">
+            <textarea name="description" placeholder="Write something" [(ngModel)]="editablePlaylist.description"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="albumCover">Cover Image</label>
+            <input type="file" id="albumCover" class="form-control" (change)="onFileChange($event)" />
+            <img *ngIf="previewImage" [src]="previewImage" alt="Cover Preview" class="img-thumbnail mt-2"
+                style="max-width: 250px;" />
+        </div>
+        
+        <ng-template pTemplate="footer">
+            <button type="button" class="btn btn-danger me-2" (click)="removeCover()">Remove Cover</button>
+            <button type="button" class="btn btn-danger me-2" (click)="confirmDeletionOfPlaylist()">Delete</button>
+            <button type="button" class="btn btn-secondary me-2" (click)="editDialogeVisible = false">Cancel</button>
+            <button type="button" class="btn btn-primary" (click)="saveChanges()">Save</button>
+        </ng-template>
+    </p-dialog>
+    <p-confirmDialog [style]="{width: '20vw'}" />
 </div>
