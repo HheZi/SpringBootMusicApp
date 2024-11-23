@@ -35,23 +35,21 @@ public class PlaylistService {
 	
 	private final WebClient.Builder builder;
 
-	public Flux<ResponsePlaylist> getPlaylists(){
-		return playlistRepository.findAll()
-				.map(playlistMapper::fromPlaylistToResponsePlaylist);
-	}
-	
 	public Mono<ResponsePlaylist> getPlaylistById(Integer id){
-		return playlistRepository.findById(id)
-				.map(playlistMapper::fromPlaylistToResponsePlaylist);
+		return Mono.zip(playlistRepository.findById(id), getTrackIdsByPlaylist(id).collectList())
+				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)))
+				.map(t -> playlistMapper.fromPlaylistToResponsePlaylist(t.getT1(), t.getT2()));
 	}
 	
 	public Flux<ResponsePlaylist> findPlaylistsBySymbol(String symbol){
 		return playlistRepository.findByNameStartsWithAllIgnoreCase(symbol)
+				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)))
 				.map(playlistMapper::fromPlaylistToResponsePlaylist);
 	}
 	
 	public Flux<Long> getTrackIdsByPlaylist(Integer id){
 		return playlistTrackRepository.findByPlaylistId(id)
+				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)))
 				.map(t -> t.getTrackId());
 	}
 	

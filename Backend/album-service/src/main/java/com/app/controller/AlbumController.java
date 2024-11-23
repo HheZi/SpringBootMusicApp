@@ -83,7 +83,7 @@ public class AlbumController {
 		return dto.flatMap(t -> albumService.updateAlbum(t, id, userId));
 	}
 	
-	@PatchMapping("/{id}")
+	@DeleteMapping("cover/{id}")
 	public Mono<Void> deleteCoverOfAlbum(@PathVariable("id") Integer id){
 		return albumService.deleteCoverById(id);
 	}

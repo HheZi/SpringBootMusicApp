@@ -38,12 +38,14 @@ public class TrackContoller {
 	public Flux<ResponseTrack> getTracks(
 			@RequestParam(value = "name", required = false) String trackName, 
 			@RequestParam(value = "authorId", required = false) List<Integer> authorId,
-			@RequestParam(value = "albumId", required = false) List<Integer> albumId
+			@RequestParam(value = "albumId", required = false) List<Integer> albumId,
+			@RequestParam(value = "id", required = false) List<Integer> ids
 		){
 		return trackService.getTracks(
 				trackName != null ? URLDecoder.decode(trackName, Charset.defaultCharset()) : trackName, 
 						authorId, 
-						albumId
+						albumId,
+						ids
 					);
 	}
 

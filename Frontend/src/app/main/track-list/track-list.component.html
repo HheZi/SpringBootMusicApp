@@ -5,7 +5,7 @@
             <i class="pi pi-play-circle"></i>
         </span>
 
-        <img src="{{ track.imageUrl }}" alt="Track Image" class="track-image img-thumbnail rounded" (click)="playTrack(i)">
+        <img [src]="track.imageUrl " alt="Track Image" class="track-image img-thumbnail rounded" (click)="playTrack(i)">
 
         <div class="ms-3 flex-grow-1">
             <ng-container *ngIf="!track.isEditing; else editMode">

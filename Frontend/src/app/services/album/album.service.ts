@@ -48,7 +48,7 @@ export class AlbumService {
   }
 
   public deleteCover(id: number){
-    return this.httpClient.patch(this.ALBUM_URL + id, null);
+    return this.httpClient.delete(this.ALBUM_URL + "cover/" + id);
   }
 }
 

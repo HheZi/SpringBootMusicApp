@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Playlist } from './playlist';
 import { PlaylistService } from '../../services/playlist/playlist.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-playlist-list',
@@ -9,9 +10,10 @@ import { PlaylistService } from '../../services/playlist/playlist.service';
 })
 export class PlaylistListComponent implements OnInit{
 
-  public playlists: Playlist[] = [];
+  protected playlists: Playlist[] = [];
 
   constructor(
+    private router: Router 
   ){
 
   }
@@ -20,6 +22,10 @@ export class PlaylistListComponent implements OnInit{
 
   public setPlaylists(playlists: any[]): void{
     this.playlists = playlists; 
+  }
+
+  protected navigateToPlaylist(id: number){
+    this.router.navigate(["playlist/"+id]);
   }
 
 }

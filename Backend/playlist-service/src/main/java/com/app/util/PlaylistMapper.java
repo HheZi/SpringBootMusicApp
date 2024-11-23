@@ -1,5 +1,6 @@
 package com.app.util;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.stereotype.Component;
@@ -24,13 +25,17 @@ public class PlaylistMapper {
 				.build();
 	}
 	
-	public ResponsePlaylist fromPlaylistToResponsePlaylist(Playlist playlist) {
+	public ResponsePlaylist fromPlaylistToResponsePlaylist(Playlist playlist, List<Long> trackIds) {
 		return ResponsePlaylist.builder()
 				.id(playlist.getId())
 				.description(playlist.getDescription())
 				.imageUrl(playlist.getImageName() != null ? IMAGE_URL_FORMAT + playlist.getImageName() : IMAGE_URL_DEFAULT)
 				.name(playlist.getName())
+				.trackIds(trackIds)
 				.build();
+	}
+	public ResponsePlaylist fromPlaylistToResponsePlaylist(Playlist playlist) {
+		return fromPlaylistToResponsePlaylist(playlist, null);
 	}
 	
 }

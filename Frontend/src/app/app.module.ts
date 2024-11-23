@@ -39,6 +39,7 @@ import { SeeAuthorComponent } from './main/see-author/see-author.component';
 import { CreatePlaylistComponent } from './main/create-playlist/create-playlist.component';
 import { PlaylistListComponent } from './main/playlist-list/playlist-list.component';
 import { TrackListComponent } from './main/track-list/track-list.component';
+import { SeePlaylistComponent } from './main/see-playlist/see-playlist.component';
 
 
 @NgModule({
@@ -57,7 +58,8 @@ import { TrackListComponent } from './main/track-list/track-list.component';
     SeeAuthorComponent,
     CreatePlaylistComponent,
     PlaylistListComponent,
-    TrackListComponent
+    TrackListComponent,
+    SeePlaylistComponent
   ],
   imports: [
     BrowserModule,

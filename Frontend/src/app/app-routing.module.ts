@@ -11,6 +11,7 @@ import { CreateAuthorComponent } from './main/create-author/create-author.compon
 import { SeeAlbumComponent } from './main/see-album/see-album.component';
 import { SeeAuthorComponent } from './main/see-author/see-author.component';
 import { CreatePlaylistComponent } from './main/create-playlist/create-playlist.component';
+import { SeePlaylistComponent } from './main/see-playlist/see-playlist.component';
 
 const routes: Routes = [
 {
@@ -31,7 +32,8 @@ const routes: Routes = [
   {path: 'authors/create', component: CreateAuthorComponent},
   {path: 'album/:id', component: SeeAlbumComponent},
   {path: 'author/:id', component: SeeAuthorComponent},
-  {path: 'playlist/create', component: CreatePlaylistComponent}
+  {path: 'playlist/create', component: CreatePlaylistComponent},
+  {path: 'playlist/:id', component: SeePlaylistComponent}
 ]
 }];
 

@@ -1,0 +1,13 @@
+<div class="container mt-4">
+    <div class="d-flex align-items-center mb-4" *ngIf="!isNotFound; else NotFound">
+        <img [src]="playlist.imageUrl" alt="Playlst Cover" class="me-3 cover">
+        <div>
+            <h1>{{playlist.name}}</h1>
+            <h5>{{playlist.description}}</h5>
+        </div>
+    </div>
+    <ng-template #NotFound>
+        <h1 class="text-center">Playlist Not Found</h1>
+    </ng-template>
+    <app-track-list></app-track-list>
+</div>

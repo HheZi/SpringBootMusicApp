@@ -90,24 +90,24 @@ export class SeeTracksComponent implements OnInit {
 
   private fetchTracksByAuthors(authors: any[]): void {
     this.checkIfNotFound(authors)
-    if (!this.isNotFound)
-      authors.forEach((author: any) => {
-        this.trackService.getTracksByAuthorId(author.id).subscribe({
-          next: (tracks: any) => this.populateTracks(tracks),
-          error: (err: any) => this.handleError("Error while loading tracks by author", err)
-        });
+    if (!this.isNotFound){
+      var ids = authors.map(a => a.id);
+      this.trackService.getTracksByAuthorId(ids).subscribe({
+        next: (tracks: any) => this.populateTracks(tracks),
+        error: (err: any) => this.handleError("Error while loading tracks by author", err)
       });
+    }
   }
 
   private fetchTracksByAlbums(albums: any[]): void {
     this.checkIfNotFound(albums)
-    if (!this.isNotFound)
-      albums.forEach(album => {
-        this.trackService.getTracksByAlbumId(album.id).subscribe({
-          next: (tracks: any) => this.populateTracks(tracks),
-          error: (err: any) => this.handleError("Error while loading tracks by album", err)
-        });
+    if (!this.isNotFound){
+      var ids = albums.map((a: any) => a.id);
+      this.trackService.getTracksByAlbumId(ids).subscribe({
+        next: (tracks: any) => this.populateTracks(tracks),
+        error: (err: any) => this.handleError("Error while loading tracks by album", err)
       });
+    }
   }
 
   private fetchPlaylist(playlists: any[]): void{

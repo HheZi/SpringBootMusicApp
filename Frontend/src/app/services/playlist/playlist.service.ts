@@ -22,4 +22,8 @@ export class PlaylistService {
     return this.httpClient.post(this.PLAYLIST_URL, body);
   }
 
+  public getPlaylist(id: number): Observable<Object>{
+    return this.httpClient.get(this.PLAYLIST_URL + id);
+  }
+
 }

@@ -24,11 +24,6 @@ import reactor.core.publisher.Mono;
 public class PlaylistController {
 
 	private final PlaylistService playlistService;
-
-	@GetMapping
-	public Flux<ResponsePlaylist> getPlaylists(){
-		return playlistService.getPlaylists();
-	}
 	
 	@GetMapping("{id}")
 	public Mono<ResponsePlaylist> getPlaylist(@PathVariable("id") Integer id) {

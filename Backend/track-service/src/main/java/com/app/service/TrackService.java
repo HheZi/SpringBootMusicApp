@@ -53,7 +53,8 @@ public class TrackService {
 	public Flux<ResponseTrack> getTracks(
 			String trackName, 
 			List<Integer> authorId, 
-			List<Integer> albumId
+			List<Integer> albumId,
+			List<Integer> ids
 		){
 		Criteria criteria;
 
@@ -65,6 +66,9 @@ public class TrackService {
 		}
 		else if (albumId != null) {
 			criteria = Criteria.where("album_id").in(albumId);
+		}
+		else if (ids != null) {
+			criteria = Criteria.where("id").in(ids);
 		}
 		else {
 			return repository.findAll()
