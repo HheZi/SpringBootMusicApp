@@ -1,17 +1,69 @@
+.header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.icon {
+  font-size: 1.8rem;
+  color: #495057;
+  transition: color 0.3s ease;
+}
+
+.icon:hover {
+  color: #dc3545; 
+  cursor: pointer;
+}
+
+.menu-btn {
+  margin-left: 0.5rem;
+}
+
 .search-form {
+  flex: 1;
+  max-width: 500px;
+  position: relative;
+}
+
+.search-input {
   width: 100%;
-  max-width: 400px;
+  padding: 0.375rem 0.75rem;
+  border: 1px solid #ced4da;
+  border-radius: 0.375rem;
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
 }
 
-.nav-link:hover{
-  cursor: pointer;
+.search-input:focus {
+  border-color: #80bdff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
 }
 
-.icon{
-  font-size: 1.5rem;
+.search-form button {
+  margin-left: 0.5rem;
 }
 
-.icon:hover{
-  cursor: pointer;
-  color: red;
+.btn-outline-secondary {
+  border-color: #ced4da;
+  color: #6c757d;
+}
+
+.btn-outline-secondary:hover {
+  color: #495057;
+  border-color: #adb5bd;
+}
+
+.btn-outline-primary {
+  color: #007bff;
+  border-color: #007bff;
+}
+
+.btn-outline-primary:hover {
+  background-color: #007bff;
+  color: #fff;
+  border-color: #007bff;
 }

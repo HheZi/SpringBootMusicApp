@@ -1,30 +1,35 @@
-<header class="header">
-    <nav class="navbar navbar-expand-lg navbar-light bg-light ">
-        <div class="d-flex flex-grow-3 align-items-center">
-          <div class="navbar-nav ms-2">
-            <div class="d-flex justify-content-end pe-3">
-              <i class="pi pi-home icon m-auto" (click)="navigateTo('/')"></i>
-            </div>
-            <p-menu #menu [model]="items" [popup]="true" [style]="{width: '50px;'}"/>
-            <p-button (onClick)="menu.toggle($event)" icon="pi pi-ellipsis-v" [label]="butLabel"/>
-          </div>
-        </div>
-      
-        <div class="d-flex flex-grow-1 justify-content-end pe-3">
-          <form class="d-flex search-form" (ngSubmit)="onSearch()">
-            <input
-              class="form-control me-2"
-              type="search"
-              placeholder="Search"
-              aria-label="Search"
-              name="search"
-              [(ngModel)]="textInput"
-            />
-            <button pButton type="button" icon="pi pi-search" (click)="onSearch()"></button>
-          </form>
-        </div>
-        <div class="d-flex justify-content-end pe-3">
-          <i class="pi pi-sign-out icon" (click)="logout()"></i>
-        </div>
-      </nav>
+<header class="header shadow-sm">
+  <nav class="navbar navbar-expand-lg navbar-light bg-white py-2 px-3">
+    <div class="navbar-brand d-flex align-items-center">
+      <i class="pi pi-home icon me-3" (click)="navigateTo('/')"></i>
+      <p-menu #menu [model]="items" [popup]="true"></p-menu>
+      <p-button 
+        (onClick)="menu.toggle($event)" 
+        icon="pi pi-ellipsis-v" 
+        class="menu-btn btn-outline-secondary">
+      </p-button>
+    </div>
+
+    <form class="search-form ms-auto me-auto d-flex align-items-center" (ngSubmit)="onSearch()">
+      <input
+        class="form-control me-2 search-input"
+        type="search"
+        placeholder="Search"
+        aria-label="Search"
+        name="search"
+        [(ngModel)]="textInput"
+      />
+      <button
+        pButton
+        type="button"
+        icon="pi pi-search"
+        class="btn btn-outline-primary"
+        (click)="onSearch()"
+      ></button>
+    </form>
+
+    <div class="d-flex align-items-center">
+      <i class="pi pi-sign-out icon text-danger" (click)="logout()"></i>
+    </div>
+  </nav>
 </header>

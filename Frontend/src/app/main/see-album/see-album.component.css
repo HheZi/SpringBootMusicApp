@@ -1,15 +1,71 @@
-.album-cover{
-    max-width: 225px;
-}
-.icon:hover{
-    cursor: pointer;
-    color: #c7c7c7;
-}
-
-.link{
-    color: black;
+.album-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 1rem;
 }
 
-.link:hover{
+.album-cover {
+    max-width: 250px;
+    border-radius: 12px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.album-type {
+    font-size: 0.85rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+}
+
+.album-title {
+    font-size: 2rem;
+    font-weight: bold;
+    margin: 0;
+}
+
+.album-meta {
+    font-size: 1rem;
+    margin-top: 0.5rem;
+    color: #6c757d;
+}
+
+.icon:hover {
+    color: #495057;
     cursor: pointer;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-label {
+    font-weight: 500;
+}
+
+.img-thumbnail {
+    border-radius: 8px;
+    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.p-dialog .btn {
+    min-width: 80px;
+}
+
+.p-dialog .btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+.p-dialog .btn-outline-danger {
+    border-color: #dc3545;
+    color: #dc3545;
+}
+
+.p-dialog .btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+}
+
+.tracks-list {
+    margin-top: 2rem;
 }

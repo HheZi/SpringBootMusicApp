@@ -1,41 +1,66 @@
 <div class="container mt-4">
-    <div class="album-header d-flex align-items-center mb-4" *ngIf="!isNotFound; else NotFound">
-        <img [src]="album.imageUrl" alt="Cover" class="album-cover me-3" />
+    <div *ngIf="!isNotFound; else NotFound" class="album-header d-flex flex-wrap align-items-start mb-4">
+        <img [src]="album.imageUrl" alt="Cover" class="album-cover rounded shadow-sm me-4 mb-3" />
         <div>
-            <h4>{{album.albumType}}</h4>
-            <h1>
-                {{ album.name }} 
-                <span *ngIf="isOwnerOfAlbum" (click)="editDialogVisible = true">
-                    <i class="pi pi-pencil icon"></i>
+            <h4 class="album-type text-uppercase text-muted">{{ album.albumType }}</h4>
+            <h1 class="album-title d-flex align-items-center">
+                {{ album.name }}
+                <span *ngIf="isOwnerOfAlbum" class="ms-3">
+                    <i class="pi pi-pencil icon btn btn-outline-secondary btn-sm" (click)="editDialogVisible = true"></i>
                 </span>
-            </h1> 
-            <h5 id="tracks_in_album">
-                {{album.numberOfTrack}} Tracks 
-                <span class="ms-2" *ngIf="album.releaseDate">Release Date {{album.releaseDate}}</span>
+            </h1>
+            <h5 class="album-meta text-secondary">
+                {{ album.numberOfTrack }} Tracks
+                <span *ngIf="album.releaseDate" class="ms-3">Release Date: {{ album.releaseDate }}</span>
             </h5>
         </div>
     </div>
+
     <ng-template #NotFound>
-        <h1 class="text-center">Album Is Not Found</h1>
+        <div class="text-center my-5">
+            <h1 class="text-danger">Album Not Found</h1>
+        </div>
     </ng-template>
-    <app-track-list></app-track-list>
 
-    <p-dialog [(visible)]="editDialogVisible" [header]="'Edit Album'" [modal]="true" [closable]="true" [style]="{width: '500px'}">
-        
+    <div class="tracks-list mt-4">
+        <app-track-list></app-track-list>
+    </div>
+
+    <p-dialog
+        [(visible)]="editDialogVisible"
+        [header]="'Edit Album'"
+        [modal]="true"
+        [closable]="true"
+        [style]="{ width: '500px' }"
+    >
         <div class="form-group mt-2">
-            <input type="text" id="albumName" class="form-control" [(ngModel)]="editableAlbum.name" placeholder="Name"/>
+            <input
+                type="text"
+                id="albumName"
+                class="form-control"
+                [value]="album.name"
+                [(ngModel)]="editableAlbum.name"
+                placeholder="Enter album name"
+            />
         </div>
 
-        <div class="mt-2">
-            <p-calendar [(ngModel)]="editableAlbum.releaseDate" dateFormat="yy.mm.dd" [touchUI]="true"  placeholder="Release Date"/>
+        <div class="form-group mt-3">
+            <p-calendar
+                [(ngModel)]="editableAlbum.releaseDate"
+                dateFormat="yy.mm.dd"
+                [touchUI]="true"
+                placeholder="Select release date"
+            ></p-calendar>
         </div>
 
-        <div class="form-group">
-            <label for="albumCover">Cover Image</label>
-            <input type="file" id="albumCover" class="form-control" (change)="onFileChange($event)"/>
-            <img *ngIf="previewImage" [src]="previewImage" alt="Cover Preview" class="img-thumbnail mt-2" style="max-width: 250px;"/>
+        <div class="form-group mt-3">
+            <label for="albumCover" class="form-label">Cover Image</label>
+            <input type="file" id="albumCover" class="form-control" (change)="onFileChange($event)" />
+            <div class="mt-3 text-center">
+                <img *ngIf="previewImage" [src]="previewImage" alt="Cover Preview" class="img-thumbnail" style="max-width: 200px;" />
+            </div>
         </div>
-        
+
         <ng-template pTemplate="footer">
             <button type="button" class="btn btn-danger me-2" (click)="removeCover()">Remove Cover</button>
             <button type="button" class="btn btn-danger me-2" (click)="confirmDeletionOfAlbum()">Delete</button>
@@ -43,5 +68,6 @@
             <button type="button" class="btn btn-primary" (click)="saveChanges()">Save</button>
         </ng-template>
     </p-dialog>
+
+    <p-confirmDialog [style]="{ width: '20vw' }" />
 </div>
-<p-confirmDialog [style]="{width: '20vw'}"/>

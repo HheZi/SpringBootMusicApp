@@ -101,7 +101,7 @@ public class AlbumService {
 				.filter(t -> t.getCreatedBy() == userId)
 				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "You are not a creator of the album")))
 				.flatMap(t -> {
-					if (dto.getName() != null) {
+					if (dto.getName() != null && !dto.getName().isEmpty() && !dto.getName().isBlank()) {
 						t.setName(dto.getName());
 					}
 					if (dto.getReleaseDate() != null) {

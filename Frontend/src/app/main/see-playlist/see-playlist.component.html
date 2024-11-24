@@ -1,48 +1,77 @@
 <div class="container mt-4">
-    <div class="d-flex align-items-center mb-4" *ngIf="!isPlaylistNotFound; else NotFound">
-        <img [src]="playlist.imageUrl" alt="Playlst Cover" class="me-3 cover">
+    <div *ngIf="!isPlaylistNotFound; else NotFound" class="playlist-header d-flex flex-wrap align-items-start mb-4">
+        <img [src]="playlist.imageUrl" alt="Playlist Cover" class="playlist-cover rounded shadow-sm me-4 mb-3" />
         <div>
-            <h1>
-                {{playlist.name}}
-                <span *ngIf="canModify">
-                    <i class="pi pi-pencil icon" (click)="editDialogeVisible = true"></i>
+            <h1 class="playlist-title d-flex align-items-center">
+                {{ playlist.name }}
+                <span *ngIf="canModify" class="ms-3">
+                    <i class="pi pi-pencil icon btn btn-outline-secondary btn-sm" (click)="editDialogeVisible = true"></i>
                 </span>
             </h1>
-            <h5>{{playlist.description}}</h5>
-            <h4>{{playlist.numberOfTracks}} Tracks</h4>
+            <p class="playlist-description text-secondary">{{ playlist.description }}</p>
+            <h4 class="playlist-meta text-muted">
+                {{ playlist.numberOfTracks }} Tracks
+            </h4>
         </div>
     </div>
+
     <ng-template #NotFound>
-        <h1 class="text-center">Playlist Not Found</h1>
+        <div class="text-center my-5">
+            <h1 class="text-danger">Playlist Not Found</h1>
+        </div>
     </ng-template>
 
-    <div *ngIf="!isTracksNotFound; else TracksNotFound">
+    <div *ngIf="!isTracksNotFound; else TracksNotFound" class="tracks-list">
         <app-track-list></app-track-list>
-
     </div>
+
     <ng-template #TracksNotFound>
         <h3 class="text-center">Playlist Is Empty</h3>
     </ng-template>
 
-    <p-dialog [(visible)]="editDialogeVisible" [header]="'Edit Album'" [modal]="true" [closable]="true"
-        [style]="{width: '500px'}">
-
+    <p-dialog
+        [(visible)]="editDialogeVisible"
+        [header]="'Edit Playlist'"
+        [modal]="true"
+        [closable]="true"
+        [style]="{ width: '500px' }"
+    >
         <div class="form-group mt-2">
-            <input type="text" id="albumName" [value]="playlist.name" class="form-control" [(ngModel)]="editablePlaylist.name"
-                placeholder="Name" />
+            <input
+                type="text"
+                id="playlistName"
+                class="form-control"
+                [value]="playlist.name"
+                [(ngModel)]="editablePlaylist.name"
+                placeholder="Enter playlist name"
+            />
         </div>
 
-        <div class="form-group mt-2">
-            <textarea name="description" [value]="playlist.description" placeholder="Write something" [(ngModel)]="editablePlaylist.description"></textarea>
+        <div class="form-group mt-3">
+            <textarea
+                id="playlistDescription"
+                class="form-control"
+                rows="3"
+                [value]="playlist.description"
+                [(ngModel)]="editablePlaylist.description"
+                placeholder="Write a short description"
+            ></textarea>
         </div>
 
-        <div class="form-group">
-            <label for="albumCover">Cover Image</label>
-            <input type="file" id="albumCover" class="form-control" (change)="onFileChange($event)" />
-            <img *ngIf="previewImage" [src]="previewImage" alt="Cover Preview" class="img-thumbnail mt-2"
-                style="max-width: 250px;" />
+        <div class="form-group mt-3">
+            <label for="playlistCover" class="form-label">Cover Image</label>
+            <input type="file" id="playlistCover" class="form-control" (change)="onFileChange($event)" />
+            <div class="mt-3 text-center">
+                <img
+                    *ngIf="previewImage"
+                    [src]="previewImage"
+                    alt="Cover Preview"
+                    class="img-thumbnail"
+                    style="max-width: 200px;"
+                />
+            </div>
         </div>
-        
+
         <ng-template pTemplate="footer">
             <button type="button" class="btn btn-danger me-2" (click)="removeCover()">Remove Cover</button>
             <button type="button" class="btn btn-danger me-2" (click)="confirmDeletionOfPlaylist()">Delete</button>
@@ -50,5 +79,6 @@
             <button type="button" class="btn btn-primary" (click)="saveChanges()">Save</button>
         </ng-template>
     </p-dialog>
+
+    <p-confirmDialog [style]="{ width: '20vw' }" />
 </div>
-<p-confirmDialog [style]="{width: '20vw'}" />

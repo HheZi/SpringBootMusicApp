@@ -4,7 +4,7 @@
     <div>
       <h1 class="author-name mb-1">
         {{ author.name }}
-        <i *ngIf="canModify" class="pi pi-pencil icon edit-icon ms-2" (click)="openOrCloseDialog()"></i>
+        <i *ngIf="canModify"class="pi pi-pencil icon btn btn-outline-secondary btn-sm" (click)="openOrCloseDialog()"></i>
       </h1>
       <p class="text-muted mb-0">View and explore {{ author.name }}'s albums and tracks</p>
     </div>
@@ -45,7 +45,7 @@
   [style]="{width: '500px'}">
 
   <div class="form-group mt-2">
-    <input type="text" id="albumName" class="form-control" [(ngModel)]="editableAuthor.name" placeholder="Name" />
+    <input type="text" id="albumName" [value]="author.name" class="form-control" [(ngModel)]="editableAuthor.name" placeholder="Name" />
   </div>
 
   <div class="form-group">
