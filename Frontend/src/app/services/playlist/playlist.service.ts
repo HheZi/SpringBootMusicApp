@@ -34,4 +34,11 @@ export class PlaylistService {
     return this.httpClient.put(this.PLAYLIST_URL + id, formData);
   }
 
+  public deleteCover(id: number): Observable<Object>{
+    return this.httpClient.delete(this.PLAYLIST_URL + id + "/cover");
+  }
+
+  public deletePlaylist(id: number){
+    return this.httpClient.delete(this.PLAYLIST_URL + id);
+  }
 }

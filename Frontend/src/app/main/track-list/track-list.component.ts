@@ -69,7 +69,7 @@ export class TrackListComponent {
 
   protected confirmDeletionOfTrack(id: number) {
     this.confirmationService.confirm({
-      message: "You want to delete the track?",
+      message: "Do you want to delete the track?",
       header: "Confirmation",
       icon: "pi pi-exclamation-triangle",
       accept: () => this.deleteTrackFromAlbum(id)

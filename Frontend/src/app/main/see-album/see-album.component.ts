@@ -119,7 +119,7 @@ export class SeeAlbumComponent {
 
   public confirmDeletionOfAlbum() {
     this.confirmationService.confirm({
-      message: "You want to delete?",
+      message: "Do you want to delete?",
       header: "Confirmation",
       icon: "pi pi-exclamation-triangle",
       accept: () => this.deleteAlbum()

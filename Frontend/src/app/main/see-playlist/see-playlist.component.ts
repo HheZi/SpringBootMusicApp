@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { Playlist } from './playlist';
 import { Title } from '@angular/platform-browser';
 import { PlaylistService } from '../../services/playlist/playlist.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { TrackListComponent } from '../track-list/track-list.component';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { TrackService } from '../../services/track/track.service';
@@ -19,7 +19,8 @@ export class SeePlaylistComponent implements OnInit {
 
   protected playlist: Playlist = { id: 0, name: "", imageUrl: "", description: "", trackIds: [], numberOfTracks: 0 };
   protected editablePlaylist: Playlist = { id: 0, name: "", imageUrl: "", description: "", trackIds: [], numberOfTracks: 0 };
-  protected isNotFound: boolean = false;
+  protected isPlaylistNotFound: boolean = false;
+  protected isTracksNotFound: boolean = false;
 
   protected canModify: boolean = false;
   protected editDialogeVisible: boolean = false
@@ -33,7 +34,9 @@ export class SeePlaylistComponent implements OnInit {
     private playlistService: PlaylistService,
     private trackService: TrackService,
     private activetedRoute: ActivatedRoute,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private confirmationService: ConfirmationService,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
@@ -48,15 +51,18 @@ export class SeePlaylistComponent implements OnInit {
         this.title.setTitle(playlist.name);
         this.playlist = playlist;
 
-        if (this.playlist.trackIds) {
+        if (this.playlist.trackIds.length != 0) {
           this.trackService.getTrackByIds(this.playlist.trackIds).subscribe({
             next: (tracksResp: any) => this.trackList.setTracks(tracksResp)
           })
         }
+        else{
+          this.isTracksNotFound = true;
+        }
 
         this.playlistService.getIsOwnerOfPlaylist(this.playlist.id).subscribe((resp: any) => this.canModify = resp)
       },
-      error: () => this.isNotFound = true
+      error: () => this.isPlaylistNotFound = true
     })
 
   }
@@ -90,11 +96,31 @@ export class SeePlaylistComponent implements OnInit {
     });
   }
 
-  protected confirmDeletionOfPlaylist(): void{
+  private deletePlayist(){
+    this.playlistService.deletePlaylist(this.playlist.id).subscribe({
+      next: () => {
+        this.messageService.add({closable: true, summary: "You have deleted the playlist", severity: "success"});
+        this.router.navigate(['/']);
+      }
+    })
+  }
 
+  protected confirmDeletionOfPlaylist(): void{
+    this.confirmationService.confirm({
+      message: "Do you want to delete?",
+      header: "Confirmation",
+      icon: "pi pi-exclamation-triangle",
+      accept: () => this.deletePlayist()
+    });
   }
 
   protected removeCover(): void{
-
+    this.playlistService.deleteCover(this.playlist.id).subscribe({
+      next: () => {
+        this.loadPlaylist(this.playlist.id)
+        this.editDialogeVisible = false;
+      },
+      error: () => this.messageService.add({closable: true, summary: "Something went wrong", severity: "error"})
+    })
   }
 }

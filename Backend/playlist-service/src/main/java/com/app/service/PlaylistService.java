@@ -49,7 +49,6 @@ public class PlaylistService {
 	
 	public Flux<Long> getTrackIdsByPlaylist(Integer id){
 		return playlistTrackRepository.findByPlaylistId(id)
-				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)))
 				.map(t -> t.getTrackId());
 	}
 	
@@ -66,7 +65,28 @@ public class PlaylistService {
 				.flatMap(playlistRepository::save)
 				.map(t -> ResponseEntity.status(HttpStatus.CREATED).build());
 	}
-
+	
+	@Transactional
+	public Mono<Void> deleteCover(Integer id) {
+		return playlistRepository.findById(id)
+				.doOnNext(t -> {
+					deletePlalyistCover(t.getImageName());
+					t.setImageName(null);
+				})
+				.flatMap(playlistRepository::save)
+				.then();
+	}
+	
+	@Transactional
+	public Mono<Void> deletePlaylist(Integer id){
+		return playlistTrackRepository.deleteByPlaylistId(id)
+				.then(playlistRepository.findById(id))
+				.doOnNext(t -> deletePlalyistCover(t.getImageName()))
+				.flatMap(playlistRepository::delete);
+				
+	}
+	
+	@Transactional
 	public Mono<Void> updatePlaylist(CreateOrUpdatePlaylist dto, Integer id){
 		return playlistRepository.findById(id)
 				.flatMap(t -> {
@@ -112,5 +132,17 @@ public class PlaylistService {
 	    			.bodyToMono(Void.class);
 	    }).subscribe();
 		
+	}
+	
+	private void deletePlalyistCover(UUID cover) {
+		if (cover == null) return;
+			
+		builder
+		.baseUrl("http://image-service/api/images/" + cover.toString())
+		.build()
+		.delete()
+		.retrieve()
+		.bodyToMono(Void.class)
+		.subscribe();
 	}
 }
