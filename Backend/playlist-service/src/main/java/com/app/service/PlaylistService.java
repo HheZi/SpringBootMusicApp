@@ -90,7 +90,7 @@ public class PlaylistService {
 	public Mono<Void> updatePlaylist(CreateOrUpdatePlaylist dto, Integer id){
 		return playlistRepository.findById(id)
 				.flatMap(t -> {
-					if(dto.getName() != null) {
+					if(dto.getName() != null && !dto.getName().isEmpty() && !dto.getName().isBlank()) {
 						t.setName(dto.getName());
 					}
 					if (dto.getDescription() != null) {

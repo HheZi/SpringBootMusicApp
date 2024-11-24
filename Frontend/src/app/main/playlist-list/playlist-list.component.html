@@ -1,7 +1,13 @@
-<div *ngFor="let playlist of playlists; let i = index">
-    <div class="card m-2 d-inline-flex" style="width: 13rem;"(click)="navigateToPlaylist(playlist.id)">
-        <img class="card-img-top border-bottom" [src]="playlist.imageUrl" alt="Cover">
-        <h5 class="card-title">{{playlist.name}}</h5>
-        <p class="card-text">{{playlist.description}}</p>
+<div class="playlists-container d-flex flex-wrap">
+  <div
+    *ngFor="let playlist of playlists; let i = index"
+    class="card playlist-card shadow-sm m-2"
+    (click)="navigateToPlaylist(playlist.id)"
+  >
+    <img class="card-img-top playlist-cover" [src]="playlist.imageUrl" alt="Cover" />
+    <div class="card-body">
+      <h5 class="card-title text-truncate" title="{{ playlist.name }}">{{ playlist.name }}</h5>
+      <p class="card-text text-muted">{{ playlist.description }}</p>
     </div>
+  </div>
 </div>

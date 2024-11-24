@@ -82,9 +82,8 @@ export class SeePlaylistComponent implements OnInit {
     if(this.editablePlaylist.name){
       formData.append("name", this.editablePlaylist.name);
     }
-    if(this.editablePlaylist.description){
-      formData.append("description", this.editablePlaylist.description);
-    }
+    formData.append("description", this.editablePlaylist.description);
+    
     if(this.selectedFile){
       formData.append("cover", this.selectedFile);
     }

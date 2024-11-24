@@ -26,8 +26,6 @@ public class PlaylistMapper {
 	}
 	
 	public ResponsePlaylist fromPlaylistToResponsePlaylist(Playlist playlist, List<Long> trackIds) {
-//		if (playlist == null ) return null;
-		
 		return ResponsePlaylist.builder()
 				.id(playlist.getId())
 				.description(playlist.getDescription())

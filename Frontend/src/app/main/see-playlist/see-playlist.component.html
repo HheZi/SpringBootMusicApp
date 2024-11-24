@@ -28,12 +28,12 @@
         [style]="{width: '500px'}">
 
         <div class="form-group mt-2">
-            <input type="text" id="albumName" class="form-control" [(ngModel)]="editablePlaylist.name"
+            <input type="text" id="albumName" [value]="playlist.name" class="form-control" [(ngModel)]="editablePlaylist.name"
                 placeholder="Name" />
         </div>
 
         <div class="form-group mt-2">
-            <textarea name="description" placeholder="Write something" [(ngModel)]="editablePlaylist.description"></textarea>
+            <textarea name="description" [value]="playlist.description" placeholder="Write something" [(ngModel)]="editablePlaylist.description"></textarea>
         </div>
 
         <div class="form-group">

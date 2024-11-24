@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ViewChildren } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild, ViewChildren } from '@angular/core';
 import { TrackService } from '../../services/track/track.service';
 import { MessageService } from 'primeng/api';
 import { Title } from '@angular/platform-browser';
@@ -15,7 +15,7 @@ import { TrackListComponent } from '../track-list/track-list.component';
   templateUrl: './home-page.component.html',
   styleUrls: ['./home-page.component.css'],
 })
-export class SeeTracksComponent implements OnInit {
+export class SeeTracksComponent implements OnInit{
 
   @ViewChild(PlaylistListComponent) playlistList!: PlaylistListComponent; 
   @ViewChild(TrackListComponent) trackList!: TrackListComponent;
@@ -35,7 +35,8 @@ export class SeeTracksComponent implements OnInit {
   ) {
     this.titleService.setTitle("Tracks");
   }
-
+  
+  
   ngOnInit(): void {
     this.activatedRoute.queryParams.subscribe(params => {
       this.searchValue = params['name'] || null;
@@ -47,22 +48,30 @@ export class SeeTracksComponent implements OnInit {
       }
     });
   }
-
+  
   public getTracks(headers: HttpParams | null = null): void {
+    this.isNotFound = false;
+    this.playlistList?.setPlaylists([]);
+    this.trackList?.setTracks([]);
+    
     this.trackService.getTracks(headers).subscribe({
       next: tracksResp => this.populateTracks(tracksResp)
     });
   }
-
+  
   private populateTracks(tracksResp: any): void {
     this.checkIfNotFound(tracksResp);
-  
+    
     if (!this.isNotFound) {
       this.trackList.setTracks(tracksResp);
     }
   }
-
+  
   public getTracksByName(): void {
+    this.isNotFound = false;
+    this.playlistList?.setPlaylists([]);
+    this.trackList?.setTracks([]);
+
     if (this.radioVal === "Track") {
       var params = new HttpParams();
       this.getTracks(params.append("name", this.searchValue))
@@ -110,12 +119,12 @@ export class SeeTracksComponent implements OnInit {
     }
   }
 
-  private fetchPlaylist(playlists: any[]): void{
+  private fetchPlaylist(playlists: any[]): void {
     this.checkIfNotFound(playlists);
-    if(!this.isNotFound){
-      this.playlistList.setPlaylists(playlists);
+  
+    if (!this.isNotFound) {
+      this.playlistList.setPlaylists(playlists); 
     }
-
   }
 
   private handleError(summary: string, error: any): void {
