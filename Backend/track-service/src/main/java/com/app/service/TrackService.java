@@ -6,15 +6,19 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
 import org.springframework.data.relational.core.query.Criteria;
 import org.springframework.data.relational.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -80,38 +84,42 @@ public class TrackService {
 		
 	}
 	
-	private Mono<Mp3File> saveAudioInTemp(FilePart audio) {
-		Path path = Path.of(tempFolder, audio.filename());
-		
-		return audio.transferTo(path)
-				.then(Mono.fromCallable(() -> new Mp3File(path.toString())))
-				.doFinally(t -> path.toFile().delete());
-	}
-
 	@Transactional
 	public Mono<ResponseEntity<?>> createTrack(CreateTrackDto dto, Integer userId) {
-		return saveAudioInTemp(dto.getAudio())
+		Path path = Path.of(tempFolder, dto.getAudio().filename());
+		
+		return dto.getAudio().transferTo(path)
+				.then(Mono.fromCallable(() -> new Mp3File(path.toString())))
 				.flatMap(t -> repository.save(mapper.fromCreateTrackDtoToTrack(dto, userId, t)))
-				.doOnNext(t -> saveAudio(t.getAudioName().toString(), dto.getAudio()))
+				.flatMap(t -> saveAudio(t.getAudioName().toString(), path))
+				.then(Mono.just(path.toFile().delete()))
 				.map(t -> ResponseEntity.status(HttpStatus.CREATED).build());
 	}
 
-	private void saveAudio(String name, FilePart audio) {
-		if(name  == null || audio == null) return;
+	private Mono<Void> saveAudio(String name, Path pathToTempAudio) {
+		if(name  == null || pathToTempAudio == null) return Mono.empty();
 		
-		DataBufferUtils.join(audio.content())
-        .map(dataBuffer -> {
-            byte[] content = new byte[dataBuffer.readableByteCount()];
-            dataBuffer.read(content);  
-            DataBufferUtils.release(dataBuffer);  
-            return content;
-        })
-        .flatMap(t -> webClient.build()
-        	.post().uri("http://audio-service/api/audio")
-            .bodyValue(new RequestSaveAudio(name, t))
-            .retrieve()
-            .bodyToMono(Void.class))
-        .subscribe();
+//		DataBufferUtils.join(audio.content())
+//        .map(dataBuffer -> {
+//            byte[] content = new byte[dataBuffer.readableByteCount()];
+//            dataBuffer.read(content);  
+//            DataBufferUtils.release(dataBuffer);  
+//            return content;
+//        })
+//        .flatMap(t -> )
+//        .subscribe();
+		
+		MultipartBodyBuilder builder = new MultipartBodyBuilder();
+		
+		builder.part("file", new FileSystemResource(pathToTempAudio));
+		builder.part("name", name);
+		
+		return webClient.build()
+    	.post().uri("http://audio-service/api/audio")
+        .body(BodyInserters.fromMultipartData(builder.build()))
+        .retrieve()
+        .bodyToMono(Void.class);
+		
 		
 	}
 	

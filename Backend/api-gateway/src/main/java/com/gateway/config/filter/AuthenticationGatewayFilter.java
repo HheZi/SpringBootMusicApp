@@ -15,6 +15,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.server.ServerWebExchange;
 
@@ -26,13 +27,15 @@ import reactor.core.publisher.Mono;
 @Component
 public class AuthenticationGatewayFilter implements GatewayFilter {
 
+	private final AntPathMatcher pathMatcher = new AntPathMatcher();
+	
 	private final List<OpenEndpoint> openEndpoints = List.of(
-			new OpenEndpoint("/api/auth", new HttpMethod[] { POST }),
+			new OpenEndpoint("/api/auth/**", new HttpMethod[] { POST }),
 			new OpenEndpoint("/api/users", new HttpMethod[] { POST }),
-			new OpenEndpoint("/api/audio", new HttpMethod[] { GET }),
-			new OpenEndpoint("/api/images", new HttpMethod[] { GET }),
-			new OpenEndpoint("/api/tracks", new HttpMethod[] { GET }),
-			new OpenEndpoint("/tracks", new HttpMethod[] { GET })
+			new OpenEndpoint("/api/audio/**", new HttpMethod[] { GET }),
+			new OpenEndpoint("/api/images/**", new HttpMethod[] { GET }),
+			new OpenEndpoint("/api/tracks/**", new HttpMethod[] { GET }),
+			new OpenEndpoint("/tracks/", new HttpMethod[] { GET })
 		);
 
 	@Autowired
@@ -44,7 +47,7 @@ public class AuthenticationGatewayFilter implements GatewayFilter {
 
 		String token = getTokenFromHeader(request);
 
-		if (isEndpointNotSecured(request)) {
+		if (isOpenEndpointSecured(request)) {
 			return chain.filter(exchange);
 		}
 		
@@ -69,13 +72,13 @@ public class AuthenticationGatewayFilter implements GatewayFilter {
 		return vals == null ? null : vals.get(0).split("\s+")[1];
 	}
 
-	private boolean isEndpointNotSecured(ServerHttpRequest request) {
+	private boolean isOpenEndpointSecured(ServerHttpRequest request) {
 	    return openEndpoints.stream()
 	            .anyMatch(endpoint -> isPathTheSame(request, endpoint.uri()) && isHttpMethodTheSame(request, endpoint.httpMethods()));
 	}
 
 	private boolean isPathTheSame(ServerHttpRequest request, String uri) {
-		return request.getURI().getPath().contains(uri);
+		return pathMatcher.match(uri, request.getURI().getPath());
 	}
 
 	private boolean isHttpMethodTheSame(ServerHttpRequest request, HttpMethod[] httpMethods) {

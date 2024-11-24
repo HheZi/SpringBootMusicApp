@@ -1,6 +1,10 @@
 spring:
   application:
     name: audio-service
+  servlet:
+    multipart:
+      max-file-size: 36MB
+      max-request-size: 36MB
 server:
   port: 0
 audio.path: /Programming/Java/StreamingService/Backend/audio-service/audio

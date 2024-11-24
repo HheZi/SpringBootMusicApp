@@ -62,7 +62,7 @@ public class AuthorService {
 	public Mono<Void> updateAuthor(AuthorCreateOrUpdateRequest dto, Integer id, Integer userId){
 		return authorRepository.findById(id)
 		.filter(t -> t.getCreatedBy() == userId)
-		.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "You can't update the author")))
+		.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.FORBIDDEN)))
 		.doOnNext(t -> {
 			if (dto.getName() != null && !dto.getName().isEmpty() && !dto.getName().isBlank()) {
 				t.setName(dto.getName());

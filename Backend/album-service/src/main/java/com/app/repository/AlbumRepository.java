@@ -9,6 +9,6 @@ import reactor.core.publisher.Flux;
 
 public interface AlbumRepository extends ReactiveCrudRepository<Album, Integer>{
 
-	Flux<Album> findByNameIsStartingWithAllIgnoreCase(String name);
+	Flux<Album> findByNameStartingWithAllIgnoreCase(String name);
 	
 }

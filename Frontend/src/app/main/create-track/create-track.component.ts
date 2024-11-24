@@ -52,7 +52,7 @@ export class CreateTrackComponent implements  OnInit{
       console.log(formData);
       this.trackService.createTracks(formData).subscribe({
         next: (resp) => this.messageService.add({closable: true, detail: "The track has been created", severity: 'success'}),
-        error: (err) => this.messageService.add({closable: true, detail: err.error, severity: "error", summary: "Something went wrong"})
+        error: (err) => this.messageService.add({closable: true, severity: "error", summary: "Something went wrong"})
       });
     }
   }
@@ -64,7 +64,6 @@ export class CreateTrackComponent implements  OnInit{
   }
   
   public searchAlbum(event: any): void{
-
     this.albumService.getAlbumsBySymbol(event.query).subscribe({
       next: (resp: any) => this.albums = resp
     });

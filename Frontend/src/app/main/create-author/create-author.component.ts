@@ -40,8 +40,8 @@ export class CreateAuthorComponent implements OnInit{
       }
   
       this.authorService.createAuthor(formData).subscribe({
-        next: (data) => this.messageService.add({ closable: true, detail: "You have created the author", severity: "success" }),
-        error: (err) => this.messageService.add({ closable: true, detail: err.error, summary: "Something went wrong", severity: "error" })
+        next: (data) => this.messageService.add({ closable: true, summary: "You have created the author", severity: "success" }),
+        error: (err) => this.messageService.add({ closable: true, summary: "Something went wrong", severity: "error" })
       })
     }
 

@@ -25,8 +25,7 @@ public class AudioService {
 	private String audioPath;
 
 	public ResourceRegion getResource(String filename, String rangeHeader) throws IOException {
-
-		FileSystemResource resource = new FileSystemResource(new File(audioPath, filename));
+		FileSystemResource resource = new FileSystemResource(Path.of(audioPath, filename));
 
 		List<HttpRange> ranges = HttpRange.parseRanges(rangeHeader);
 		long contentLength = resource.contentLength();
@@ -42,13 +41,12 @@ public class AudioService {
 
 	@SneakyThrows
 	public void saveAudio(SaveAudioDTO dto) {
-		Path path = Path.of(audioPath, dto.getName());
-		Files.write(path, dto.getContent());
+		Files.write(Path.of(audioPath, dto.getName()), dto.getFile().getBytes());
 	}
 
 	@SneakyThrows
 	public void deleteAudio(String name) {
-		Files.delete(Path.of(audioPath).resolve(name));
+		Files.delete(Path.of(audioPath, name));
 	}
 
 }

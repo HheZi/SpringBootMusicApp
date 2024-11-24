@@ -71,7 +71,7 @@ class AudioControllerTest {
 		
 		SaveAudioDTO dto = new SaveAudioDTO();
 		dto.setName(filenameToSave);
-		dto.setContent(contentToSave);
+//		dto.setContent(contentToSave);
 		
 		
 		mockMvc.perform(MockMvcRequestBuilders.post("/api/audio")
