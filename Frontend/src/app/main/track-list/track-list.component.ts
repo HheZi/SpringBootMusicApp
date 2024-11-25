@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { AudioService } from '../../services/audio/audio.service';
 import { Track } from './track';
 import { Router } from '@angular/router';

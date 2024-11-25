@@ -15,7 +15,7 @@ import { TrackListComponent } from '../track-list/track-list.component';
   templateUrl: './home-page.component.html',
   styleUrls: ['./home-page.component.css'],
 })
-export class SeeTracksComponent implements OnInit{
+export class HomeComponent implements OnInit {
 
   @ViewChild(PlaylistListComponent) playlistList!: PlaylistListComponent; 
   @ViewChild(TrackListComponent) trackList!: TrackListComponent;
@@ -48,6 +48,8 @@ export class SeeTracksComponent implements OnInit{
       }
     });
   }
+
+
   
   public getTracks(headers: HttpParams | null = null): void {
     this.isNotFound = false;

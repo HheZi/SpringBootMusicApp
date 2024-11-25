@@ -26,6 +26,7 @@ import com.app.model.Track;
 import com.app.payload.request.CreateTrackDto;
 import com.app.payload.request.RequestSaveAudio;
 import com.app.payload.request.UpdateTrackRequest;
+import com.app.payload.response.ResponseTotalDuration;
 import com.app.payload.response.ResponseTrack;
 import com.app.repository.TrackRepository;
 import com.app.util.TrackMapper;
@@ -117,6 +118,13 @@ public class TrackService {
 		return repository.countByAlbumId(albumId);
 	}
 
+	public Mono<ResponseTotalDuration> totalTimeOfTracks(List<Long> ids) {
+		return repository.findAllById(ids)
+				.map(t -> t.getDuration())
+				.reduce((t, u) -> t + u)
+				.map(mapper::getDurationOfTrack);
+	}
+	
 	@Transactional
 	public Mono<Void> deleteTrack(Long id){
 		return repository.findById(id)

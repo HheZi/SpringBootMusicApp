@@ -12,6 +12,7 @@
             <h5 class="album-meta text-secondary">
                 {{ album.numberOfTrack }} Tracks
                 <span *ngIf="album.releaseDate" class="ms-3">Release Date: {{ album.releaseDate }}</span>
+                <span *ngIf="album.totalDuration" class="ms-3">{{album.totalDuration}}</span>
             </h5>
         </div>
     </div>

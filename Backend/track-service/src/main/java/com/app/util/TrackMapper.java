@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 
 import com.app.model.Track;
 import com.app.payload.request.CreateTrackDto;
+import com.app.payload.response.ResponseTotalDuration;
 import com.app.payload.response.ResponseTrack;
 import com.mpatric.mp3agic.Mp3File;
 
@@ -21,7 +22,7 @@ public class TrackMapper {
 				.authorId(dto.getAuthorId())
 				.albumId(dto.getAlbumId())
 				.createdBy(userId)
-				.duration(calculateDurationOfTrack(mp3File.getLengthInSeconds()))
+				.duration(mp3File.getLengthInSeconds())
 				.build();
 	}
 	
@@ -32,6 +33,20 @@ public class TrackMapper {
 		return String.format("%d:%02d", minutes, seconds);
 	}
 	
+	public ResponseTotalDuration getDurationOfTrack(long totalSeconds) {
+		int hours = (int) (totalSeconds / 3600);
+		
+		if (totalSeconds >= 60 * 60 * 24) {
+			return new ResponseTotalDuration("More then 24 hours");
+		}
+		else if(totalSeconds >= 60 * 60) {
+			return new ResponseTotalDuration("At least "+ hours  + " hours");
+		}
+		else {
+			return new ResponseTotalDuration(calculateDurationOfTrack(totalSeconds));
+		}
+	}
+	
 	public ResponseTrack fromTrackToResponseTrack(Track track) {
 		return ResponseTrack.builder()
 				.id(track.getId())
@@ -39,7 +54,7 @@ public class TrackMapper {
 				.audioUrl(String.format(AUDIO_URL, track.getAudioName().toString()))
 				.albumId(track.getAlbumId())
 				.authorId(track.getAuthorId())
-				.duration(track.getDuration())
+				.duration(calculateDurationOfTrack(track.getDuration()))
 				.build();
 	}
 	

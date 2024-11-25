@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.app.payload.request.CreateTrackDto;
 import com.app.payload.request.UpdateTrackRequest;
+import com.app.payload.response.ResponseTotalDuration;
 import com.app.payload.response.ResponseTrack;
 import com.app.service.TrackService;
 
@@ -52,6 +53,11 @@ public class TrackContoller {
 	@GetMapping("/count/{albumId}")
 	public Mono<Long> countTracks(@PathVariable("albumId") Long albumId){
 		return trackService.countTracksByAlbumId(albumId);
+	}
+	
+	@GetMapping("/duration")
+	public Mono<ResponseTotalDuration> getTotalDuration(@RequestParam("ids") List<Long> ids){
+		return  trackService.totalTimeOfTracks(ids);
 	}
 	
 	@PostMapping

@@ -17,14 +17,14 @@ import { TrackListComponent } from '../track-list/track-list.component';
   providers: [ConfirmationService]
 })
 export class SeeAlbumComponent {
-  public album: Album = { id: 0, imageUrl: "", name: "", numberOfTrack: 0, albumType: "", releaseDate: null };
+  public album: Album = { id: 0, imageUrl: "", name: "", numberOfTrack: 0, albumType: "", releaseDate: null, totalDuration: ''};
   public isOwnerOfAlbum = false;
   public isNotFound = false;
 
   @ViewChild(TrackListComponent) trackList!: TrackListComponent;
 
   public editDialogVisible = false;
-  public editableAlbum: Album = { id: 0, imageUrl: "", name: "", numberOfTrack: 0, albumType: "", releaseDate: null };
+  public editableAlbum: Album = { id: 0, imageUrl: "", name: "", numberOfTrack: 0, albumType: "", releaseDate: null,  totalDuration: ''};
   private selectedFile: File | null = null;
   public previewImage: string | ArrayBuffer | null = null;
 
@@ -55,14 +55,20 @@ export class SeeAlbumComponent {
           this.album.numberOfTrack = val;
         });
 
+        
         this.albumService.getIsUserIsOwnerOfAlbum(this.album.id).subscribe((resp: any) => {
           this.isOwnerOfAlbum = resp;
           this.trackList.setModifiable(this.isOwnerOfAlbum);
         });
-
+        
         this.trackService.getTracksByAlbumId(albumId).subscribe((tracks: any) => {
           this.trackList.setTracks(tracks);
+          this.trackService.getDurationByIds(tracks.map((t: any) => t.id)).subscribe({
+            next: (resp: any) => this.album.totalDuration = resp.duration
+          })
         });
+        
+        
       },
       error: () => this.isNotFound = true
     });

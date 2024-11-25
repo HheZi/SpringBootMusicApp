@@ -3,7 +3,7 @@ import { RouteReuseStrategy, RouterModule, Routes } from '@angular/router';
 import { LoginComponent } from './login/login.component';
 import { RegistrationComponent } from './registration/registration.component';
 import { MainComponent } from './main/main.component';
-import { SeeTracksComponent } from './main/home-page/home-page.component';
+import { HomeComponent } from './main/home-page/home-page.component';
 import { CreateAlbumComponent } from './main/create-album/create-album.component';
 import { CustomReuseStrategy } from './custome-routes/custom-reuse-strategy';
 import { CreateTrackComponent } from './main/create-track/create-track.component';
@@ -26,10 +26,10 @@ const routes: Routes = [
   path: '', 
   component: MainComponent,
   children: [
-  {path: '', component: SeeTracksComponent}, 
-  {path: 'albums/create', component: CreateAlbumComponent},
-  {path: 'tracks/create', component: CreateTrackComponent},
-  {path: 'authors/create', component: CreateAuthorComponent},
+  {path: 'home', component: HomeComponent}, 
+  {path: 'album/create', component: CreateAlbumComponent},
+  {path: 'track/create', component: CreateTrackComponent},
+  {path: 'author/create', component: CreateAuthorComponent},
   {path: 'album/:id', component: SeeAlbumComponent},
   {path: 'author/:id', component: SeeAuthorComponent},
   {path: 'playlist/create', component: CreatePlaylistComponent},

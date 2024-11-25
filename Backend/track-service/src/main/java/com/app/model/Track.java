@@ -36,6 +36,6 @@ public class Track {
 	@Column("created_by")
 	private Integer createdBy;
 	
-	private String duration;
+	private Long duration;
 	
 }

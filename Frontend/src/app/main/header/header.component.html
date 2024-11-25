@@ -1,7 +1,7 @@
 <header class="header shadow-sm">
   <nav class="navbar navbar-expand-lg navbar-light bg-white py-2 px-3">
     <div class="navbar-brand d-flex align-items-center">
-      <i class="pi pi-home icon me-3" (click)="navigateTo('/')"></i>
+      <i class="pi pi-home icon me-3" (click)="navigateTo('/home')"></i>
       <p-menu #menu [model]="items" [popup]="true"></p-menu>
       <p-button 
         (onClick)="menu.toggle($event)" 

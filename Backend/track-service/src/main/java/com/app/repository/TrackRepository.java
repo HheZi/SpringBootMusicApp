@@ -12,4 +12,5 @@ public interface TrackRepository extends ReactiveCrudRepository<Track, Long>{
 	public Mono<Long> countByAlbumId(Long playlistId);
 	
 	Flux<Track> findByAlbumId(Integer playlistId);
+	
 }

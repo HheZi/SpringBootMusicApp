@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Playlist } from './playlist';
 import { PlaylistService } from '../../services/playlist/playlist.service';
 import { Router } from '@angular/router';
@@ -8,7 +8,7 @@ import { Router } from '@angular/router';
   templateUrl: './playlist-list.component.html',
   styleUrl: './playlist-list.component.css'
 })
-export class PlaylistListComponent implements OnInit{
+export class PlaylistListComponent {
 
   protected playlists: Playlist[] = [];
 
@@ -17,7 +17,8 @@ export class PlaylistListComponent implements OnInit{
   ){
 
   }
-  ngOnInit(): void {
+  ngOnDestroy(): void {
+    this.playlists = []
   }
 
   public setPlaylists(playlists: any[]): void{

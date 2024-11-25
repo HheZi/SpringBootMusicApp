@@ -17,7 +17,7 @@ import { RegistrationComponent } from './registration/registration.component';
 import { MainComponent } from './main/main.component';
 import { AudioComponent } from './main/audio/audio.component';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { SeeTracksComponent } from './main/home-page/home-page.component';
+import { HomeComponent } from './main/home-page/home-page.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { DataViewModule } from 'primeng/dataview';
 import { CreateAlbumComponent } from './main/create-album/create-album.component';
@@ -49,7 +49,7 @@ import { SeePlaylistComponent } from './main/see-playlist/see-playlist.component
     RegistrationComponent,
     MainComponent,
     AudioComponent,
-    SeeTracksComponent,
+    HomeComponent,
     CreateAlbumComponent,
     CreateTrackComponent,
     HeaderComponent,

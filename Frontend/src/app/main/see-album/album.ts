@@ -5,4 +5,5 @@ export interface Album{
     imageUrl: string;
     numberOfTrack: number,
     releaseDate: Date | null | string
+    totalDuration: string
 }
