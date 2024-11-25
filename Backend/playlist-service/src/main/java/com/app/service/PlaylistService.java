@@ -1,16 +1,23 @@
 package com.app.service;
 
+import java.nio.file.Path;
 import java.util.UUID;
+import java.util.function.Function;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.app.model.Playlist;
 import com.app.model.PlaylistTrack;
 import com.app.payload.request.CreateOrUpdatePlaylist;
 import com.app.payload.request.SavePlaylistImageRequest;
@@ -20,6 +27,7 @@ import com.app.repository.PlaylistTrackRepository;
 import com.app.util.PlaylistMapper;
 
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.var;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -35,6 +43,9 @@ public class PlaylistService {
 	
 	private final WebClient.Builder builder;
 
+	@Value("${file.temp}")
+	private String tempFolder;
+	
 	public Mono<ResponsePlaylist> getPlaylistById(Integer id){
 		return Mono.zip(playlistRepository.findById(id), getTrackIdsByPlaylist(id).collectList())
 				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)))
@@ -59,9 +70,18 @@ public class PlaylistService {
 	
 	@Transactional
 	public Mono<ResponseEntity<?>> createPlaylist(CreateOrUpdatePlaylist dto, Integer userId){
-		return Mono.just(
-				playlistMapper.fromCreatePlaylistToPlaylist(dto, userId, dto.getCover() != null))
-				.doOnNext(t -> saveAuthorImage(t.getImageName(), dto.getCover()))
+		if (dto.getCover() != null) {
+			Path path = Path.of(tempFolder, dto.getCover().filename());
+			
+			return dto.getCover().transferTo(path)
+					.then(Mono.fromCallable(() -> playlistMapper.fromCreatePlaylistToPlaylist(dto, userId, true)))
+					.flatMap(playlistRepository::save)
+					.flatMap(t -> saveAuthorImage(t.getImageName(), path))
+					.then(Mono.just(path.toFile().delete()))
+					.map(t -> ResponseEntity.status(HttpStatus.CREATED).build());
+		}
+		
+		return Mono.just(playlistMapper.fromCreatePlaylistToPlaylist(dto, userId, false))
 				.flatMap(playlistRepository::save)
 				.map(t -> ResponseEntity.status(HttpStatus.CREATED).build());
 	}
@@ -88,20 +108,33 @@ public class PlaylistService {
 	
 	@Transactional
 	public Mono<Void> updatePlaylist(CreateOrUpdatePlaylist dto, Integer id){
+		Function<Playlist, Mono<Playlist>> func = playlist -> {
+			if(dto.getName() != null && !dto.getName().isEmpty() && !dto.getName().isBlank()) {
+				playlist.setName(dto.getName());
+			}
+			if (dto.getDescription() != null) {
+				playlist.setDescription(dto.getDescription());
+			}
+			if (playlist.getImageName() == null && dto.getCover() != null) {
+				playlist.setImageName(UUID.randomUUID());
+			}
+			return playlistRepository.save(playlist);
+		};
+		
+		if (dto.getCover() != null) {
+			Path path = Path.of(tempFolder, dto.getCover().filename());
+			
+			return dto.getCover().transferTo(path)
+					.then(playlistRepository.findById(id))
+					.flatMap(func)
+					.flatMap(t -> saveAuthorImage(t.getImageName(), path))
+					.then(Mono.just(path.toFile().delete()))
+					.then();
+					
+		}
+		
 		return playlistRepository.findById(id)
-				.flatMap(t -> {
-					if(dto.getName() != null && !dto.getName().isEmpty() && !dto.getName().isBlank()) {
-						t.setName(dto.getName());
-					}
-					if (dto.getDescription() != null) {
-						t.setDescription(dto.getDescription());
-					}
-					if (t.getImageName() == null && dto.getCover() != null) {
-						t.setImageName(UUID.randomUUID());
-					}
-					return playlistRepository.save(t);
-				})
-				.doOnNext(t -> saveAuthorImage(t.getImageName(), dto.getCover()))
+				.flatMap(func)
 				.then();
 	}
 	
@@ -113,24 +146,20 @@ public class PlaylistService {
 				.then();
 	}
 	
-	private void saveAuthorImage(UUID name, FilePart filePart) {
-		if (name ==  null || filePart == null) return;			
+	private Mono<Void> saveAuthorImage(UUID name, Path pathToFile) {
+		if (name == null) Mono.empty();			
+
+		MultipartBodyBuilder multipartbuilder = new MultipartBodyBuilder();
 		
-		DataBufferUtils.join(filePart.content())
-	    .map(dataBuffer -> {
-	    	byte[] bs = new byte[dataBuffer.readableByteCount()];
-	    	dataBuffer.read(bs);
-	    	DataBufferUtils.release(dataBuffer);
-	    	return bs;
-	    })
-	    .flatMap(t -> {
-	    	return builder.build()
-	    			.post()
-	    			.uri("http://image-service/api/images/")
-	    			.bodyValue(new SavePlaylistImageRequest(name.toString(), t))
-	    			.retrieve()
-	    			.bodyToMono(Void.class);
-	    }).subscribe();
+		multipartbuilder.part("file", new FileSystemResource(pathToFile));
+		multipartbuilder.part("name", name.toString());
+		
+		return builder.build()
+    			.post()
+    			.uri("http://image-service/api/images/")
+    			.body(BodyInserters.fromMultipartData(multipartbuilder.build()))
+    			.retrieve()
+    			.bodyToMono(Void.class);
 		
 	}
 	

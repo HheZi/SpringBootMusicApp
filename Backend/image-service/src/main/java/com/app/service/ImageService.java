@@ -2,20 +2,25 @@ package com.app.service;
 
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.FileSystemResourceLoader;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
+import org.springframework.http.CacheControl;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.app.payload.RequestImage;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import reactor.core.publisher.Mono;
 
 @Service
 @RequiredArgsConstructor
@@ -27,26 +32,31 @@ public class ImageService {
 	@Value("${image.default}")
 	private String defaultImagePath;
 	
-	private final ResourceLoader loader;
-	
 	@SneakyThrows
-	public Resource getImage(String name){
-		return new FileSystemResource(new File(imagePath, name));
+	public Mono<ResponseEntity<FileSystemResource>> getImage(String name){
+		return Mono.just(ResponseEntity.ok()
+				.contentType(MediaType.IMAGE_JPEG)
+				.body(new FileSystemResource(Path.of(imagePath, name))));
 	}
 
 	@SneakyThrows
-	public Resource getDefaultImage() {
-		return new FileSystemResource(new File(defaultImagePath));
+	public Mono<ResponseEntity<FileSystemResource>> getDefaultImage() {
+		return Mono.just(ResponseEntity.ok()
+				.contentType(MediaType.IMAGE_PNG)
+				.cacheControl(CacheControl.maxAge(1, TimeUnit.DAYS))
+				.body(new FileSystemResource(Path.of(defaultImagePath))));
 	}
 	
 	@SneakyThrows
-	public void saveImage(RequestImage image) {
-		Files.write(Path.of(imagePath, image.getName()), image.getContent());
+	public Mono<ResponseEntity<?>> saveImage(RequestImage image) {
+		return image.getFile()
+				.transferTo(Path.of(imagePath, image.getName()))
+				.map(t -> ResponseEntity.status(HttpStatus.CREATED).build());
 	}
 	
-	@SneakyThrows
-	public void deleteImage(String name) {
-		Files.delete(Path.of(imagePath, name));
+	public Mono<Void> deleteImage(String name) {
+		new File(imagePath, name).delete();
+		return Mono.empty();
 	}
 	
 }

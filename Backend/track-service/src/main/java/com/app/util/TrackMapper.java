@@ -29,7 +29,7 @@ public class TrackMapper {
 		int minutes = (int) lengthInSeconds / 60;
 		int seconds = (int) lengthInSeconds % 60;
 		
-		return minutes + ":" + seconds;
+		return String.format("%d:%02d", minutes, seconds);
 	}
 	
 	public ResponseTrack fromTrackToResponseTrack(Track track) {

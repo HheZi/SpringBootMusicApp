@@ -99,16 +99,6 @@ public class TrackService {
 	private Mono<Void> saveAudio(String name, Path pathToTempAudio) {
 		if(name  == null || pathToTempAudio == null) return Mono.empty();
 		
-//		DataBufferUtils.join(audio.content())
-//        .map(dataBuffer -> {
-//            byte[] content = new byte[dataBuffer.readableByteCount()];
-//            dataBuffer.read(content);  
-//            DataBufferUtils.release(dataBuffer);  
-//            return content;
-//        })
-//        .flatMap(t -> )
-//        .subscribe();
-		
 		MultipartBodyBuilder builder = new MultipartBodyBuilder();
 		
 		builder.part("file", new FileSystemResource(pathToTempAudio));

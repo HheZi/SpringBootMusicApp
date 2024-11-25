@@ -78,7 +78,7 @@ class ImageControllerTest {
 		String imageName = "savedImage";
 		
 		RequestImage requestImage = new RequestImage();
-		requestImage.setContent(new byte[] {100, 45, 23, 65, 4});
+//		requestImage.setContent(new byte[] {100, 45, 23, 65, 4});
 		requestImage.setName(imageName);
 		
 		mockMvc.perform(MockMvcRequestBuilders.post("/api/images/")
