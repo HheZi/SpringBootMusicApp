@@ -1,8 +1,12 @@
 package com.app.service;
 
+import java.nio.file.Path;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Function;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -37,6 +41,9 @@ public class AlbumService {
 	private final AlbumMapper albumMapper;
 
 	private final WebClient.Builder builder;
+	
+	@Value("${file.temp}")
+	private String tempFolder;
 
 	public Mono<ResponseAlbum> getAlbumById(Integer id) {
 		return albumRepository
@@ -57,33 +64,34 @@ public class AlbumService {
 	}
 
 	public Mono<ResponseEntity<Integer>> createAlbum(RequestAlbum dto, Integer userId) {
-		boolean coverIsPresent = dto.getCover() != null && !dto.getCover().filename().isEmpty();
+		if (dto.getCover() != null) {
+			Path path = Path.of(tempFolder, dto.getCover().filename());
+			
+			return dto.getCover().transferTo(path)
+					.then(Mono.fromCallable(() -> albumMapper.fromRequestAlbumToAlbum(dto, userId, true)))
+					.flatMap(albumRepository::save)
+					.flatMap(t -> saveAlbumCover(t.getImageName(), path))
+					.doFinally(t -> path.toFile().delete())
+					.map(t -> ResponseEntity.status(HttpStatus.CREATED).build());
+		}
 		
-		Album playlist = albumMapper.fromRequestAlbumToAlbum(dto, userId, coverIsPresent);
-
-		if (coverIsPresent) 
-			saveAlbumCover(playlist.getImageName(), dto.getCover());			
-
-		return albumRepository.save(playlist)
+		return  Mono.just(albumMapper.fromRequestAlbumToAlbum(dto, userId, false))
+				.flatMap(albumRepository::save)
 				.map(t -> ResponseEntity.status(HttpStatus.CREATED).body(t.getId()));
 	}
 
-	private void saveAlbumCover(UUID name, FilePart filePart) {
-		if (filePart == null || name == null) return;
+	private Mono<Void> saveAlbumCover(UUID name, Path pathToFile) {
+		if (name == null) return Mono.empty();
 
-		DataBufferUtils.join(filePart.content())
-	    .map(dataBuffer -> {
-	    	byte[] bs = new byte[dataBuffer.readableByteCount()];
-	    	dataBuffer.read(bs);
-	    	DataBufferUtils.release(dataBuffer);
-	    	return bs;
-	    })
-	    .flatMap(t -> {
-	    	 return builder.build().post().uri("http://image-service/api/images/")
-	    	.bodyValue(new RequestImage(name.toString(), t))
-	    	.retrieve()
-	    	.bodyToMono(Void.class);
-	    }).subscribe();
+		MultipartBodyBuilder multipartbuilder = new MultipartBodyBuilder();
+		
+		multipartbuilder.part("file", new FileSystemResource(pathToFile));
+		multipartbuilder.part("name", name.toString());
+		
+		return builder.build().post().uri("http://image-service/api/images/")
+				.body(BodyInserters.fromMultipartData(multipartbuilder.build()))
+				.retrieve()
+				.bodyToMono(Void.class);
 
 	}
 
@@ -96,24 +104,38 @@ public class AlbumService {
 				.flatMap(t -> t.getCreatedBy() == userId ? Mono.just(true) : Mono.just(false));
 	}
 
-	public Mono<ResponseAlbum> updateAlbum(RequestToUpdateAlbum dto, Integer playlistId, Integer userId){
+	public Mono<Void> updateAlbum(RequestToUpdateAlbum dto, Integer playlistId, Integer userId){
+		Function<Album, Mono<Album>> function = t -> {
+			if (dto.getName() != null && !dto.getName().isEmpty() && !dto.getName().isBlank()) {
+				t.setName(dto.getName());
+			}
+			if (dto.getReleaseDate() != null) {
+				t.setReleaseDate(dto.getReleaseDate());
+			}
+			if (dto.getCover() != null && t.getImageName() == null) {
+				t.setImageName(UUID.randomUUID());
+			}
+			return albumRepository.save(t);
+		};
+		
+		if(dto.getCover() != null) {
+			Path path = Path.of(tempFolder, dto.getCover().filename());
+			
+			return dto.getCover().transferTo(path)
+					.then(albumRepository.findById(playlistId))
+					.filter(t -> t.getCreatedBy() == userId)
+					.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE)))
+					.flatMap(function)
+					.flatMap(t -> saveAlbumCover(t.getImageName(), path))
+					.doFinally(t -> path.toFile().delete())
+					.then();
+		}
+		
 		return albumRepository.findById(playlistId)
 				.filter(t -> t.getCreatedBy() == userId)
-				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "You are not a creator of the album")))
-				.flatMap(t -> {
-					if (dto.getName() != null && !dto.getName().isEmpty() && !dto.getName().isBlank()) {
-						t.setName(dto.getName());
-					}
-					if (dto.getReleaseDate() != null) {
-						t.setReleaseDate(dto.getReleaseDate());
-					}
-					if (dto.getCover() != null && t.getImageName() == null) {
-						t.setImageName(UUID.randomUUID());
-					}
-					return albumRepository.save(t);
-				})
-				.doOnNext(t -> saveAlbumCover(t.getImageName(), dto.getCover()))
-				.map(albumMapper::fromAlbumToResponseAlbum);
+				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE)))
+				.flatMap(function)
+				.then();
 	}
 	
 	public Mono<Void> deleteAlbum(Integer id){

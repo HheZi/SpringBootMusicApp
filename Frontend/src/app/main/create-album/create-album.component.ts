@@ -63,7 +63,7 @@ export class CreateAlbumComponent implements OnInit {
 
       this.albumService.createAlbum(formData).subscribe({
         next: (data) => this.messageService.add({ closable: true, detail: "Album created", severity: "success" }),
-        error: (err) => this.messageService.add({ closable: true, detail: err.error, severity: "error", summary: "Something went wrong" })
+        error: (err) => this.messageService.add({ closable: true, severity: "error", summary: "Something went wrong" })
       });
     }
   }

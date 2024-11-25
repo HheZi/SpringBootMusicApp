@@ -90,7 +90,7 @@ export class SeeAuthorComponent implements OnInit{
     }
       
     if (this.selectedFile){
-      formData.append("file", this.selectedFile);
+      formData.append("cover", this.selectedFile);
     }
 
     this.authorService.updateAuthor(formData, this.author.id).subscribe(() => {

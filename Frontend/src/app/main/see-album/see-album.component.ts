@@ -107,7 +107,7 @@ export class SeeAlbumComponent {
   private deleteAlbum() {
     this.albumService.deleteAlbum(this.album.id).subscribe(() => {
       this.messageService.add({ closable: true, summary: "The album deleted", severity: "success" });
-      this.router.navigate(["/tracks"]);
+      this.router.navigate(["/"]);
     });
   }
 

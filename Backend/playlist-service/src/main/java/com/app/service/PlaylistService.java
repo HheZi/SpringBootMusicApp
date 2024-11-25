@@ -77,7 +77,7 @@ public class PlaylistService {
 					.then(Mono.fromCallable(() -> playlistMapper.fromCreatePlaylistToPlaylist(dto, userId, true)))
 					.flatMap(playlistRepository::save)
 					.flatMap(t -> saveAuthorImage(t.getImageName(), path))
-					.then(Mono.just(path.toFile().delete()))
+					.doFinally(t -> path.toFile().delete())
 					.map(t -> ResponseEntity.status(HttpStatus.CREATED).build());
 		}
 		
@@ -128,7 +128,7 @@ public class PlaylistService {
 					.then(playlistRepository.findById(id))
 					.flatMap(func)
 					.flatMap(t -> saveAuthorImage(t.getImageName(), path))
-					.then(Mono.just(path.toFile().delete()))
+					.doFinally(t -> path.toFile().delete())
 					.then();
 					
 		}

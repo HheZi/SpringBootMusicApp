@@ -9,7 +9,7 @@
                     <input  type="text" class="form-control" name="name" formControlName="name" placeholder="Enter the name">
                 </div>
                 <div class="form-group mt-3 mb-3">
-                    <input type="file"  class="form-control" accept="image/jpeg" name="file" (change)="onFileChange($event)" formControlName="file">
+                    <input type="file"  class="form-control" accept="image/jpeg" name="cover" (change)="onFileChange($event)" formControlName="cover">
                 </div>
                 <button class="btn btn-primary mt-2" [disabled]="authorFormGroup.invalid">Submit</button>
             </form>

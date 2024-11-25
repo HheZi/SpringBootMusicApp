@@ -92,7 +92,7 @@ public class TrackService {
 				.then(Mono.fromCallable(() -> new Mp3File(path.toString())))
 				.flatMap(t -> repository.save(mapper.fromCreateTrackDtoToTrack(dto, userId, t)))
 				.flatMap(t -> saveAudio(t.getAudioName().toString(), path))
-				.then(Mono.just(path.toFile().delete()))
+				.doFinally(t -> path.toFile().delete())
 				.map(t -> ResponseEntity.status(HttpStatus.CREATED).build());
 	}
 

@@ -13,6 +13,6 @@ public class AuthorCreateOrUpdateRequest {
 
 	private String name;
 	
-	private FilePart file;
+	private FilePart cover;
 	
 }

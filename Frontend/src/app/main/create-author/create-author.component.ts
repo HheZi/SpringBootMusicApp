@@ -21,7 +21,7 @@ export class CreateAuthorComponent implements OnInit{
   ) {
     this.authorFormGroup = this.fb.group({
       name: ['', Validators.required],
-      file: [null]
+      cover: [null]
     });
   }
   
@@ -33,9 +33,9 @@ export class CreateAuthorComponent implements OnInit{
     if (this.authorFormGroup.valid){
       var formData = new FormData();
       formData.append("name", this.authorFormGroup.get("name")?.value);
-      var file = this.authorFormGroup.get("file")?.value;
+      var file = this.authorFormGroup.get("cover")?.value;
       if(file){
-        formData.append("file", file);
+        formData.append("cover", file);
 
       }
   
@@ -52,7 +52,7 @@ export class CreateAuthorComponent implements OnInit{
 
     if (input && input.files && input.files.length > 0) {
       const file = input.files[0];
-      this.authorFormGroup.patchValue({ "file": file });
+      this.authorFormGroup.patchValue({ "cover": file });
     }
   }
 }

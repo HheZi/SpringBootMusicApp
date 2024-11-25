@@ -75,7 +75,7 @@ public class AlbumController {
 	}
 	
 	@PutMapping("/{id}")
-	public Mono<ResponseAlbum> updateAlbum(
+	public Mono<Void> updateAlbum(
 			@ModelAttribute Mono<RequestToUpdateAlbum> dto, 
 			@PathVariable("id") Integer id,
 			@RequestHeader("userId") Integer userId
