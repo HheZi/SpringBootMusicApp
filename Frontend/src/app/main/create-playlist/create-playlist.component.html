@@ -1,25 +1,37 @@
-<div class="container mt-4">
-  <h2>Create Playlist</h2>
+<div class="create-playlist-container mt-5 p-4 shadow-lg bg-white rounded">
+  <div class="text-center mb-4">
+    <h2 class="form-title">Create Playlist</h2>
+  </div>
   <form [formGroup]="playlistForm" (ngSubmit)="onSubmit()">
-    <div class="mb-3">
-      <label for="name" class="form-label">Playlist Title</label>
-      <input formControlName="name" id="name" class="form-control" />
+
+    <div class="form-group mb-4">
+      <label for="name" class="form-label fw-bold">Playlist Title</label>
+      <input type="text" id="name" class="form-control shadow-sm" formControlName="name"
+        placeholder="Enter playlist title" />
       <div
         *ngIf="playlistForm.get('name')?.invalid && (playlistForm.get('name')?.touched || playlistForm.get('name')?.dirty)"
-        class="text-danger">
+        class="text-danger small mt-1">
         Name is required.
       </div>
     </div>
 
-    <div>
-      <textarea name="description" rows="5" cols="30" pInputTextarea formControlName="description"
-        placeholder="Write description"></textarea>
+    <div class="form-group mb-4">
+      <label for="description" class="form-label fw-bold">Description</label>
+      <textarea id="description" rows="5" class="form-control shadow-sm" pInputTextarea formControlName="description"
+        placeholder="Write playlist description"></textarea>
     </div>
 
-    <div class="mb-3">
-      <label for="cover" class="form-label">Cover Image</label>
-      <input type="file" id="cover" (change)="onCoverSelected($event)" class="form-control" accept="image/*" />
+    <div class="form-group mb-4">
+      <label for="cover" class="form-label fw-bold">Cover Image</label>
+      <input type="file" id="cover" class="form-control shadow-sm" accept="image/*" (change)="onCoverSelected($event)"
+        formControlName="cover" />
+      <small class="text-muted">Upload an image file (e.g., JPEG, PNG).</small>
     </div>
-    <button type="submit" class="btn btn-primary" [disabled]="playlistForm.invalid">Create Playlist</button>
+
+    <div class="d-grid">
+      <button type="submit" class="btn btn-primary btn-lg shadow-sm" [disabled]="playlistForm.invalid">
+        Create Playlist
+      </button>
+    </div>
   </form>
 </div>

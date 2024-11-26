@@ -1,28 +1,40 @@
-<div class="container mt-4">
-  <h2>Create Album</h2>
+<div class="create-album-container mt-5 p-4 shadow-lg bg-white rounded">
+  <h2 class="text-center mb-4">Create Album</h2>
   <form [formGroup]="albumForm" (ngSubmit)="onSubmit()">
-    <div class="mb-3">
-      <label for="title" class="form-label">Album Title</label>
-      <input formControlName="title" id="title" class="form-control" />
-      <div
-        *ngIf="albumForm.get('title')?.invalid && (albumForm.get('title')?.touched || albumForm.get('title')?.dirty)"
-        class="text-danger">
+    <div class="form-group mb-3">
+      <label for="title" class="form-label fw-bold">Album Title</label>
+      <input formControlName="title" id="title" class="form-control shadow-sm" placeholder="Enter album title" />
+      <div *ngIf="albumForm.get('title')?.invalid && (albumForm.get('title')?.touched || albumForm.get('title')?.dirty)"
+        class="text-danger mt-1 small">
         Title is required.
       </div>
     </div>
 
-    <div class="mb-3">
-      <p-dropdown formControlName="albumType" [options]="albumTypes" placeholder="Select a album type" />
+    <div class="form-group mb-3">
+      <label for="albumType" class="form-label fw-bold">Album Type</label>
+      <p-dropdown formControlName="albumType" [options]="albumTypes" placeholder="Select album type"
+        class="w-100 shadow-sm">
+      </p-dropdown>
     </div>
 
-    <div >
-      <p-calendar formControlName="releaseDate" dateFormat="dd.mm.yy" placeholder="Release Date"/>
+    <div class="form-group mb-3">
+      <label for="releaseDate" class="form-label fw-bold">Release Date</label>
+      <p-calendar formControlName="releaseDate" dateFormat="dd.mm.yy" placeholder="Select release date"
+        class="w-100 shadow-sm">
+      </p-calendar>
     </div>
 
-    <div class="mb-3">
-      <label for="cover" class="form-label">Cover Image</label>
-      <input type="file" id="cover" (change)="onCoverSelected($event)" class="form-control" accept="image/*"/>
+    <div class="form-group mb-3">
+      <label for="cover" class="form-label fw-bold">Cover Image</label>
+      <input type="file" id="cover" (change)="onCoverSelected($event)" class="form-control shadow-sm"
+        accept="image/*" />
+      <small class="text-muted">Only image files are allowed.</small>
     </div>
-    <button type="submit" class="btn btn-primary" [disabled]="albumForm.invalid">Create Album</button>
+
+    <div class="d-grid">
+      <button type="submit" class="btn btn-primary btn-lg shadow-sm" [disabled]="albumForm.invalid">
+        Create Album
+      </button>
+    </div>
   </form>
 </div>

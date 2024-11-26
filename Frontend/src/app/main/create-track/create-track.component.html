@@ -1,55 +1,47 @@
-<div class="container mt-5">
-    <div class="card">
-      <div class="card-header bg-primary text-white">
-        <h3>Create New Track</h3>
-      </div>
-      <div class="card-body">
-        <form [formGroup]="trackForm" (ngSubmit)="onSubmit()">
-          <div class="form-group">
-            <label for="title">Track Title</label>
-            <div>
-              <input id="title" type="text"  formControlName="title" pInputText />
-            </div>
-            <div *ngIf="trackForm.get('title')?.invalid && trackForm.get('title')?.touched" class="text-danger">
-              Title is required
-            </div>
-          </div>
-          
-          <div class="form-group">
-            <label for="album">Album</label>
-            <div>
-                <p-autoComplete  id="album"  formControlName="album" field="name" [suggestions]="albums" 
-                    (completeMethod)="searchAlbum($event)"/>
-            </div>
-          </div>
+<div class="create-track-container mt-5 p-4 shadow-lg bg-white rounded">
+  <div class="text-center mb-4">
+    <h3 class="form-title">Create New Track</h3>
+  </div>
+  <form [formGroup]="trackForm" (ngSubmit)="onSubmit()">
 
-          <div class="form-group">
-            <label for="author">Author</label>
-            <div>
-                <p-autoComplete  id="author"  formControlName="author" field="name" [suggestions]="authors" 
-                (completeMethod)="searchAuthors($event)"/>
-
-            </div>
-            <div *ngIf="trackForm.get('author')?.invalid && trackForm.get('author')?.touched" class="text-danger">
-              Author is required
-            </div>
-          </div>
-
-  
-          <div class="form-group">
-            <label for="file">Audio File</label>
-            <p-fileUpload mode="advanced" name="file" (onSelect)="onFileSelected($event)" [customUpload]="true"  accept="audio/mpeg" 
-            [showCancelButton]="true" [maxFileSize]="293601280" [showUploadButton]="false" [fileLimit]="1"/>
-            <div *ngIf="trackForm.get('file')?.invalid && trackForm.get('file')?.touched" class="text-danger">
-              File is required
-            </div>
-          </div>
-  
-          <button type="submit" class="btn btn-success mt-3" [disabled]="trackForm.invalid">
-            Create Track
-          </button>
-        </form>
+    <div class="form-group mb-4">
+      <label for="title" class="form-label fw-bold">Track Title</label>
+      <input id="title" type="text" class="form-control shadow-sm" formControlName="title" pInputText
+        placeholder="Enter track title" />
+      <div *ngIf="trackForm.get('title')?.invalid && trackForm.get('title')?.touched" class="text-danger small mt-1">
+        Title is required.
       </div>
     </div>
-  </div>
-  
+
+    <div class="form-group mb-4">
+      <label for="album" class="form-label fw-bold me-2">Album</label>
+      <p-autoComplete id="album" formControlName="album" field="name" [suggestions]="albums"
+        (completeMethod)="searchAlbum($event)" class="shadow-sm"></p-autoComplete>
+    </div>
+
+    <div class="form-group mb-4">
+      <label for="author" class="form-label fw-bold me-2">Author</label>
+      <p-autoComplete id="author" formControlName="author" field="name" [suggestions]="authors"
+        (completeMethod)="searchAuthors($event)" class="shadow-sm"></p-autoComplete>
+      <div *ngIf="trackForm.get('author')?.invalid && trackForm.get('author')?.touched" class="text-danger small mt-1">
+        Author is required.
+      </div>
+    </div>
+
+    <div class="form-group mb-4">
+      <label for="file" class="form-label fw-bold">Audio File</label>
+      <p-fileUpload mode="advanced" name="file" (onSelect)="onFileSelected($event)" [customUpload]="true"
+        accept="audio/mpeg" [showCancelButton]="true" [maxFileSize]="293601280" [showUploadButton]="false"
+        [fileLimit]="1" class="shadow-sm"></p-fileUpload>
+      <div *ngIf="trackForm.get('file')?.invalid && trackForm.get('file')?.touched" class="text-danger small mt-1">
+        File is required.
+      </div>
+    </div>
+
+    <div class="d-grid">
+      <button type="submit" class="btn btn-success btn-lg shadow-sm" [disabled]="trackForm.invalid">
+        Create Track
+      </button>
+    </div>
+  </form>
+</div>

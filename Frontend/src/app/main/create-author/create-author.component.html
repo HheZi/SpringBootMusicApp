@@ -1,18 +1,31 @@
-<div class="container mt-5">
-    <div class="card">
-        <div class="card-header text-center">
-            <h3>Create autor</h3>
-        </div>
-        <div class="card-body">
-            <form (ngSubmit)="onSubmit()" [formGroup]="authorFormGroup">
-                <div class="form-group">
-                    <input  type="text" class="form-control" name="name" formControlName="name" placeholder="Enter the name">
-                </div>
-                <div class="form-group mt-3 mb-3">
-                    <input type="file"  class="form-control" accept="image/jpeg" name="cover" (change)="onFileChange($event)" formControlName="cover">
-                </div>
-                <button class="btn btn-primary mt-2" [disabled]="authorFormGroup.invalid">Submit</button>
-            </form>
-        </div>
+<div class="create-author-container mt-5 p-4 shadow-lg bg-white rounded">
+  <div class="text-center mb-4">
+    <h3 class="form-title">Create Author</h3>
+  </div>
+  <form (ngSubmit)="onSubmit()" [formGroup]="authorFormGroup">
+
+    <div class="form-group mb-3">
+      <label for="name" class="form-label fw-bold">Author Name</label>
+      <input type="text" id="name" class="form-control shadow-sm" name="name" formControlName="name"
+        placeholder="Enter the author's name" />
+      <div
+        *ngIf="authorFormGroup.get('name')?.invalid && (authorFormGroup.get('name')?.touched || authorFormGroup.get('name')?.dirty)"
+        class="text-danger mt-1 small">
+        Name is required.
+      </div>
     </div>
+
+    <div class="form-group mb-3">
+      <label for="cover" class="form-label fw-bold">Cover Image</label>
+      <input type="file" id="cover" class="form-control shadow-sm" accept="image/jpeg" name="cover"
+        (change)="onFileChange($event)" formControlName="cover" />
+      <small class="text-muted">Only JPEG files are allowed.</small>
+    </div>
+
+    <div class="d-grid">
+      <button type="submit" class="btn btn-primary btn-lg shadow-sm" [disabled]="authorFormGroup.invalid">
+        Submit
+      </button>
+    </div>
+  </form>
 </div>
