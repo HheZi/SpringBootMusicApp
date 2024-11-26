@@ -99,7 +99,7 @@ export class SeePlaylistComponent implements OnInit {
     this.playlistService.deletePlaylist(this.playlist.id).subscribe({
       next: () => {
         this.messageService.add({closable: true, summary: "You have deleted the playlist", severity: "success"});
-        this.router.navigate(['/']);
+        this.router.navigate(['/home']);
       }
     })
   }

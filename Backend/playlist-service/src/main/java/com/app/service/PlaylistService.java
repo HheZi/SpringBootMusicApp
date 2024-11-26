@@ -22,6 +22,7 @@ import com.app.model.PlaylistTrack;
 import com.app.payload.request.CreateOrUpdatePlaylist;
 import com.app.payload.request.SavePlaylistImageRequest;
 import com.app.payload.response.ResponsePlaylist;
+import com.app.payload.response.ResponsePlaylistPreview;
 import com.app.repository.PlaylistRepository;
 import com.app.repository.PlaylistTrackRepository;
 import com.app.util.PlaylistMapper;
@@ -61,6 +62,13 @@ public class PlaylistService {
 	public Flux<Long> getTrackIdsByPlaylist(Integer id){
 		return playlistTrackRepository.findByPlaylistId(id)
 				.map(t -> t.getTrackId());
+	}
+	
+	public Flux<ResponsePlaylistPreview> getPlaylistsByCreatorId(Integer userId){
+		return playlistRepository.findByCreatedBy(userId)
+				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)))
+				.map(playlistMapper::fromPlaylistToResponsePlaylistPreview);
+
 	}
 	
 	public Mono<Boolean> isCreatorOfPlaylist(Integer id, Integer userId){
@@ -142,6 +150,9 @@ public class PlaylistService {
 	public Mono<Void> addTrackToPlaylist(Integer id, Long trackId){
 		return playlistRepository.findById(id)
 				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)))
+				.flatMap(t -> playlistTrackRepository.existsByPlaylistIdAndTrackId(id, trackId))
+				.filter(t -> !t)
+				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.CONFLICT)))
 				.flatMap(t -> playlistTrackRepository.save(new PlaylistTrack(null, id, trackId)))
 				.then();
 	}

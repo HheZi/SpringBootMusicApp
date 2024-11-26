@@ -22,6 +22,10 @@ export class PlaylistService {
     return this.httpClient.post(this.PLAYLIST_URL, body);
   }
 
+  public getPlaylistsByOwner(): Observable<Object>{
+    return this.httpClient.get(this.PLAYLIST_URL);
+  }
+
   public getPlaylist(id: number): Observable<Object>{
     return this.httpClient.get(this.PLAYLIST_URL + id);
   }
@@ -32,6 +36,10 @@ export class PlaylistService {
 
   public savePlaylist(formData: FormData, id: number): Observable<Object>{
     return this.httpClient.put(this.PLAYLIST_URL + id, formData);
+  }
+
+  public addTrackToPlaylist(playlistId:number, trackId: number): Observable<Object>{
+    return this.httpClient.patch(this.PLAYLIST_URL + playlistId+"/"+trackId, null);
   }
 
   public deleteCover(id: number): Observable<Object>{

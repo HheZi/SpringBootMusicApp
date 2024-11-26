@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import com.app.model.Playlist;
 import com.app.payload.request.CreateOrUpdatePlaylist;
 import com.app.payload.response.ResponsePlaylist;
+import com.app.payload.response.ResponsePlaylistPreview;
 
 @Component
 public class PlaylistMapper {
@@ -35,6 +36,15 @@ public class PlaylistMapper {
 				.numberOfTracks(trackIds != null ? trackIds.size() : null)
 				.build();
 	}
+	
+	public ResponsePlaylistPreview fromPlaylistToResponsePlaylistPreview(Playlist playlist) {
+		return new ResponsePlaylistPreview(
+				playlist.getId(),
+				playlist.getName(), 
+				playlist.getImageName() != null ? IMAGE_URL_FORMAT + playlist.getImageName() : IMAGE_URL_DEFAULT
+			);
+	}
+	 
 	public ResponsePlaylist fromPlaylistToResponsePlaylist(Playlist playlist) {
 		return fromPlaylistToResponsePlaylist(playlist, null);
 	}

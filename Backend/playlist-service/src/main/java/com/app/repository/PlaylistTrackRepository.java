@@ -14,4 +14,6 @@ public interface PlaylistTrackRepository extends ReactiveCrudRepository<Playlist
 	
 	@Modifying
 	Mono<Void> deleteByPlaylistId(Integer playlistId);
+	
+	Mono<Boolean> existsByPlaylistIdAndTrackId(Integer playlistId, Long trackId);
 }

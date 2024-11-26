@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.app.payload.request.CreateOrUpdatePlaylist;
 import com.app.payload.response.ResponsePlaylist;
+import com.app.payload.response.ResponsePlaylistPreview;
 import com.app.service.PlaylistService;
 
 import lombok.RequiredArgsConstructor;
@@ -49,6 +50,11 @@ public class PlaylistController {
 			@RequestHeader("userId") Integer userId
 		){
 		return playlistService.isCreatorOfPlaylist(id, userId);
+	}
+	
+	@GetMapping
+	public Flux<ResponsePlaylistPreview> getPlaylistsByOwner(@RequestHeader("userId") Integer userId){
+		return playlistService.getPlaylistsByCreatorId(userId);
 	}
 	
 	@PostMapping

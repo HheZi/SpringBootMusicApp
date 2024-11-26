@@ -4,6 +4,7 @@ import { Track } from './track';
 import { Router } from '@angular/router';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { TrackService } from '../../services/track/track.service';
+import { PlaylistService } from '../../services/playlist/playlist.service';
 
 @Component({
   selector: 'app-track-list',
@@ -12,16 +13,22 @@ import { TrackService } from '../../services/track/track.service';
   providers: [ConfirmationService]
 })
 export class TrackListComponent {
+
   protected tracks: Track[] = [];
   protected isModifiableList: boolean = false;
   protected newTitle: string = "";
   protected indexOfEditingTrack: number = -1;
+  protected addTrackDialogVisible: boolean = false;
+  protected playlists: any[] = [];
+  protected isPlaylistsNotFound: boolean = false;
+  protected selectedTrackId: number = 0;
 
   constructor(
     private audioService: AudioService,
     private router: Router,
     private confirmationService: ConfirmationService,
     private trackService: TrackService,
+    private playlistService: PlaylistService,
     private messageService: MessageService
   ){}
 
@@ -94,6 +101,25 @@ export class TrackListComponent {
     track.isEditing = !track.isEditing;
 
     this.indexOfEditingTrack = isTheSameIndex ? -1 : track.id;
+  }
+
+  protected makeEditDialogVisible(id: number){
+    this.playlistService.getPlaylistsByOwner().subscribe({
+      next: (playlists: any) => this.playlists = playlists,
+      error: ()  =>  this.isPlaylistsNotFound = true
+    })
+    this.selectedTrackId = id;
+    this.addTrackDialogVisible = true;
+  }
+
+  protected addTrackToPlaylist(playlistId: number) {
+    this.playlistService.addTrackToPlaylist(playlistId, this.selectedTrackId).subscribe({
+      next: () => {
+        this.messageService.add({closable: true, summary: "Track has been added to playlist", severity: "success"})
+        this.addTrackDialogVisible = false;
+      },
+      error: () => this.messageService.add({closable: true, summary: "Something went wrong", severity: "error"})
+    })
   }
 
 }

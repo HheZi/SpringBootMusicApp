@@ -9,7 +9,7 @@
 
         <div class="ms-3 flex-grow-1">
             <ng-container *ngIf="!track.isEditing; else editMode">
-                <h5 class="track-title mb-1 text-truncate">{{ track.title }}</h5>
+                <h5 class="track-title mb-1 text-truncate" (click)="playTrack(i)">{{ track.title }}</h5>
                 <span class="track-artist d-block text-muted">
                     <a class="link" (click)="seeAuthor(track.authorId)">{{ track.author }}</a>
                 </span>
@@ -32,9 +32,34 @@
         </div>
 
         <div class="track-actions d-flex align-items-center" *ngIf="isModifiableList">
-            <i class="pi icon me-3" [ngClass]="{'pi-pen-to-square': !track.isEditing, 'pi-times': track.isEditing}" (click)="makeTrackEditableOrNot(track)"></i>
+            <i class="pi icon me-3" [ngClass]="{'pi-pen-to-square': !track.isEditing, 'pi-times': track.isEditing}"
+                (click)="makeTrackEditableOrNot(track)"></i>
             <i class="pi pi-trash icon text-danger" (click)="confirmDeletionOfTrack(track.id)"></i>
+        </div>
+
+        <div class="add-to-playlist ms-3">
+            <i class="pi pi-plus text-primary" (click)="makeEditDialogVisible(track.id)"></i>
         </div>
     </div>
 </div>
-<p-confirmDialog [style]="{width: '20vw'}"/>
+<p-dialog [(visible)]="addTrackDialogVisible" [style]="{width: '35vw'}" [modal]="true" header="Add Track to Playlist" class="add-track-dialog">
+    <div *ngIf="!isPlaylistsNotFound; else NotFound">
+        <ul class="list-group playlists-list">
+            <li class="list-group-item d-flex align-items-center playlist-item"
+                *ngFor="let playlist of playlists" (click)="addTrackToPlaylist(playlist.id)">
+                <img [src]="playlist.imageUrl" alt="Playlist Cover" class="playlist-cover rounded" >
+                <div class="ms-3 flex-grow-1">
+                    <h5 class="mb-1 text-truncate playlist-title">{{ playlist.name }}</h5>
+                </div>
+                <i class="pi pi-plus-circle text-success playlist-action-icon"></i>
+            </li>
+        </ul>
+    </div>
+    <ng-template #NotFound>
+        <div class="text-center p-3">
+            <h5 class="text-muted">You don't have playlists yet</h5>
+        </div>
+    </ng-template>
+</p-dialog>
+
+<p-confirmDialog [style]="{width: '20vw'}" />

@@ -36,7 +36,6 @@ export class HomeComponent implements OnInit {
     this.titleService.setTitle("Tracks");
   }
   
-  
   ngOnInit(): void {
     this.activatedRoute.queryParams.subscribe(params => {
       this.searchValue = params['name'] || null;

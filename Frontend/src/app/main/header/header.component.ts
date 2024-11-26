@@ -26,10 +26,10 @@ export class HeaderComponent {
 
   onSearch() {  
     if (this.textInput){
-      this.router.navigate(['/'], {queryParams: {'name': this.textInput}});
+      this.router.navigate(['/home'], {queryParams: {'name': this.textInput}});
     }
     else{
-      this.router.navigate(['/']);
+      this.router.navigate(['/home']);
     }
   }
   
