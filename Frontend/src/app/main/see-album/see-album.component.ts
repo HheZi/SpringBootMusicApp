@@ -58,7 +58,13 @@ export class SeeAlbumComponent {
         
         this.albumService.getIsUserIsOwnerOfAlbum(this.album.id).subscribe((resp: any) => {
           this.isOwnerOfAlbum = resp;
-          this.trackList.setModifiable(this.isOwnerOfAlbum);
+          this.trackList.onDelete('Delete this track from album?',(trackId: number) => {
+            this.trackService.deleteTrack(trackId).subscribe(() => {
+              this.messageService.add({ closable: true, severity: "success", summary: "Track deleted"});
+              this.album.numberOfTrack--;
+            });
+          });
+          this.trackList.makeUpdatable();
         });
         
         this.trackService.getTracksByAlbumId(albumId).subscribe((tracks: any) => {

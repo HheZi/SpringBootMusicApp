@@ -15,13 +15,18 @@ import { PlaylistService } from '../../services/playlist/playlist.service';
 export class TrackListComponent {
 
   protected tracks: Track[] = [];
-  protected isModifiableList: boolean = false;
+  protected canBeDeleted: boolean = false;
+  protected canBeRenamed: boolean = false;
   protected newTitle: string = "";
-  protected indexOfEditingTrack: number = -1;
   protected addTrackDialogVisible: boolean = false;
   protected playlists: any[] = [];
   protected isPlaylistsNotFound: boolean = false;
-  protected selectedTrackId: number = 0;
+  
+  private indexOfEditingTrack: number = -1;
+  private selectedTrackId: number = 0;
+  private funcToDeleteTrack: Function = (id: number) => {};
+  private warningMessageToDisplayInConfirmDialog: string = "Do you want to do this?";
+
 
   constructor(
     private audioService: AudioService,
@@ -63,28 +68,31 @@ export class TrackListComponent {
     this.router.navigate(["author/" + value]);
   }
 
-  public setModifiable(value: boolean){
-    this.isModifiableList = value;
+  public onDelete(warningMessage: string, func: Function){
+    this.canBeDeleted = true;
+    this.funcToDeleteTrack = func;
+    this.warningMessageToDisplayInConfirmDialog = warningMessage;
   }
 
-  private deleteTrackFromAlbum(trackId: number) {
-    this.trackService.deleteTrack(trackId).subscribe(() => {
-      this.messageService.add({ closable: true, severity: "success", summary: "Track deleted" });
-      this.tracks.splice(this.tracks.findIndex(t => t.id == trackId), 1);
-    });
+  public makeUpdatable(){
+    this.canBeRenamed = true;
   }
 
   protected confirmDeletionOfTrack(id: number) {
     this.confirmationService.confirm({
-      message: "Do you want to delete the track?",
+      message: this.warningMessageToDisplayInConfirmDialog,
       header: "Confirmation",
       icon: "pi pi-exclamation-triangle",
-      accept: () => this.deleteTrackFromAlbum(id)
+      accept: () =>  {
+        this.funcToDeleteTrack(id)
+        this.tracks.splice(this.tracks.findIndex(t => t.id == id), 1);
+      },
+      reject: () => {}
     });
   }
 
   protected updateTrackTitle(track: Track) {
-    if(this.isModifiableList)
+    if(this.canBeRenamed)
       this.trackService.updateTrackTitle(track.id, this.newTitle).subscribe(() => {
         this.messageService.add({ severity: "success", summary: "You have updated the track title", closable: true });
         track.title = this.newTitle;
@@ -118,7 +126,7 @@ export class TrackListComponent {
         this.messageService.add({closable: true, summary: "Track has been added to playlist", severity: "success"})
         this.addTrackDialogVisible = false;
       },
-      error: () => this.messageService.add({closable: true, summary: "Something went wrong", severity: "error"})
+      error: () => this.messageService.add({closable: true, summary: "Already in playlist", severity: "error"})
     })
   }
 

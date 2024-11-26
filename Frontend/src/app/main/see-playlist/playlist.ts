@@ -4,5 +4,6 @@ export interface Playlist{
     imageUrl: string,
     description: string,
     trackIds: number[],
-    numberOfTracks: number
+    numberOfTracks: number,
+    totalDuration: string
 }

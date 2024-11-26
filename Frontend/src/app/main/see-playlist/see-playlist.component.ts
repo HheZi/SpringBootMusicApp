@@ -17,8 +17,8 @@ import { formatNumber } from '@angular/common';
 })
 export class SeePlaylistComponent implements OnInit {
 
-  protected playlist: Playlist = { id: 0, name: "", imageUrl: "", description: "", trackIds: [], numberOfTracks: 0 };
-  protected editablePlaylist: Playlist = { id: 0, name: "", imageUrl: "", description: "", trackIds: [], numberOfTracks: 0 };
+  protected playlist: Playlist = { id: 0, name: "", imageUrl: "", description: "", trackIds: [], numberOfTracks: 0, totalDuration: ''};
+  protected editablePlaylist: Playlist = { id: 0, name: "", imageUrl: "", description: "", trackIds: [], numberOfTracks: 0, totalDuration: ''};
   protected isPlaylistNotFound: boolean = false;
   protected isTracksNotFound: boolean = false;
 
@@ -53,7 +53,23 @@ export class SeePlaylistComponent implements OnInit {
 
         if (this.playlist.trackIds.length != 0) {
           this.trackService.getTrackByIds(this.playlist.trackIds).subscribe({
-            next: (tracksResp: any) => this.trackList.setTracks(tracksResp)
+            next: (tracksResp: any) => {
+              this.trackService.getDurationByIds(tracksResp.map((t: any) => t.id)).subscribe(
+                (resp: any) => this.playlist.totalDuration = resp.duration
+              )
+
+              this.trackList.setTracks(tracksResp);
+
+              this.trackList.onDelete("Delete track from playlist?", (trackId: number) => {
+                this.playlistService.deleteTrackFromPlaylist(this.playlist.id, trackId).subscribe({
+                  next: () => {
+                    this.messageService.add({closable: true, severity: "success", summary: "Track deleted from playlist"});
+                    this.playlist.numberOfTracks--;
+                  },
+                  error: () => this.messageService.add({closable: true, severity: "error", summary: "Something went wrong"})
+                })
+              })
+            }
           })
         }
         else{
@@ -61,6 +77,8 @@ export class SeePlaylistComponent implements OnInit {
         }
 
         this.playlistService.getIsOwnerOfPlaylist(this.playlist.id).subscribe((resp: any) => this.canModify = resp)
+
+
       },
       error: () => this.isPlaylistNotFound = true
     })

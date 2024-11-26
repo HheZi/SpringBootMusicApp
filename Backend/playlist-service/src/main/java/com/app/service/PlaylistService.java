@@ -65,7 +65,7 @@ public class PlaylistService {
 	}
 	
 	public Flux<ResponsePlaylistPreview> getPlaylistsByCreatorId(Integer userId){
-		return playlistRepository.findByCreatedBy(userId)
+		return (playlistRepository.findByCreatedBy(userId))
 				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)))
 				.map(playlistMapper::fromPlaylistToResponsePlaylistPreview);
 
@@ -155,6 +155,13 @@ public class PlaylistService {
 				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.CONFLICT)))
 				.flatMap(t -> playlistTrackRepository.save(new PlaylistTrack(null, id, trackId)))
 				.then();
+	}
+	
+	@Transactional
+	public Mono<Void> deleteTrackFromPlaylist(Integer id, Long trackId){
+		return playlistTrackRepository.findByPlaylistIdAndTrackId(id, trackId)
+				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)))
+				.flatMap(playlistTrackRepository::delete);
 	}
 	
 	private Mono<Void> saveAuthorImage(UUID name, Path pathToFile) {

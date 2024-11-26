@@ -31,10 +31,14 @@
             <span class="track-duration text-muted">{{ track.duration }}</span>
         </div>
 
-        <div class="track-actions d-flex align-items-center" *ngIf="isModifiableList">
-            <i class="pi icon me-3" [ngClass]="{'pi-pen-to-square': !track.isEditing, 'pi-times': track.isEditing}"
+        <div class="track-actions d-flex align-items-center" >
+            <span *ngIf="canBeRenamed">
+                <i class="pi icon me-3" [ngClass]="{'pi-pen-to-square': !track.isEditing, 'pi-times': track.isEditing}"
                 (click)="makeTrackEditableOrNot(track)"></i>
-            <i class="pi pi-trash icon text-danger" (click)="confirmDeletionOfTrack(track.id)"></i>
+            </span>
+            <span *ngIf="canBeDeleted">
+                <i class="pi pi-trash icon text-danger" (click)="confirmDeletionOfTrack(track.id)"></i>
+            </span>
         </div>
 
         <div class="add-to-playlist ms-3">

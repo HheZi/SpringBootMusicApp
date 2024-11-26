@@ -42,6 +42,10 @@ export class PlaylistService {
     return this.httpClient.patch(this.PLAYLIST_URL + playlistId+"/"+trackId, null);
   }
 
+  public deleteTrackFromPlaylist(playlistId:number, trackId: number): Observable<Object>{
+    return this.httpClient.delete(this.PLAYLIST_URL + playlistId+"/"+trackId);
+  }
+
   public deleteCover(id: number): Observable<Object>{
     return this.httpClient.delete(this.PLAYLIST_URL + id + "/cover");
   }

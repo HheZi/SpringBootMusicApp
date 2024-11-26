@@ -78,6 +78,14 @@ public class PlaylistController {
 		return playlistService.updatePlaylist(dto, id);
 	}
 	
+	@DeleteMapping("{id}/{trackId}")
+	public Mono<Void> deleteTrackFromPlaylist(
+			@PathVariable("id") Integer id, 
+			@PathVariable("trackId")  Long trackId
+		){
+		return playlistService.deleteTrackFromPlaylist(id, trackId);
+	}
+	
 	@DeleteMapping("{id}/cover")
 	public Mono<Void> deleteCover(@PathVariable("id") Integer id){
 		return playlistService.deleteCover(id);

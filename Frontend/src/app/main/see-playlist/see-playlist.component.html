@@ -10,7 +10,9 @@
             </h1>
             <p class="playlist-description text-secondary">{{ playlist.description }}</p>
             <h4 class="playlist-meta text-muted">
-                <span>{{ playlist.numberOfTracks }} Tracks</span>
+                <span *ngIf="playlist.numberOfTracks != 0; else NoTracks">{{ playlist.numberOfTracks }} Tracks</span>
+                <ng-template #NoTracks>No tracks</ng-template>
+                <span class="ms-3">{{playlist.totalDuration}}</span>
             </h4>
         </div>
     </div>
