@@ -30,11 +30,13 @@ public class AuthenticationGatewayFilter implements GatewayFilter {
 	private final AntPathMatcher pathMatcher = new AntPathMatcher();
 	
 	private final List<OpenEndpoint> openEndpoints = List.of(
-			new OpenEndpoint("/api/auth/**", new HttpMethod[] { POST }),
-			new OpenEndpoint("/api/users", new HttpMethod[] { POST }),
-			new OpenEndpoint("/api/audio/**", new HttpMethod[] { GET }),
-			new OpenEndpoint("/api/images/**", new HttpMethod[] { GET }),
+			new OpenEndpoint("/api/auth/*", new HttpMethod[] { POST }),
+			new OpenEndpoint("/api/users/", new HttpMethod[] { POST }),
+			new OpenEndpoint("/api/audio/*", new HttpMethod[] { GET }),
+			new OpenEndpoint("/api/images/*", new HttpMethod[] { GET }),
 			new OpenEndpoint("/api/tracks/**", new HttpMethod[] { GET }),
+			new OpenEndpoint("/api/albums/**", new HttpMethod[] { GET }),
+			new OpenEndpoint("/api/authors/**", new HttpMethod[] { GET }),
 			new OpenEndpoint("/tracks/", new HttpMethod[] { GET })
 		);
 
