@@ -5,9 +5,14 @@ spring:
     url: r2dbc:postgresql://localhost:5432/PlaylistDB
     password: postgres
     username: postgres
+  kafka:
+    bootstrap-servers:
+      - localhost:9092
+    consumer:
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
 server:
   port: 0
-logging:
-  level:
-    '[org.springframework.web]': debug
 file.temp: \Programming\Java\StreamingService\Backend\playlist-service\temp

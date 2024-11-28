@@ -17,6 +17,7 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.app.kafka.message.TrackDeletionMessage;
 import com.app.model.Playlist;
 import com.app.model.PlaylistTrack;
 import com.app.payload.request.CreateOrUpdatePlaylist;
@@ -28,7 +29,6 @@ import com.app.repository.PlaylistTrackRepository;
 import com.app.util.PlaylistMapper;
 
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.var;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -164,6 +164,12 @@ public class PlaylistService {
 				.flatMap(playlistTrackRepository::delete);
 	}
 	
+	public void deleteTrackFromAllPlaylists(TrackDeletionMessage trackDeletionMessage) {
+		playlistTrackRepository
+		.deleteByTrackId(trackDeletionMessage.trackId())
+		.subscribe();
+	}
+ 	
 	private Mono<Void> saveAuthorImage(UUID name, Path pathToFile) {
 		if (name == null) Mono.empty();			
 

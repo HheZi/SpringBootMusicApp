@@ -1,41 +1,35 @@
 package com.app.service;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.ResourceLoader;
-import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
 import org.springframework.data.relational.core.query.Criteria;
 import org.springframework.data.relational.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.MultipartBodyBuilder;
-import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.app.kafka.KafkaTrackProducer;
+import com.app.kafka.message.TrackDeletionMessage;
 import com.app.model.Track;
 import com.app.payload.request.CreateTrackDto;
-import com.app.payload.request.RequestSaveAudio;
 import com.app.payload.request.UpdateTrackRequest;
 import com.app.payload.response.ResponseTotalDuration;
 import com.app.payload.response.ResponseTrack;
 import com.app.repository.TrackRepository;
 import com.app.util.TrackMapper;
-import com.mpatric.mp3agic.InvalidDataException;
 import com.mpatric.mp3agic.Mp3File;
-import com.mpatric.mp3agic.UnsupportedTagException;
 
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -50,6 +44,8 @@ public class TrackService {
 	private final WebClient.Builder webClient;
 
 	private final R2dbcEntityTemplate template;
+	
+	private final KafkaTrackProducer kafkaTrackProducer;
 	
 	@Value("${file.temp}")
 	private String tempFolder;
@@ -79,6 +75,7 @@ public class TrackService {
 			return repository.findAll()
 					.map(mapper::fromTrackToResponseTrack);			
 		}
+		
 		
 		return template.select(Query.query(criteria), Track.class)
 				.map(mapper::fromTrackToResponseTrack);
@@ -128,14 +125,20 @@ public class TrackService {
 	@Transactional
 	public Mono<Void> deleteTrack(Long id){
 		return repository.findById(id)
-		.doOnNext(t -> deleteTrackFile(t.getAudioName()))
+		.doOnNext(t -> {
+			deleteTrackFile(t.getAudioName());
+			kafkaTrackProducer.sendMessage(new TrackDeletionMessage(t.getId()));
+		})
 		.flatMap(repository::delete);
 	}
 	
 	@Transactional
 	public Mono<Void> deleteTracksByAlbumId(Integer albumId) {
 		return repository.findByAlbumId(albumId)
-		.doOnNext(t -> deleteTrackFile(t.getAudioName()))
+		.doOnNext(t -> {
+			deleteTrackFile(t.getAudioName());
+			kafkaTrackProducer.sendMessage(new TrackDeletionMessage(t.getId()));
+		})
 		.collectList()
 		.flatMap(repository::deleteAll);
 	}
@@ -154,7 +157,7 @@ public class TrackService {
 	public Mono<Void> updateTrackTitle(UpdateTrackRequest updateTrack, Long trackId, Integer userId){
 		return repository.findById(trackId)
 		.filter(t -> t.getCreatedBy() == userId)
-		.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "You can't update the title")))
+		.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE)))
 		.doOnNext(t -> {
 			String title = updateTrack.getTitle();
 			if (title != null && !title.isEmpty() && !title.isBlank()) {

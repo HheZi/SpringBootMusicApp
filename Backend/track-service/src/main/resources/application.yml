@@ -5,12 +5,18 @@ spring:
     url: r2dbc:postgresql://localhost:5432/TrackDB
     password: postgres
     username: postgres
-  codec:
-    max-in-memory-size:
-      36MB
+  kafka:
+    bootstrap-servers:
+    - localhost:9092
+    producer:
+      key-serializer:
+        org.apache.kafka.common.serialization.StringSerializer
+      value-serializer:
+        org.springframework.kafka.support.serializer.JsonSerializer
 server:
   port: 0
 logging:
   level:
-    '[org.springframework.web]': debug
+    org.springframework.web: debug
 file.temp: \Programming\Java\StreamingService\Backend\track-service\temp
+kafka.topic.name: track-deletion-topic

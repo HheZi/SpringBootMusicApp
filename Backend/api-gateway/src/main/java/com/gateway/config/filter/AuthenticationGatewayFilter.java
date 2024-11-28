@@ -35,8 +35,8 @@ public class AuthenticationGatewayFilter implements GatewayFilter {
 			new OpenEndpoint("/api/audio/*", new HttpMethod[] { GET }),
 			new OpenEndpoint("/api/images/*", new HttpMethod[] { GET }),
 			new OpenEndpoint("/api/tracks/**", new HttpMethod[] { GET }),
-			new OpenEndpoint("/api/albums/**", new HttpMethod[] { GET }),
-			new OpenEndpoint("/api/authors/**", new HttpMethod[] { GET }),
+			new OpenEndpoint("/api/albums/*", new HttpMethod[] { GET }),
+			new OpenEndpoint("/api/authors/*", new HttpMethod[] { GET }),
 			new OpenEndpoint("/tracks/", new HttpMethod[] { GET })
 		);
 
