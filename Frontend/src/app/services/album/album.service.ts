@@ -10,6 +10,7 @@ import { TrackService } from '../track/track.service';
   providedIn: 'root'
 })
 export class AlbumService {
+ 
   private readonly ALBUM_URL: string = AppConts.BASE_URL + "/api/albums/";
   
   constructor(private httpClient: HttpClient, private authService: AuthService, private trackService: TrackService) {}
@@ -21,6 +22,9 @@ export class AlbumService {
   public getAlbumsByIds(ids: number[]): Observable<Object>{
     const params = { ids: ids.map(id => id.toString()) };
     return this.httpClient.get(this.ALBUM_URL, { params, responseType: "json" });
+  }
+  public getAlbumsByAuthorId(authorId: number) {
+    return this.httpClient.get(this.ALBUM_URL, { params: {'authorId': authorId}, responseType: "json" });
   }
 
   public getAlbumsBySymbol(symbol: string): Observable<Object>{

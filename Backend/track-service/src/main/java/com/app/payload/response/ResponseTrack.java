@@ -17,7 +17,5 @@ public class ResponseTrack {
 	
 	private String audioUrl;
 	
-	private Integer authorId;
-	
 	private String duration;
 }

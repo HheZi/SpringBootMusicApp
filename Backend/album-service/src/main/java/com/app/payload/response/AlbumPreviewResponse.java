@@ -1,18 +1,22 @@
-package com.gateway.payload.response;
+package com.app.payload.response;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ResponseAlbumFromAPI {
-	private Integer id;
+@Builder
+public class AlbumPreviewResponse {
 
+	private Integer id;
+	
 	private String name;
 	
-	private Integer authorId;
-
 	private String imageUrl;
+	
+	private Integer authorId;
+	
 }

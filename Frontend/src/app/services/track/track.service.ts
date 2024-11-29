@@ -21,10 +21,6 @@ export class TrackService {
     }
     return this.httpClient.get(this.TRACK_URL_TO_GET_FROM_AGGREGATION, {params: header});
   }
-  
-  public getTracksByAuthorId(id: any) : Observable<Object>{
-    return this.httpClient.get(this.TRACK_URL_TO_GET_FROM_AGGREGATION, {params: {authorId: id}});
-  }
 
   public getDurationByIds(ids: number): Observable<Object>{
     return this.httpClient.get(this.TRACK_URL + "duration", {params: {"ids": ids}});

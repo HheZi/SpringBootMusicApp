@@ -16,8 +16,6 @@ public class ResponseTrackFromAPI {
 	
 	private String audioUrl;
 	
-	private Integer authorId;
-	
 	private String duration;
 	
 }

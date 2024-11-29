@@ -19,7 +19,6 @@ public class TrackMapper {
 		return Track.builder()
 				.title(dto.getTitle())
 				.audioName(UUID.randomUUID())
-				.authorId(dto.getAuthorId())
 				.albumId(dto.getAlbumId())
 				.createdBy(userId)
 				.duration(mp3File.getLengthInSeconds())
@@ -53,7 +52,6 @@ public class TrackMapper {
 				.title(track.getTitle())
 				.audioUrl(String.format(AUDIO_URL, track.getAudioName().toString()))
 				.albumId(track.getAlbumId())
-				.authorId(track.getAuthorId())
 				.duration(calculateDurationOfTrack(track.getDuration()))
 				.build();
 	}

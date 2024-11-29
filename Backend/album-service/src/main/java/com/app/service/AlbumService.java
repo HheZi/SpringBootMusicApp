@@ -24,6 +24,7 @@ import com.app.model.enums.AlbumType;
 import com.app.payload.request.RequestImage;
 import com.app.payload.request.RequestAlbum;
 import com.app.payload.request.RequestToUpdateAlbum;
+import com.app.payload.response.AlbumPreviewResponse;
 import com.app.payload.response.ResponseAlbum;
 import com.app.repository.AlbumRepository;
 import com.app.util.AlbumMapper;
@@ -52,15 +53,19 @@ public class AlbumService {
 				.map(albumMapper::fromAlbumToResponseAlbum);
 	}
 	
-	public Flux<ResponseAlbum> getAlbumByIds(List<Integer> ids){
+	public Flux<AlbumPreviewResponse> getAlbumByIds(List<Integer> ids, Integer authorId){
+		if (authorId != null) {
+			return albumRepository.findByAuthorId(authorId)
+			.map(albumMapper::fromAlbumToAlbumPreviewResponse);
+		}
 		return albumRepository.findAllById(ids)
-				.map(albumMapper::fromAlbumToResponseAlbum);
+				.map(albumMapper::fromAlbumToAlbumPreviewResponse);
 	}
 	
-	public Flux<ResponseAlbum> findAlbumBySymbol(String symbol){
+	public Flux<AlbumPreviewResponse> findAlbumBySymbol(String symbol){
 		return albumRepository.findByNameStartingWithAllIgnoreCase(symbol)
 				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)))
-				.map(albumMapper::fromAlbumToResponseAlbum);
+				.map(albumMapper::fromAlbumToAlbumPreviewResponse);
 	}
 
 	public Mono<ResponseEntity<Integer>> createAlbum(RequestAlbum dto, Integer userId) {

@@ -53,7 +53,6 @@ public class TrackService {
 	@Transactional
 	public Flux<ResponseTrack> getTracks(
 			String trackName, 
-			List<Integer> authorId, 
 			List<Integer> albumId,
 			List<Integer> ids
 		){
@@ -61,9 +60,6 @@ public class TrackService {
 
 		if (trackName != null) {
 			criteria = Criteria.where("title").like(trackName+ "%");
-		}
-		else if (authorId != null) {
-			criteria = Criteria.where("author_id").in(authorId);
 		}
 		else if (albumId != null) {
 			criteria = Criteria.where("album_id").in(albumId);

@@ -50,6 +50,7 @@ export class SeePlaylistComponent implements OnInit {
       next: (playlist: any) => {
         this.title.setTitle(playlist.name);
         this.playlist = playlist;
+        this.editablePlaylist.description = playlist.description;
 
         if (this.playlist.trackIds.length != 0) {
           this.trackService.getTrackByIds(this.playlist.trackIds).subscribe({
@@ -100,6 +101,7 @@ export class SeePlaylistComponent implements OnInit {
     if(this.editablePlaylist.name){
       formData.append("name", this.editablePlaylist.name);
     }
+
     formData.append("description", this.editablePlaylist.description);
     
     if(this.selectedFile){

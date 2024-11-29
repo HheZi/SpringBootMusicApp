@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import com.app.model.Album;
 import com.app.model.enums.AlbumType;
 import com.app.payload.request.RequestAlbum;
+import com.app.payload.response.AlbumPreviewResponse;
 import com.app.payload.response.ResponseAlbum;
 
 @Component
@@ -21,18 +22,29 @@ public class AlbumMapper {
 				.name(dto.getName())
 				.imageName(coverIsPresent ?  UUID.randomUUID() : null)
 				.createdBy(userId)
+				.authorId(dto.getAuthorId())
 				.albumType(dto.getAlbumType())
 				.releaseDate(dto.getReleaseDate())
 				.build();
 	}
 	
-	public ResponseAlbum fromAlbumToResponseAlbum(Album playlist) {
+	public ResponseAlbum fromAlbumToResponseAlbum(Album album) {
 		return ResponseAlbum.builder()
-				.id(playlist.getId())
-				.name(playlist.getName())
-				.albumType(playlist.getAlbumType())
-				.releaseDate(playlist.getReleaseDate())
-				.imageUrl(playlist.getImageName() != null ? IMAGE_URL + playlist.getImageName().toString() : DEFAULT_IMAGE_URL)
+				.id(album.getId())
+				.name(album.getName())
+				.albumType(album.getAlbumType())
+				.releaseDate(album.getReleaseDate())
+				.authorId(album.getAuthorId())
+				.imageUrl(album.getImageName() != null ? IMAGE_URL + album.getImageName().toString() : DEFAULT_IMAGE_URL)
+				.build();
+	}
+	
+	public AlbumPreviewResponse fromAlbumToAlbumPreviewResponse(Album album) {
+		return AlbumPreviewResponse.builder()
+				.id(album.getId())
+				.authorId(album.getAuthorId())
+				.imageUrl(album.getImageName() != null ? IMAGE_URL + album.getImageName().toString() : DEFAULT_IMAGE_URL)
+				.name(album.getName())
 				.build();
 	}
 	

@@ -27,6 +27,7 @@ export class CreateAlbumComponent implements OnInit {
     this.albumForm = this.fb.group({
       title: ['', Validators.required],
       cover: [null],
+      author: [null, Validators.required],
       releaseDate: [null],
       albumType: ['', Validators.required]
     });
@@ -45,7 +46,7 @@ export class CreateAlbumComponent implements OnInit {
   public searchAuthors(event: any) {
     this.authorService.getAuthorsBySymbol(event.query).subscribe({
       next: (authors: any) => {
-        this.authors = authors.map((a: any) => a.name);
+        this.authors = authors;
       }
     })
   }
@@ -56,7 +57,7 @@ export class CreateAlbumComponent implements OnInit {
 
       if(this.albumForm.get("cover")?.value)
         formData.append("cover", this.albumForm.get("cover")?.value);
-      
+      formData.append("authorId", this.albumForm.get("author")?.value.id)
       formData.append("name", this.albumForm.get("title")?.value);
       formData.append("albumType", this.albumForm.get("albumType")?.value);
       formData.append("releaseDate", this.parseReleasDate());

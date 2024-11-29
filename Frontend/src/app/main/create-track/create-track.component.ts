@@ -15,8 +15,6 @@ export class CreateTrackComponent implements  OnInit{
 
   public trackForm: FormGroup;
   
-  public authors: string[] = [];
-  
   public albums: string[] = []; 
 
   constructor(private fb: FormBuilder, private authorService: AuthorService, 
@@ -26,7 +24,6 @@ export class CreateTrackComponent implements  OnInit{
 
     this.trackForm = this.fb.group({
       title: ['', Validators.required],
-      author: [null, Validators.required],
       audio: [null, Validators.required],
       album: [null, Validators.required]
     });
@@ -45,7 +42,6 @@ export class CreateTrackComponent implements  OnInit{
     if (this.trackForm.valid) {
       const formData = new FormData();
       formData.append("title", this.trackForm.get("title")?.value);
-      formData.append("authorId",  this.trackForm.get("author")?.value.id)
       formData.append("audio", this.trackForm.get("audio")?.value);
       formData.append("albumId", this.trackForm.get("album")?.value.id);
       
@@ -55,12 +51,6 @@ export class CreateTrackComponent implements  OnInit{
         error: (err) => this.messageService.add({closable: true, severity: "error", summary: "Something went wrong"})
       });
     }
-  }
-  
-  public searchAuthors(event: any): void{
-    this.authorService.getAuthorsBySymbol(event.query).subscribe({
-      next: (resp: any) => this.authors = resp
-    })
   }
   
   public searchAlbum(event: any): void{

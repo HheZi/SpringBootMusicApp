@@ -9,8 +9,8 @@ import reactor.core.publisher.Mono;
 
 public interface TrackRepository extends ReactiveCrudRepository<Track, Long>{
 	
-	public Mono<Long> countByAlbumId(Long playlistId);
+	public Mono<Long> countByAlbumId(Long albumId);
 	
-	Flux<Track> findByAlbumId(Integer playlistId);
+	Flux<Track> findByAlbumId(Integer albumId);
 	
 }

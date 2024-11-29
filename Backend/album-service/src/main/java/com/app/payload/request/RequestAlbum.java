@@ -21,5 +21,7 @@ public class RequestAlbum {
 	
 	private LocalDate releaseDate;
 	
+	private Integer authorId;
+	
 	private FilePart cover;
 }

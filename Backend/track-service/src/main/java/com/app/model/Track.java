@@ -24,9 +24,6 @@ public class Track {
 	
 	private String title;
 
-	@Column("author_id")
-	private Integer authorId;
-	
 	@Column("album_id")
 	private Integer albumId;
 	

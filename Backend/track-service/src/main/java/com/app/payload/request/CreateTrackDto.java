@@ -13,7 +13,5 @@ public class CreateTrackDto {
 	
 	private Integer albumId;
 	
-	private Integer authorId;
-	
 	private FilePart audio;
 }

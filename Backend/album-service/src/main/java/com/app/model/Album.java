@@ -35,6 +35,9 @@ public class Album {
 	@Column("created_by")
 	private Integer createdBy;
 	
+	@Column("author_id")
+	private Integer authorId;
+	
 	@Column("release_date")
 	private LocalDate releaseDate;
 }

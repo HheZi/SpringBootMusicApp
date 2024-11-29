@@ -11,4 +11,5 @@ public interface AlbumRepository extends ReactiveCrudRepository<Album, Integer>{
 
 	Flux<Album> findByNameStartingWithAllIgnoreCase(String name);
 	
+	Flux<Album> findByAuthorId(Integer authorId);
 }

@@ -36,8 +36,8 @@ public class TracksAggregationFilter implements GatewayFilter {
 	public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
 		Flux<ResponseTrackFromAPI> tracks = fetchTracksFromService(exchange);
 		
-		Flux<ResponseAuthorFromAPI> authors = fetchAuthorsFromService(tracks);
 		Flux<ResponseAlbumFromAPI> albums = fetchAlbumsFromService(tracks);
+		Flux<ResponseAuthorFromAPI> authors = fetchAuthorsFromService(albums);
 		
 		Flux<ResponseTracks> result = Mono.zip(tracks.collectList(), authors.collectList(), albums.collectList())
 		.flatMapMany(t -> collectTracks(t.getT1(), t.getT2(), t.getT3()));
@@ -67,14 +67,14 @@ public class TracksAggregationFilter implements GatewayFilter {
 		
 		return Flux.fromIterable(tracks)
 			.map(t -> {
-				ResponseAuthorFromAPI author = authors
-						.stream()
-						.filter(a -> t.getAuthorId() == a.getId())
-						.findFirst().orElseGet(ResponseAuthorFromAPI::new);
-				
 				ResponseAlbumFromAPI album = albums.stream()
 						.filter(p -> t.getAlbumId() == p.getId())
 						.findFirst().orElseGet(ResponseAlbumFromAPI::new);
+
+				ResponseAuthorFromAPI author = authors
+						.stream()
+						.filter(a -> a.getId() == album.getAuthorId())
+						.findFirst().orElseGet(ResponseAuthorFromAPI::new);
 				
 				return new ResponseTracks(t.getId(), t.getTitle(), album, author, t.getAudioUrl(), t.getDuration());
 			});
@@ -93,8 +93,8 @@ public class TracksAggregationFilter implements GatewayFilter {
 				.exchangeToFlux(t -> t.bodyToFlux(ResponseTrackFromAPI.class));
 	}
 	
-	private Flux<ResponseAuthorFromAPI> fetchAuthorsFromService(Flux<ResponseTrackFromAPI> tracks){
-		return tracks.map(ResponseTrackFromAPI::getAuthorId)
+	private Flux<ResponseAuthorFromAPI> fetchAuthorsFromService(Flux<ResponseAlbumFromAPI> tracks){
+		return tracks.map(ResponseAlbumFromAPI::getAuthorId)
 				.collectList()
 				.flatMapMany(t -> {
 					return builder

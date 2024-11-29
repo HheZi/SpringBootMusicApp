@@ -21,6 +21,8 @@ public class ResponseAlbum {
 	
 	private String imageUrl;
 	
+	private Integer authorId;
+	
 	@JsonFormat(shape = Shape.STRING, pattern = "yyyy-MM-dd")
 	private LocalDate releaseDate;
 	

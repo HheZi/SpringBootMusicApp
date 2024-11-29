@@ -102,10 +102,10 @@ export class HomeComponent implements OnInit {
     this.checkIfNotFound(authors)
     if (!this.isNotFound){
       var ids = authors.map(a => a.id);
-      this.trackService.getTracksByAuthorId(ids).subscribe({
-        next: (tracks: any) => this.populateTracks(tracks),
-        error: (err: any) => this.handleError("Error while loading tracks by author", err)
-      });
+      // this.trackService.getTracksByAuthorId(ids).subscribe({
+      //   next: (tracks: any) => this.populateTracks(tracks),
+      //   error: (err: any) => this.handleError("Error while loading tracks by author", err)
+      // });
     }
   }
 

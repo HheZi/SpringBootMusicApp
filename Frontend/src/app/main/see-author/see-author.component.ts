@@ -56,14 +56,14 @@ export class SeeAuthorComponent implements OnInit{
         this.authorService.canModify(this.author.id).subscribe((resp:any)=>{
           this.canModify = resp;
         })
-        this.trackService.getTracksByAuthorId(authorId).subscribe((tracksResp: any) => {
-          this.trackList.setTracks(tracksResp);
-          var ids = tracksResp.map((t: any) => t.album.id);
-          
-          this.albumService.getAlbumsByIds(ids).subscribe((albums: any) =>{
-            this.albums = albums;
+        this.albumService.getAlbumsByAuthorId(this.author.id).subscribe((albums: any) =>{
+          this.albums = albums;
+          this.trackService.getTracksByAlbumId(albums.map((a: any) => a.id)).subscribe((tracksResp: any) => {
+            this.trackList.setTracks(tracksResp);
+            var ids = tracksResp.map((t: any) => t.album.id);
           });
-        })},
+        });
+      },
         error: () => this.isNotFound = true
       });
     
