@@ -9,6 +9,7 @@ import { HttpParams } from '@angular/common/http';
 import { PlaylistListComponent } from '../playlist-list/playlist-list.component';
 import { PlaylistService } from '../../services/playlist/playlist.service';
 import { TrackListComponent } from '../track-list/track-list.component';
+import { NotFoundError } from 'rxjs';
 
 @Component({
   selector: 'app-home-page',
@@ -56,7 +57,8 @@ export class HomeComponent implements OnInit {
     this.trackList?.setTracks([]);
     
     this.trackService.getTracks(headers).subscribe({
-      next: tracksResp => this.populateTracks(tracksResp)
+      next: tracksResp => this.populateTracks(tracksResp),
+      error: () => this.isNotFound = true
     });
   }
   
@@ -102,10 +104,15 @@ export class HomeComponent implements OnInit {
     this.checkIfNotFound(authors)
     if (!this.isNotFound){
       var ids = authors.map(a => a.id);
-      // this.trackService.getTracksByAuthorId(ids).subscribe({
-      //   next: (tracks: any) => this.populateTracks(tracks),
-      //   error: (err: any) => this.handleError("Error while loading tracks by author", err)
-      // });
+      this.albumService.getAlbumsByAuthorId(ids).subscribe({
+        next: (albums: any) => {
+          this.trackService.getTracksByAlbumId(albums.map((a: any) => a.id)).subscribe({
+            next: (tracks: any) => this.populateTracks(tracks),
+            error: () => this.isNotFound = true 
+          })
+        },
+        error: () => this.isNotFound = true
+      })
     }
   }
 

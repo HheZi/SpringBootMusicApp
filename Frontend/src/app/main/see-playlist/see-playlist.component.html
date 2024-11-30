@@ -9,10 +9,18 @@
                 </span>
             </h1>
             <p class="playlist-description text-secondary">{{ playlist.description }}</p>
-            <h4 class="playlist-meta text-muted">
-                <span *ngIf="playlist.numberOfTracks != 0; else NoTracks">{{ playlist.numberOfTracks }} Tracks</span>
-                <ng-template #NoTracks>No tracks</ng-template>
-                <span class="ms-3">{{playlist.totalDuration}}</span>
+
+            <h4 class="playlist-meta">
+                <span class="d-flex align-items-center">
+                    <i class="pi pi-music text-primary me-2"></i>
+                    <span *ngIf="playlist.numberOfTracks != 0; else NoTracks">{{ playlist.numberOfTracks }} Tracks</span>
+                    <ng-template #NoTracks>No tracks</ng-template>
+                    <span class="ms-2">
+                        <i class="pi pi-clock me-2" style="font-size: 1rem;"></i>
+                        <span>{{ playlist.totalDuration }}</span>
+                    </span>
+                </span>
+
             </h4>
         </div>
     </div>

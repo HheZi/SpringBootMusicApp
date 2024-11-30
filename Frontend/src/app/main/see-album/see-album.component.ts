@@ -17,14 +17,14 @@ import { TrackListComponent } from '../track-list/track-list.component';
   providers: [ConfirmationService]
 })
 export class SeeAlbumComponent {
-  public album: Album = { id: 0, imageUrl: "", name: "", numberOfTrack: 0, albumType: "", releaseDate: null, totalDuration: ''};
+  public album: Album = { id: 0, imageUrl: "", name: "", numberOfTracks: 0, albumType: "", releaseDate: null, totalDuration: '', authorId: 0, authorImageUrl: '', authorName: ''};
   public isOwnerOfAlbum = false;
   public isNotFound = false;
 
   @ViewChild(TrackListComponent) trackList!: TrackListComponent;
 
   public editDialogVisible = false;
-  public editableAlbum: Album = { id: 0, imageUrl: "", name: "", numberOfTrack: 0, albumType: "", releaseDate: null,  totalDuration: ''};
+  public editableAlbum: Album = { id: 0, imageUrl: "", name: "", numberOfTracks: 0, albumType: "", releaseDate: null,  totalDuration: '', authorId: 0, authorImageUrl: '', authorName: ''};
   private selectedFile: File | null = null;
   public previewImage: string | ArrayBuffer | null = null;
 
@@ -46,38 +46,37 @@ export class SeeAlbumComponent {
   }
 
   private loadAlbum(albumId: number): void {
-    this.albumService.getAlbumsById(albumId).subscribe({
+    this.albumService.getFullAlbum(albumId).subscribe({
       next: (album: any) => {
-        this.album = album;
-        this.title.setTitle(this.album.name);
+        this.album = {
+          albumType: album.albumType,
+          authorId: album.author.id,
+          authorImageUrl: album.author.imageUrl,
+          authorName: album.author.name,
+          id: album.id,
+          imageUrl: album.imageUrl,
+          name: album.name,
+          numberOfTracks: album.numberOfTracks,
+          releaseDate: album.releaseDate,
+          totalDuration: album.totalDuration
+        };
+        this.trackList.setTracks(album.tracks);
 
-        this.trackService.getTrackInAlbum(albumId).subscribe((val: any) => {
-          this.album.numberOfTrack = val;
-        });
+      } 
+    })
 
-        
-        this.albumService.getIsUserIsOwnerOfAlbum(this.album.id).subscribe((resp: any) => {
-          this.isOwnerOfAlbum = resp;
-          this.trackList.onDelete('Delete this track from album?',(trackId: number) => {
-            this.trackService.deleteTrack(trackId).subscribe(() => {
-              this.messageService.add({ closable: true, severity: "success", summary: "Track deleted"});
-              this.album.numberOfTrack--;
-            });
+    this.albumService.getIsUserIsOwnerOfAlbum(albumId).subscribe({
+      next: (resp: any) => {
+        this.isOwnerOfAlbum = resp;
+        this.trackList.onDelete('Delete this track from album?',(trackId: number) => {
+          this.trackService.deleteTrack(trackId).subscribe(() => {
+            this.messageService.add({ closable: true, severity: "success", summary: "Track deleted"});
+            this.album.numberOfTracks--;
           });
-          this.trackList.makeUpdatable();
         });
-        
-        this.trackService.getTracksByAlbumId(albumId).subscribe((tracks: any) => {
-          this.trackList.setTracks(tracks);
-          this.trackService.getDurationByIds(tracks.map((t: any) => t.id)).subscribe({
-            next: (resp: any) => this.album.totalDuration = resp.duration
-          })
-        });
-        
-        
-      },
-      error: () => this.isNotFound = true
-    });
+      }
+    })
+
   }
 
   onFileChange(event: any): void {

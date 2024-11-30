@@ -49,7 +49,7 @@ public class TrackContoller {
 	}
 
 	@GetMapping("/count/{albumId}")
-	public Mono<Long> countTracks(@PathVariable("albumId") Long albumId){
+	public Mono<Integer> countTracks(@PathVariable("albumId") Long albumId){
 		return trackService.countTracksByAlbumId(albumId);
 	}
 	

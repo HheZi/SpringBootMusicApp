@@ -3,7 +3,10 @@ export interface Album{
     id: number;
     name: string;
     imageUrl: string;
-    numberOfTrack: number,
+    numberOfTracks: number,
     releaseDate: Date | null | string
     totalDuration: string
+    authorName: string;
+    authorImageUrl: string;
+    authorId: number;
 }

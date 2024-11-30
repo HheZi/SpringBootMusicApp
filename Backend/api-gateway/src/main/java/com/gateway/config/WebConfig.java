@@ -6,11 +6,11 @@ import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import com.gateway.config.filter.AuthenticationGatewayFilter;
-import com.gateway.config.filter.TracksAggregationFilter;
+import com.gateway.config.filter.aggregation.AlbumAggregationFilter;
+import com.gateway.config.filter.aggregation.TracksAggregationFilter;
 
 @Configuration
 public class WebConfig {
@@ -19,7 +19,10 @@ public class WebConfig {
 	private AuthenticationGatewayFilter authenticationGatewayFilter;
 	
 	@Autowired
-	private TracksAggregationFilter aggregationFilter;
+	private TracksAggregationFilter trackAggregationFilter;
+	
+	@Autowired
+	private AlbumAggregationFilter albumAggregationFilter;
 
 	@Bean
 	RouteLocator routeLocator(RouteLocatorBuilder builder) {
@@ -48,7 +51,9 @@ public class WebConfig {
 				.route("playlist-service", 
 						t -> t.path("/api/playlists/**").filters(f -> f.filter(authenticationGatewayFilter)).uri("lb://playlist-service"))
 				
-				.route(t -> t.path("/tracks").filters(f -> f.filters(authenticationGatewayFilter, aggregationFilter)).uri("http://localhost"))
+				.route(t -> t.path("/tracks").filters(f -> f.filters(authenticationGatewayFilter, trackAggregationFilter)).uri("http://localhost"))
+				
+				.route(t -> t.path("/albums/*").filters(f -> f.filters(authenticationGatewayFilter, albumAggregationFilter)).uri("http://localhost"))
 				
 				.build();
 	}

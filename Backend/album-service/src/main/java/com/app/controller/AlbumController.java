@@ -44,7 +44,7 @@ public class AlbumController {
 	@GetMapping
 	public Flux<AlbumPreviewResponse> getAlbumByIds(
 			@RequestParam(value = "ids", required = false) List<Integer> ids,
-			@RequestParam(value = "authorId", required = false) Integer authorId
+			@RequestParam(value = "authorId", required = false) List<Integer> authorId
 		){
 		if (ids == null && authorId == null ) {
 			return Flux.error(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST));

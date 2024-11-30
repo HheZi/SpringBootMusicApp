@@ -12,20 +12,31 @@
 }
 
 .playlist-title {
-    font-size: 2rem;
+    font-size: 2.25rem;
     font-weight: bold;
+    color: #343a40;
     margin-bottom: 0.5rem;
 }
 
 .playlist-description {
     font-size: 1rem;
     color: #6c757d;
-    margin-bottom: 0.5rem;
+    margin-bottom: 1rem;
 }
 
 .playlist-meta {
-    font-size: 1.25rem;
-    color: #6c757d;
+    font-size: 1.1rem;
+    color: #495057;
+}
+
+.playlist-meta .pi {
+    font-size: 1.3rem;
+}
+
+.playlist-meta span {
+    display: flex;
+    align-items: center;
+    font-weight: 500;
 }
 
 .icon:hover {

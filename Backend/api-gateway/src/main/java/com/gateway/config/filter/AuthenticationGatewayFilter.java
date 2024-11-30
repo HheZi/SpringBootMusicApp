@@ -1,8 +1,8 @@
 package com.gateway.config.filter;
 
-import static org.springframework.http.HttpMethod.*;
+import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpMethod.POST;
 
-import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -37,7 +37,8 @@ public class AuthenticationGatewayFilter implements GatewayFilter {
 			new OpenEndpoint("/api/tracks/**", new HttpMethod[] { GET }),
 			new OpenEndpoint("/api/albums/*", new HttpMethod[] { GET }),
 			new OpenEndpoint("/api/authors/*", new HttpMethod[] { GET }),
-			new OpenEndpoint("/tracks/", new HttpMethod[] { GET })
+			new OpenEndpoint("/tracks/", new HttpMethod[] { GET }),
+			new OpenEndpoint("/albums/*", new HttpMethod[] { GET })
 		);
 
 	@Autowired

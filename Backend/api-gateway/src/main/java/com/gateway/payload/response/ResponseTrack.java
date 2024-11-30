@@ -7,15 +7,15 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ResponseTracks {
+public class ResponseTrack {
 
 	private Long id;
 	
 	private String title;
 	
-	private ResponseAlbumFromAPI album;
+	private ResponsePreviewAlbumFromAPI album;
 	
-	private ResponseAuthorFromAPI author;
+	private ResponsePreviewAuthorFromAPI author;
 	
 	private String audioUrl;
 	

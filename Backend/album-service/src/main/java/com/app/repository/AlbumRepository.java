@@ -1,5 +1,7 @@
 package com.app.repository;
 
+import java.util.List;
+
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.stereotype.Repository;
 
@@ -11,5 +13,5 @@ public interface AlbumRepository extends ReactiveCrudRepository<Album, Integer>{
 
 	Flux<Album> findByNameStartingWithAllIgnoreCase(String name);
 	
-	Flux<Album> findByAuthorId(Integer authorId);
+	Flux<Album> findByAuthorIdIn(List<Integer> authorId);
 }

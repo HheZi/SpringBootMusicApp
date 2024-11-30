@@ -107,7 +107,7 @@ public class TrackService {
 		
 	}
 	
-	public Mono<Long> countTracksByAlbumId(Long albumId){
+	public Mono<Integer> countTracksByAlbumId(Long albumId){
 		return repository.countByAlbumId(albumId);
 	}
 

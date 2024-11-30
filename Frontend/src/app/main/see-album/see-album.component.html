@@ -6,13 +6,29 @@
             <h1 class="album-title d-flex align-items-center">
                 {{ album.name }}
                 <span *ngIf="isOwnerOfAlbum" class="ms-3">
-                    <i class="pi pi-pencil icon btn btn-outline-secondary btn-sm" (click)="editDialogVisible = true"></i>
+                    <i class="pi pi-pencil icon btn btn-outline-secondary btn-sm"
+                        (click)="editDialogVisible = true"></i>
                 </span>
             </h1>
-            <h5 class="album-meta text-secondary">
-                {{ album.numberOfTrack }} Tracks
-                <span *ngIf="album.releaseDate" class="ms-3">Release Date: {{ album.releaseDate }}</span>
-                <span *ngIf="album.totalDuration" class="ms-3">{{album.totalDuration}}</span>
+
+            <h5 class="album-meta d-flex align-items-center text-secondary">
+                <a [routerLink]="'/author/' + album.authorId"
+                    class="d-flex align-items-center text-decoration-none text-dark">
+                    <img [src]="album.authorImageUrl" alt="Author" class="author-avatar rounded-circle me-2" />
+                    <span class="text-decoration-underline">{{ album.authorName }}</span>
+                </a>
+                <span class="ms-3">
+                    <i class="pi pi-music" style="font-size: 1rem;"></i>
+                    {{ album.numberOfTracks }} Tracks
+                </span>
+                <span *ngIf="album.releaseDate" class="ms-3">
+                    <i class="pi pi-calendar" style="font-size: 1rem;"></i>
+                    Release Date: {{ album.releaseDate }}
+                </span>
+                <span *ngIf="album.totalDuration" class="ms-3">
+                    <i class="pi pi-clock" style="font-size: 1rem;"></i>
+                    {{ album.totalDuration }}
+                </span>
             </h5>
         </div>
     </div>
@@ -27,38 +43,24 @@
         <app-track-list></app-track-list>
     </div>
 
-    <p-dialog
-        [(visible)]="editDialogVisible"
-        [header]="'Edit Album'"
-        [modal]="true"
-        [closable]="true"
-        [style]="{ width: '500px' }"
-    >
+    <p-dialog [(visible)]="editDialogVisible" [header]="'Edit Album'" [modal]="true" [closable]="true"
+        [style]="{ width: '500px' }">
         <div class="form-group mt-2">
-            <input
-                type="text"
-                id="albumName"
-                class="form-control"
-                [value]="album.name"
-                [(ngModel)]="editableAlbum.name"
-                placeholder="Enter album name"
-            />
+            <input type="text" id="albumName" class="form-control" [value]="album.name" [(ngModel)]="editableAlbum.name"
+                placeholder="Enter album name" />
         </div>
 
         <div class="form-group mt-3">
-            <p-calendar
-                [(ngModel)]="editableAlbum.releaseDate"
-                dateFormat="yy.mm.dd"
-                [touchUI]="true"
-                placeholder="Select release date"
-            ></p-calendar>
+            <p-calendar [(ngModel)]="editableAlbum.releaseDate" dateFormat="yy.mm.dd" [touchUI]="true"
+                placeholder="Select release date"></p-calendar>
         </div>
 
         <div class="form-group mt-3">
             <label for="albumCover" class="form-label">Cover Image</label>
             <input type="file" id="albumCover" class="form-control" (change)="onFileChange($event)" />
             <div class="mt-3 text-center">
-                <img *ngIf="previewImage" [src]="previewImage" alt="Cover Preview" class="img-thumbnail" style="max-width: 200px;" />
+                <img *ngIf="previewImage" [src]="previewImage" alt="Cover Preview" class="img-thumbnail"
+                    style="max-width: 200px;" />
             </div>
         </div>
 
@@ -70,5 +72,5 @@
         </ng-template>
     </p-dialog>
 
-    <p-confirmDialog [style]="{ width: '20vw' }" />
+    <p-confirmDialog [style]="{ width: '20vw' }"></p-confirmDialog>
 </div>

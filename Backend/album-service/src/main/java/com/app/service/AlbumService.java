@@ -53,9 +53,9 @@ public class AlbumService {
 				.map(albumMapper::fromAlbumToResponseAlbum);
 	}
 	
-	public Flux<AlbumPreviewResponse> getAlbumByIds(List<Integer> ids, Integer authorId){
+	public Flux<AlbumPreviewResponse> getAlbumByIds(List<Integer> ids, List<Integer> authorId){
 		if (authorId != null) {
-			return albumRepository.findByAuthorId(authorId)
+			return albumRepository.findByAuthorIdIn(authorId)
 			.map(albumMapper::fromAlbumToAlbumPreviewResponse);
 		}
 		return albumRepository.findAllById(ids)
