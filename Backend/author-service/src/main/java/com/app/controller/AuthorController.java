@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,6 +22,7 @@ import com.app.payload.request.AuthorCreateOrUpdateRequest;
 import com.app.payload.response.AuthorResponse;
 import com.app.service.AuthorService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -58,16 +60,16 @@ public class AuthorController {
 	
 	@PostMapping
 	public Mono<ResponseEntity<?>> createAuthor(
-			@ModelAttribute Mono<AuthorCreateOrUpdateRequest> dto, 
+			@Valid @ModelAttribute AuthorCreateOrUpdateRequest dto, 
 			@RequestHeader("userId") Integer userId
 		) {
-		return dto.map(t -> authorService.saveAuthor(t, userId))
+		return authorService.saveAuthor(dto, userId)
 				.flatMap(t -> Mono.just(ResponseEntity.status(HttpStatus.CREATED).body(t)));
 	}
 	
 	@PutMapping("{id}")
 	public Mono<Void> updateAuthor(
-			@ModelAttribute AuthorCreateOrUpdateRequest body, 
+			@Valid @ModelAttribute AuthorCreateOrUpdateRequest body, 
 			@PathVariable("id") Integer id,
 			@RequestHeader("userId") Integer userId
 		) {
