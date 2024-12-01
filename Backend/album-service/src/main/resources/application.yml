@@ -11,3 +11,4 @@ logging:
   level:
     '[org.springframework.web]': debug
 file.temp: \Programming\Java\StreamingService\Backend\album-service\temp
+file.max-size: 1_048_576 #1MB

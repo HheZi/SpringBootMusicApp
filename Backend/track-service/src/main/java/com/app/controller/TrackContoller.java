@@ -23,6 +23,7 @@ import com.app.payload.response.ResponseTotalDuration;
 import com.app.payload.response.ResponseTrack;
 import com.app.service.TrackService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -60,10 +61,10 @@ public class TrackContoller {
 	
 	@PostMapping
 	public Mono<ResponseEntity<?>> createTrack(
-			@ModelAttribute Mono<CreateTrackDto> dto, 
+			@Valid @ModelAttribute CreateTrackDto dto, 
 			@RequestHeader("userId") Integer userId
 		) {
-		return dto.flatMap(t -> trackService.createTrack(t, userId));
+		return trackService.createTrack(dto, userId);
 	}
 	
 	@PatchMapping("/{id}")

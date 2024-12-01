@@ -36,12 +36,15 @@ export class CreateAuthorComponent implements OnInit{
       var file = this.authorFormGroup.get("cover")?.value;
       if(file){
         formData.append("cover", file);
-
       }
   
       this.authorService.createAuthor(formData).subscribe({
         next: (data) => this.messageService.add({ closable: true, summary: "You have created the author", severity: "success" }),
-        error: (err) => this.messageService.add({ closable: true, summary: "Something went wrong", severity: "error" })
+        error: (err) => {
+          err.error.forEach((err: any) => {
+            this.messageService.add({closable: true, severity: "error", summary: "Error while creating a track", detail: err})
+          });
+        }
       })
     }
 

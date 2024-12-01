@@ -34,16 +34,16 @@ public class ImageValidator implements ConstraintValidator<ImageValid, FilePart>
 		}
 		
 		Boolean block = value.content().map(t -> t.readableByteCount())
-			.reduce(Integer::sum)
-			.map(t -> t <= MAX_IMAGE_SIZE)
-			.block();
-
+		.reduce((t, u) -> t+u)
+		.map(t -> t <= MAX_IMAGE_SIZE )
+		.block();
 		if (!block) {
 			context.disableDefaultConstraintViolation();
             context.buildConstraintViolationWithTemplate("Max size of file " + (MAX_IMAGE_SIZE / 1024 / 1024) + "MB")
                     .addConstraintViolation();
 			return false;
 		}
+		
 		
 		return true;
 	}

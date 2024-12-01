@@ -33,9 +33,13 @@ export class CreateTrackComponent implements  OnInit{
     this.title.setTitle("Create Track");
   }
   
-  onFileSelected(event: any): void {
-    const file = event.files[0];
-    this.trackForm.patchValue({ audio: file });
+  onFileSelected($event: any): void {
+    var input = $event.target as HTMLInputElement;
+
+    if (input && input.files && input.files.length > 0) {
+      const file = input.files[0];
+      this.trackForm.patchValue({ audio: file });
+    }
   }
   
   onSubmit(): void {
@@ -45,10 +49,13 @@ export class CreateTrackComponent implements  OnInit{
       formData.append("audio", this.trackForm.get("audio")?.value);
       formData.append("albumId", this.trackForm.get("album")?.value.id);
       
-      console.log(formData);
-      this.trackService.createTracks(formData).subscribe({
+      this.trackService.createTrack(formData).subscribe({
         next: (resp) => this.messageService.add({closable: true, detail: "The track has been created", severity: 'success'}),
-        error: (err) => this.messageService.add({closable: true, severity: "error", summary: "Something went wrong"})
+        error: (err) => {
+          err.error.forEach((err: any) => {
+            this.messageService.add({closable: true, severity: "error", summary: "Error while creating a track", detail: err})
+          });
+        }
       });
     }
   }

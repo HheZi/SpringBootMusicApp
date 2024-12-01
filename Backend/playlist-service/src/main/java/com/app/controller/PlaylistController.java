@@ -18,6 +18,7 @@ import com.app.payload.response.ResponsePlaylist;
 import com.app.payload.response.ResponsePlaylistPreview;
 import com.app.service.PlaylistService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -59,7 +60,7 @@ public class PlaylistController {
 	
 	@PostMapping
 	public Mono<ResponseEntity<?>> createPlaylist(
-			@ModelAttribute CreateOrUpdatePlaylist dto,
+			@Valid @ModelAttribute CreateOrUpdatePlaylist dto,
 			@RequestHeader("userId") Integer userId
 		){
 		return playlistService.createPlaylist(dto, userId);
@@ -74,7 +75,10 @@ public class PlaylistController {
 	}
 	
 	@PutMapping("{id}")
-	public Mono<Void> updatePlaylist(@PathVariable("id") Integer id, @ModelAttribute CreateOrUpdatePlaylist dto){
+	public Mono<Void> updatePlaylist(
+			@PathVariable("id") Integer id, 
+			@Valid @ModelAttribute CreateOrUpdatePlaylist dto
+		){
 		return playlistService.updatePlaylist(dto, id);
 	}
 	

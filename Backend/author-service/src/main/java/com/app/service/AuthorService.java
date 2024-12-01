@@ -19,7 +19,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.app.model.Author;
 import com.app.payload.request.AuthorCreateOrUpdateRequest;
-import com.app.payload.request.SaveAuthorImageRequest;
 import com.app.payload.response.AuthorResponse;
 import com.app.repository.AuthorRepository;
 import com.app.util.AuthorMapper;

@@ -55,7 +55,9 @@ export class CreatePlaylistComponent {
         this.messageService.add({closable: true, summary: "The Playlist Created", severity: "success"});
       },
       error: (err) => {
-        this.messageService.add({closable: true, summary: "Something Went Wrong", severity: "error"});
+        err.error.forEach((err: any) => {
+          this.messageService.add({closable: true, severity: "error", summary: "Error while creating a playlist", detail: err})
+        });
       }
     })
   }

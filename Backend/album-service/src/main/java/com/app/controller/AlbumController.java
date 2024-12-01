@@ -11,6 +11,7 @@ import com.app.payload.response.AlbumPreviewResponse;
 import com.app.payload.response.ResponseAlbum;
 import com.app.service.AlbumService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -78,19 +79,19 @@ public class AlbumController {
 	
 	@PostMapping
 	public Mono<ResponseEntity<Integer>> createAlbum(
-			@ModelAttribute Mono<RequestAlbum> mono,
+			@Valid @ModelAttribute RequestAlbum dto,
 			@RequestHeader("userId") Integer userId
 		) {
-		return mono.flatMap(t -> albumService.createAlbum(t, userId));
+		return albumService.createAlbum(dto, userId);
 	}
 	
 	@PutMapping("/{id}")
 	public Mono<Void> updateAlbum(
-			@ModelAttribute Mono<RequestToUpdateAlbum> dto, 
+			@Valid @ModelAttribute RequestToUpdateAlbum dto, 
 			@PathVariable("id") Integer id,
 			@RequestHeader("userId") Integer userId
 		){
-		return dto.flatMap(t -> albumService.updateAlbum(t, id, userId));
+		return albumService.updateAlbum(dto, id, userId);
 	}
 	
 	@DeleteMapping("cover/{id}")

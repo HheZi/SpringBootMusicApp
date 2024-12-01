@@ -2,6 +2,10 @@ package com.app.payload.request;
 
 import org.springframework.http.codec.multipart.FilePart;
 
+import com.app.validation.AudioValid;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -9,9 +13,12 @@ import lombok.NoArgsConstructor;
 @Data
 public class CreateTrackDto {
 
+	@NotBlank(message = "Title can't be blank")
 	private String title;
 	
+	@NotNull(message = "Album is required")
 	private Integer albumId;
 	
+	@AudioValid
 	private FilePart audio;
 }

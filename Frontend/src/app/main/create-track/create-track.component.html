@@ -21,9 +21,9 @@
 
     <div class="form-group mb-4">
       <label for="file" class="form-label fw-bold">Audio File</label>
-      <p-fileUpload mode="advanced" name="file" (onSelect)="onFileSelected($event)" [customUpload]="true"
-        accept="audio/mpeg" [showCancelButton]="true" [maxFileSize]="293601280" [showUploadButton]="false"
-        [fileLimit]="1" class="shadow-sm"></p-fileUpload>
+      <input type="file" class="form-control shadow-sm" (change)="onFileSelected($event)" accept="audio/mpeg"
+        name="audio" >
+      <small>Upload an audio file (MP3).</small>
       <div *ngIf="trackForm.get('file')?.invalid && trackForm.get('file')?.touched" class="text-danger small mt-1">
         File is required.
       </div>

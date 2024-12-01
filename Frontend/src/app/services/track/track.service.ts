@@ -34,7 +34,7 @@ export class TrackService {
     return this.httpClient.get(this.TRACK_URL_TO_GET_FROM_AGGREGATION, {params: {"id": ids}});
   }
 
-  public createTracks(tracks: any): Observable<Object>{
+  public createTrack(tracks: any): Observable<Object>{
     return this.httpClient.post(this.TRACK_URL, tracks);
   }
 
