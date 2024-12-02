@@ -155,10 +155,7 @@ public class TrackService {
 		.filter(t -> t.getCreatedBy() == userId)
 		.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE)))
 		.doOnNext(t -> {
-			String title = updateTrack.getTitle();
-			if (title != null && !title.isEmpty() && !title.isBlank()) {
-				t.setTitle(title);
-			}
+				t.setTitle(updateTrack.getTitle());
 		})
 		.flatMap(repository::save)
 		.then();

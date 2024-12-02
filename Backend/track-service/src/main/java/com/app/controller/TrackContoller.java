@@ -21,6 +21,7 @@ import com.app.payload.request.CreateTrackDto;
 import com.app.payload.request.UpdateTrackRequest;
 import com.app.payload.response.ResponseTotalDuration;
 import com.app.payload.response.ResponseTrack;
+import com.app.service.AudioValidatorService;
 import com.app.service.TrackService;
 
 import jakarta.validation.Valid;
@@ -35,6 +36,8 @@ import reactor.core.publisher.Mono;
 public class TrackContoller {
 
 	private final TrackService trackService;
+	
+	private final AudioValidatorService audioValidatorService;
 
 	@GetMapping
 	public Flux<ResponseTrack> getTracks(
@@ -64,12 +67,13 @@ public class TrackContoller {
 			@Valid @ModelAttribute CreateTrackDto dto, 
 			@RequestHeader("userId") Integer userId
 		) {
-		return trackService.createTrack(dto, userId);
+		return audioValidatorService.validateAudioFile(dto.getAudio())
+				.flatMap(t -> trackService.createTrack(dto, userId));
 	}
 	
 	@PatchMapping("/{id}")
 	public Mono<Void> updateTitle(
-			@RequestBody UpdateTrackRequest title, 
+			@Valid @RequestBody UpdateTrackRequest title, 
 			@RequestHeader("userId") Integer userId, 
 			@PathVariable("id") Long trackId
 		){

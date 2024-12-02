@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.app.payload.request.CreateOrUpdatePlaylist;
 import com.app.payload.response.ResponsePlaylist;
 import com.app.payload.response.ResponsePlaylistPreview;
+import com.app.service.ImageValidatorService;
 import com.app.service.PlaylistService;
 
 import jakarta.validation.Valid;
@@ -29,6 +30,8 @@ import reactor.core.publisher.Mono;
 public class PlaylistController {
 
 	private final PlaylistService playlistService;
+	
+	private final ImageValidatorService imageValidatorService;
 	
 	@GetMapping("{id}")
 	public Mono<ResponsePlaylist> getPlaylist(@PathVariable("id") Integer id) {
@@ -63,7 +66,8 @@ public class PlaylistController {
 			@Valid @ModelAttribute CreateOrUpdatePlaylist dto,
 			@RequestHeader("userId") Integer userId
 		){
-		return playlistService.createPlaylist(dto, userId);
+		return imageValidatorService.validateImageFile(dto.getCover())
+				.flatMap(t -> playlistService.createPlaylist(dto, userId));
 	}
 	
 	@PatchMapping("{id}/{trackId}")
@@ -76,10 +80,11 @@ public class PlaylistController {
 	
 	@PutMapping("{id}")
 	public Mono<Void> updatePlaylist(
-			@PathVariable("id") Integer id, 
-			@Valid @ModelAttribute CreateOrUpdatePlaylist dto
+			@Valid @ModelAttribute CreateOrUpdatePlaylist dto,
+			@PathVariable("id") Integer id
 		){
-		return playlistService.updatePlaylist(dto, id);
+		return imageValidatorService.validateImageFile(dto.getCover())
+				.flatMap(t -> playlistService.updatePlaylist(dto, id));
 	}
 	
 	@DeleteMapping("{id}/{trackId}")

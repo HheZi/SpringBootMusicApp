@@ -51,6 +51,7 @@ export class SeePlaylistComponent implements OnInit {
         this.title.setTitle(playlist.name);
         this.playlist = playlist;
         this.editablePlaylist.description = playlist.description;
+        this.editablePlaylist.name = playlist.name;
 
         if (this.playlist.trackIds.length != 0) {
           this.trackService.getTrackByIds(this.playlist.trackIds).subscribe({
@@ -98,9 +99,7 @@ export class SeePlaylistComponent implements OnInit {
   protected saveChanges(): void{
     var formData = new FormData();
 
-    if(this.editablePlaylist.name){
-      formData.append("name", this.editablePlaylist.name);
-    }
+    formData.append("name", this.editablePlaylist.name);
 
     formData.append("description", this.editablePlaylist.description);
     
@@ -108,11 +107,16 @@ export class SeePlaylistComponent implements OnInit {
       formData.append("cover", this.selectedFile);
     }
 
-    this.playlistService.savePlaylist(formData, this.playlist.id).subscribe(() => {
-      this.messageService.add({closable: true, summary: "Playlist updated", severity: "success"});
-      this.loadPlaylist(this.playlist.id);    
-      this.editDialogeVisible = false;
-    });
+    this.playlistService.savePlaylist(formData, this.playlist.id).subscribe({
+      next: () => {
+        this.messageService.add({ severity: 'success', summary: 'playlist updated successfully' });
+        this.editDialogeVisible = false;
+        this.loadPlaylist(this.playlist.id);
+      },
+      error: (err: any) => err.error.forEach((err: any) => {
+        this.messageService.add({ closable: true, summary: "Can't update the playlist", detail: err, severity: "error" })
+      })
+    })
   }
 
   private deletePlayist(){

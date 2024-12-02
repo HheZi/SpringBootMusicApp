@@ -4,9 +4,9 @@ import java.time.LocalDate;
 
 import org.springframework.http.codec.multipart.FilePart;
 
-import com.app.validation.ImageValid;
-
+import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,9 +21,10 @@ public class RequestToUpdateAlbum {
 	private String name;
 	
 	@PastOrPresent(message = "Album release date can't be in future")
+	@NotNull(message = "Release date is required")
 	private LocalDate releaseDate;
 	
-	@ImageValid
+	@Nullable
 	private FilePart cover;
 	
 }

@@ -114,12 +114,8 @@ public class PlaylistService {
 	@Transactional
 	public Mono<Void> updatePlaylist(CreateOrUpdatePlaylist dto, Integer id){
 		Function<Playlist, Mono<Playlist>> func = playlist -> {
-			if(dto.getName() != null && !dto.getName().isEmpty() && !dto.getName().isBlank()) {
-				playlist.setName(dto.getName());
-			}
-			if (dto.getDescription() != null) {
-				playlist.setDescription(dto.getDescription());
-			}
+			playlist.setName(dto.getName());
+			playlist.setDescription(dto.getDescription());
 			if (playlist.getImageName() == null && dto.getCover() != null) {
 				playlist.setImageName(UUID.randomUUID());
 			}

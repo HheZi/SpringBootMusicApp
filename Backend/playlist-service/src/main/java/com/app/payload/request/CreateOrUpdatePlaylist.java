@@ -1,8 +1,7 @@
 package com.app.payload.request;
 
+import org.hibernate.validator.constraints.Length;
 import org.springframework.http.codec.multipart.FilePart;
-
-import com.app.validation.ImageValid;
 
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotBlank;
@@ -20,10 +19,10 @@ public class CreateOrUpdatePlaylist {
 	@NotBlank(message = "Name can't be blank")
 	private String name;
 	
-	@Nullable
+	@Length(min = 0, max = 70, message = "Description max 70 symbols")
 	private String description;
 	
-	@ImageValid
+	@Nullable
 	private FilePart cover;
 	
 }

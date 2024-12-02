@@ -17,14 +17,14 @@ import { TrackListComponent } from '../track-list/track-list.component';
   providers: [ConfirmationService]
 })
 export class SeeAlbumComponent {
-  public album: Album = { id: 0, imageUrl: "", name: "", numberOfTracks: 0, albumType: "", releaseDate: null, totalDuration: '', authorId: 0, authorImageUrl: '', authorName: ''};
+  public album: Album = { id: 0, imageUrl: "", name: "", numberOfTracks: 0, albumType: "", releaseDate: null, totalDuration: '', authorId: 0, authorImageUrl: '', authorName: '' };
   public isOwnerOfAlbum = false;
   public isNotFound = false;
 
   @ViewChild(TrackListComponent) trackList!: TrackListComponent;
 
   public editDialogVisible = false;
-  public editableAlbum: Album = { id: 0, imageUrl: "", name: "", numberOfTracks: 0, albumType: "", releaseDate: null,  totalDuration: '', authorId: 0, authorImageUrl: '', authorName: ''};
+  public editableAlbum: Album = { id: 0, imageUrl: "", name: "", numberOfTracks: 0, albumType: "", releaseDate: null, totalDuration: '', authorId: 0, authorImageUrl: '', authorName: '' };
   private selectedFile: File | null = null;
   public previewImage: string | ArrayBuffer | null = null;
 
@@ -61,16 +61,16 @@ export class SeeAlbumComponent {
           totalDuration: album.totalDuration
         };
         this.trackList.setTracks(album.tracks);
-
-      } 
+        this.editableAlbum.name = this.album.name;
+      }
     })
 
     this.albumService.getIsUserIsOwnerOfAlbum(albumId).subscribe({
       next: (resp: any) => {
         this.isOwnerOfAlbum = resp;
-        this.trackList.onDelete('Delete this track from album?',(trackId: number) => {
+        this.trackList.onDelete('Delete this track from album?', (trackId: number) => {
           this.trackService.deleteTrack(trackId).subscribe(() => {
-            this.messageService.add({ closable: true, severity: "success", summary: "Track deleted"});
+            this.messageService.add({ closable: true, severity: "success", summary: "Track deleted" });
             this.album.numberOfTracks--;
           });
         });
@@ -97,12 +97,16 @@ export class SeeAlbumComponent {
 
     formData.append("releaseDate", this.parseReleaseDate())
 
-    this.albumService.updateAlbum(this.album.id, formData).subscribe(
-      () => {
+    this.albumService.updateAlbum(this.album.id, formData).subscribe({
+      next: () => {
         this.messageService.add({ severity: 'success', summary: 'Album updated successfully' });
         this.editDialogVisible = false;
         this.loadAlbum(this.album.id);
       },
+      error: (err: any) => err.error.forEach((err: any) => {
+        this.messageService.add({ closable: true, summary: "Can't update the album", detail: err, severity: "error" })
+      })
+    }
     );
   }
 

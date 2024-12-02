@@ -15,21 +15,21 @@ import { TrackListComponent } from '../track-list/track-list.component';
   templateUrl: './see-author.component.html',
   styleUrl: './see-author.component.css'
 })
-export class SeeAuthorComponent implements OnInit{
-  
-  
+export class SeeAuthorComponent implements OnInit {
+
+
   public author: Author = { id: 0, name: '', imageUrl: '' };
   public albums: any[] = [];
   public canModify: boolean = false;
-  public updateDialog:  boolean = false;
+  public updateDialog: boolean = false;
   public isNotFound: boolean = false;
 
-  public editableAuthor: Author ={ id: 0, name: '', imageUrl: '' };
+  public editableAuthor: Author = { id: 0, name: '', imageUrl: '' };
   public previewImage: string | ArrayBuffer | null = null;
   private selectedFile: File | null = null;
-  
+
   @ViewChild(TrackListComponent) trackList!: TrackListComponent;
-  
+
   constructor(
     private activeRoute: ActivatedRoute,
     private authorService: AuthorService,
@@ -39,24 +39,25 @@ export class SeeAuthorComponent implements OnInit{
     private audioService: AudioService,
     private router: Router,
     private title: Title
-  ) {}
-  
+  ) { }
+
   ngOnInit(): void {
     const authorId = this.activeRoute.snapshot.paramMap.get('id');
     if (authorId) {
       this.loadAuthor(parseInt(authorId));
     }
   }
-  
+
   private loadAuthor(authorId: number): void {
     this.authorService.getAuthorsById(authorId).subscribe({
       next: (author: any) => {
         this.author = author;
+        this.editableAuthor.name = this.author.name;
         this.title.setTitle(this.author.name);
-        this.authorService.canModify(this.author.id).subscribe((resp:any)=>{
+        this.authorService.canModify(this.author.id).subscribe((resp: any) => {
           this.canModify = resp;
         })
-        this.albumService.getAlbumsByAuthorId(this.author.id).subscribe((albums: any) =>{
+        this.albumService.getAlbumsByAuthorId(this.author.id).subscribe((albums: any) => {
           this.albums = albums;
           this.trackService.getTracksByAlbumId(albums.map((a: any) => a.id)).subscribe((tracksResp: any) => {
             this.trackList.setTracks(tracksResp);
@@ -64,11 +65,11 @@ export class SeeAuthorComponent implements OnInit{
           });
         });
       },
-        error: () => this.isNotFound = true
-      });
-    
+      error: () => this.isNotFound = true
+    });
+
   }
-  
+
   onFileChange(event: any): void {
     this.selectedFile = event.target.files[0];
     if (this.selectedFile) {
@@ -78,29 +79,32 @@ export class SeeAuthorComponent implements OnInit{
     }
   }
 
-  public openOrCloseDialog(){
+  public openOrCloseDialog() {
     this.updateDialog = !this.updateDialog;
   }
 
   editAuthor(): void {
     var formData = new FormData();
 
-    if(this.editableAuthor.name){
-      formData.append("name", this.editableAuthor.name);
-    }
-      
-    if (this.selectedFile){
+    formData.append("name", this.editableAuthor.name);
+
+    if (this.selectedFile) {
       formData.append("cover", this.selectedFile);
     }
 
-    this.authorService.updateAuthor(formData, this.author.id).subscribe(() => {
-      this.messageService.add({ severity: 'success', summary: 'Albums updated successfully' });
-      this.updateDialog = false;
-      this.loadAuthor(this.author.id);
+    this.authorService.updateAuthor(formData, this.author.id).subscribe({
+      next: () => {
+        this.messageService.add({ severity: 'success', summary: 'Albums updated successfully' });
+        this.updateDialog = false;
+        this.loadAuthor(this.author.id);
+      },
+      error: (err: any) => err.error.forEach((err: any) => {
+        this.messageService.add({ closable: true, summary: "Can't update the author", detail: err, severity: "error" })
+      })
     })
   }
 
   public seeAlbum(albumId: number) {
-    this.router.navigate(["album/"+albumId]);
+    this.router.navigate(["album/" + albumId]);
   }
 }

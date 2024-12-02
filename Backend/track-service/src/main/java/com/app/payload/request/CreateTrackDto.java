@@ -2,8 +2,8 @@ package com.app.payload.request;
 
 import org.springframework.http.codec.multipart.FilePart;
 
-import com.app.validation.AudioValid;
 
+import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -19,6 +19,6 @@ public class CreateTrackDto {
 	@NotNull(message = "Album is required")
 	private Integer albumId;
 	
-	@AudioValid
+	@Nullable
 	private FilePart audio;
 }

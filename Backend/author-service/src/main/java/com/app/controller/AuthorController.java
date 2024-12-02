@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.app.payload.request.AuthorCreateOrUpdateRequest;
 import com.app.payload.response.AuthorResponse;
 import com.app.service.AuthorService;
+import com.app.service.ImageValidatorService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +35,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 public class AuthorController {
 
 	private final AuthorService authorService;
+	
+	private final ImageValidatorService imageValidatorService;
 	
 	@GetMapping("/{id}")
 	public Mono<AuthorResponse> getAuthor(@PathVariable("id") Integer id){
@@ -63,17 +66,18 @@ public class AuthorController {
 			@Valid @ModelAttribute AuthorCreateOrUpdateRequest dto, 
 			@RequestHeader("userId") Integer userId
 		) {
-		return Mono.empty(); 
-		//		return authorService.saveAuthor(dto, userId);
+			return imageValidatorService.validateImageFile(dto.getCover())
+					.flatMap(t -> authorService.saveAuthor(dto, userId));
 	}
 	
 	@PutMapping("{id}")
 	public Mono<Void> updateAuthor(
-			@Valid @ModelAttribute AuthorCreateOrUpdateRequest body, 
+			@Valid @ModelAttribute AuthorCreateOrUpdateRequest dto, 
 			@PathVariable("id") Integer id,
 			@RequestHeader("userId") Integer userId
 		) {
-		return authorService.updateAuthor(body, id, userId);
+		return imageValidatorService.validateImageFile(dto.getCover())
+				.flatMap(t -> authorService.updateAuthor(dto, id, userId));
 	}
 	
 }

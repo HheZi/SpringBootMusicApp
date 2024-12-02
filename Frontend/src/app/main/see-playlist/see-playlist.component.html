@@ -51,7 +51,6 @@
                 type="text"
                 id="playlistName"
                 class="form-control"
-                [value]="playlist.name"
                 [(ngModel)]="editablePlaylist.name"
                 placeholder="Enter playlist name"
             />
@@ -62,7 +61,6 @@
                 id="playlistDescription"
                 class="form-control"
                 rows="3"
-                [value]="playlist.description"
                 [(ngModel)]="editablePlaylist.description"
                 placeholder="Write a short description"
             ></textarea>

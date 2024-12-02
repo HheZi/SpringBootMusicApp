@@ -110,12 +110,9 @@ public class AlbumService {
 
 	public Mono<Void> updateAlbum(RequestToUpdateAlbum dto, Integer playlistId, Integer userId){
 		Function<Album, Mono<Album>> function = t -> {
-			if (dto.getName() != null && !dto.getName().isEmpty() && !dto.getName().isBlank()) {
-				t.setName(dto.getName());
-			}
-			if (dto.getReleaseDate() != null) {
-				t.setReleaseDate(dto.getReleaseDate());
-			}
+			t.setName(dto.getName());
+			t.setReleaseDate(dto.getReleaseDate());
+			
 			if (dto.getCover() != null && t.getImageName() == null) {
 				t.setImageName(UUID.randomUUID());
 			}

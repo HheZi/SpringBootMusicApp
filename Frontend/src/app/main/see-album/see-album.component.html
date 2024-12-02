@@ -46,7 +46,7 @@
     <p-dialog [(visible)]="editDialogVisible" [header]="'Edit Album'" [modal]="true" [closable]="true"
         [style]="{ width: '500px' }">
         <div class="form-group mt-2">
-            <input type="text" id="albumName" class="form-control" [value]="album.name" [(ngModel)]="editableAlbum.name"
+            <input type="text" id="albumName" class="form-control"[(ngModel)]="editableAlbum.name"
                 placeholder="Enter album name" />
         </div>
 

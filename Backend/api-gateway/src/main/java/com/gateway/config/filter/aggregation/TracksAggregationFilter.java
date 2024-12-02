@@ -61,7 +61,7 @@ public class TracksAggregationFilter implements GatewayFilter {
 			List<ResponsePreviewAlbumFromAPI> albums
 		){
 		if (tracks == null || tracks.isEmpty()) {
-			return Flux.error(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+			return Flux.empty();
 		}
 		
 		return Flux.fromIterable(tracks)
@@ -92,17 +92,16 @@ public class TracksAggregationFilter implements GatewayFilter {
 	}
 	
 	private Flux<ResponseTrackFromAPI> fetchTracksFromService(String param){
-		
 		return builder
 				.baseUrl("http://track-service/api/tracks/" + param)
 				.build()
 				.get()
 				.accept(MediaType.APPLICATION_JSON)
-				.exchangeToFlux(t -> t.bodyToFlux(ResponseTrackFromAPI.class))
-				.switchIfEmpty(Flux.error(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)));
+				.exchangeToFlux(t -> t.bodyToFlux(ResponseTrackFromAPI.class));
 	}
 	
 	private Flux<ResponsePreviewAuthorFromAPI> fetchAuthorsFromService(Flux<ResponsePreviewAlbumFromAPI> tracks){
+		
 		return tracks
 				.map(ResponsePreviewAlbumFromAPI::getAuthorId)
 				.collectList()
@@ -118,7 +117,8 @@ public class TracksAggregationFilter implements GatewayFilter {
 	}
 			
 	private Flux<ResponsePreviewAlbumFromAPI> fetchAlbumsFromService(Flux<ResponseTrackFromAPI> tracks){
-		return tracks.map(ResponseTrackFromAPI::getAlbumId)
+		return tracks
+				.map(ResponseTrackFromAPI::getAlbumId)
 				.collectList()
 				.flatMapMany(t -> {
 					return builder

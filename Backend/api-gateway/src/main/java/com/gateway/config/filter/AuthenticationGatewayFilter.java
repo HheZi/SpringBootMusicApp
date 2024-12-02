@@ -50,7 +50,7 @@ public class AuthenticationGatewayFilter implements GatewayFilter {
 
 		String token = getTokenFromHeader(request);
 
-		if (isOpenEndpointSecured(request)) {
+		if (isEndpointSecured(request)) {
 			return chain.filter(exchange);
 		}
 		
@@ -75,7 +75,7 @@ public class AuthenticationGatewayFilter implements GatewayFilter {
 		return vals == null ? null : vals.get(0).split("\s+")[1];
 	}
 
-	private boolean isOpenEndpointSecured(ServerHttpRequest request) {
+	private boolean isEndpointSecured(ServerHttpRequest request) {
 	    return openEndpoints.stream()
 	            .anyMatch(endpoint -> isPathTheSame(request, endpoint.uri()) && isHttpMethodTheSame(request, endpoint.httpMethods()));
 	}
