@@ -5,7 +5,11 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties.Pageable;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
 import org.springframework.data.relational.core.query.Criteria;
 import org.springframework.data.relational.core.query.Query;
@@ -51,31 +55,61 @@ public class TrackService {
 	private String tempFolder;
 	
 	@Transactional
-	public Flux<ResponseTrack> getTracks(
+	public Mono<Page<ResponseTrack>> getTracks(
 			String trackName, 
 			List<Integer> albumId,
-			List<Integer> ids
+			List<Long> ids,
+			Integer page,
+			Integer size
 		){
-		Criteria criteria;
+		Criteria criteria = Criteria.empty();
+		
+		PageRequest pageable =  PageRequest.of(page, size);
+		Mono<Long> count = template.count(Query.empty(), Track.class);
 
 		if (trackName != null) {
-			criteria = Criteria.where("title").like(trackName+ "%");
+			criteria = Criteria.where("title").like(trackName+ "%").ignoreCase(true);
+			count = template.count(Query.query(criteria), Track.class);
 		}
 		else if (albumId != null) {
 			criteria = Criteria.where("album_id").in(albumId);
+			count = template.count(Query.query(criteria), Track.class);
 		}
 		else if (ids != null) {
 			criteria = Criteria.where("id").in(ids);
-		}
-		else {
-			return repository.findAll()
-					.map(mapper::fromTrackToResponseTrack);			
+			count = template.count(Query.query(criteria), Track.class);
 		}
 		
+		Flux<ResponseTrack> tracks = template.select(Query.query(criteria).with(pageable), Track.class)
+		.map(mapper::fromTrackToResponseTrack);
 		
-		return template.select(Query.query(criteria), Track.class)
-				.map(mapper::fromTrackToResponseTrack);
+		return Mono.zip(tracks.collectList(), count)
+				.map(t -> new PageImpl<ResponseTrack>(t.getT1(), pageable, t.getT2()));
 		
+	}
+	
+	public Mono<Integer> countTracksByAlbumId(Long albumId){
+		return repository.countByAlbumId(albumId);
+	}
+
+	public Mono<ResponseTotalDuration> totalTimeOfTracks(List<Long> ids, Integer albumId) {
+		Flux<Track> tracks = Flux.empty();
+		
+		if (ids == null && albumId == null ) {
+			return Mono.error(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST));
+		}
+		else if(ids != null){
+			tracks = repository.findAllById(ids);
+		}
+		else if (albumId != null) {
+			tracks = repository.findByAlbumId(albumId);
+		}
+		
+		return tracks
+				.switchIfEmpty(Flux.error(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)))
+				.map(t -> t.getDuration())
+				.reduce(Long::sum)
+				.map(mapper::getDurationOfTrack);
 	}
 	
 	@Transactional
@@ -107,16 +141,6 @@ public class TrackService {
 		
 	}
 	
-	public Mono<Integer> countTracksByAlbumId(Long albumId){
-		return repository.countByAlbumId(albumId);
-	}
-
-	public Mono<ResponseTotalDuration> totalTimeOfTracks(List<Long> ids) {
-		return repository.findAllById(ids)
-				.map(t -> t.getDuration())
-				.reduce((t, u) -> t + u)
-				.map(mapper::getDurationOfTrack);
-	}
 	
 	@Transactional
 	public Mono<Void> deleteTrack(Long id){

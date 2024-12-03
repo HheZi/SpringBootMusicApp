@@ -1,7 +1,5 @@
 package com.gateway.config.filter.aggregation;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
@@ -20,9 +18,7 @@ import com.gateway.payload.response.ResponseAlbum;
 import com.gateway.payload.response.ResponseAlbumDuration;
 import com.gateway.payload.response.ResponseAlbumFromService;
 import com.gateway.payload.response.ResponseAuthorFromService;
-import com.gateway.payload.response.ResponseTrack;
 
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Component
@@ -35,9 +31,6 @@ public class AlbumAggregationFilter implements GatewayFilter{
 	@Autowired
 	private ObjectMapper mapper;
 	
-	@Autowired
-	private TracksAggregationFilter tracksAggregationFilter;
-
 	@Override
 	public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
 		String[] path = exchange.getRequest().getURI().getPath().split("/");
@@ -47,13 +40,13 @@ public class AlbumAggregationFilter implements GatewayFilter{
 			Integer id = Integer.parseInt(idString);
 			
 			Mono<DataBuffer> resp = fetchAlbumsFromService(id)
+				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)))
 				.flatMap(t -> {
-					Flux<ResponseTrack> tracks = tracksAggregationFilter.getTracks("?albumId="+t.getId());
-					Mono<String> albumDuration = fetchAlbumDuration(tracks);
+					Mono<String> albumDuration = fetchAlbumDuration(t.getId());
 					Mono<Integer> tracksInAlbum = fetchTracksInAlbum(t.getId());
 					Mono<ResponseAuthorFromService> author = fetchAuthorsFromService(t.getAuthorId());
 					
-					return buildAlbum(t, tracks.collectList(), albumDuration, tracksInAlbum, author);
+					return buildAlbum(t, albumDuration, tracksInAlbum, author);
 				})
 				.map(t -> {
 					try {
@@ -69,6 +62,7 @@ public class AlbumAggregationFilter implements GatewayFilter{
 			
 			return exchange.getResponse().writeWith(resp);
 			
+			
 		} catch (NumberFormatException e) {
 			return Mono.error(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST));
 		}
@@ -81,20 +75,19 @@ public class AlbumAggregationFilter implements GatewayFilter{
 				.build()
 				.get()
 				.accept(MediaType.APPLICATION_JSON)
-				.exchangeToMono(e -> e.bodyToMono(ResponseAlbumFromService.class));
+				.exchangeToMono(e -> e.bodyToMono(ResponseAlbumFromService.class))
+				.filter(t -> t.getId() != null);
 	}
 	
-	private Mono<String> fetchAlbumDuration(Flux<ResponseTrack> tracks){ 
-		return tracks.map(ResponseTrack::getId)
-		.collectList()
-		.flatMap(t -> builder
+	private Mono<String> fetchAlbumDuration(Integer id){ 
+		return builder
 				.baseUrl("http://track-service/api/tracks/duration")
 				.build()
 				.get()
-				.uri(u -> u.queryParam("ids", t).build())
+				.uri(u -> u.queryParam("albumId", id).build())
 				.accept(MediaType.APPLICATION_JSON)
 				.exchangeToMono(e -> e.bodyToMono(ResponseAlbumDuration.class))
-				.map(ResponseAlbumDuration::getDuration));
+				.map(ResponseAlbumDuration::getDuration);
 	}
 
 	private Mono<Integer> fetchTracksInAlbum(Integer id){
@@ -117,22 +110,20 @@ public class AlbumAggregationFilter implements GatewayFilter{
 	
 	private Mono<ResponseAlbum> buildAlbum(
 			ResponseAlbumFromService albumFromService,
-			Mono<List<ResponseTrack>> tracks,
 			Mono<String> albumDuration,
 			Mono<Integer> tracksInAlbum,
 			Mono<ResponseAuthorFromService> author
 		) {
-		return Mono.zip(tracks, albumDuration, tracksInAlbum, author)
+		return Mono.zip(albumDuration, tracksInAlbum, author)
 		.map(t -> ResponseAlbum.builder()
 				.id(albumFromService.getId())
 				.albumType(albumFromService.getAlbumType())
-				.author(t.getT4())
-				.numberOfTracks(t.getT3())
-				.totalDuration(t.getT2())
+				.author(t.getT3())
+				.numberOfTracks(t.getT2())
+				.totalDuration(t.getT1())
 				.imageUrl(albumFromService.getImageUrl())
 				.name(albumFromService.getName())
 				.releaseDate(albumFromService.getReleaseDate())
-				.tracks(t.getT1())
 				.build());
 		
 	}

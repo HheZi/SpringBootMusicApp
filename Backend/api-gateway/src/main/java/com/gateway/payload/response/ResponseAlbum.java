@@ -30,6 +30,4 @@ public class ResponseAlbum {
 	
 	private ResponseAuthorFromService author;
 	
-	private List<ResponseTrack> tracks;
-	
 }

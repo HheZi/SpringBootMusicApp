@@ -16,6 +16,8 @@ import org.springframework.web.server.ServerWebExchange;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gateway.payload.response.PageResponseTrack;
+import com.gateway.payload.response.PageResponseTrackFromAPI;
 import com.gateway.payload.response.ResponsePreviewAlbumFromAPI;
 import com.gateway.payload.response.ResponsePreviewAuthorFromAPI;
 import com.gateway.payload.response.ResponseTrack;
@@ -40,7 +42,7 @@ public class TracksAggregationFilter implements GatewayFilter {
 		int indexOf = path.indexOf('?');
 		String substring = indexOf == -1 ?  "" : path.substring(indexOf);
 		
-		Mono<DataBuffer> dataBuffer = getTracks(substring).collectList().map(t -> {
+		Mono<DataBuffer> dataBuffer = getTracks(substring).map(t -> {
 				try {
 					return mapper.writeValueAsBytes(t);
 				} catch (JsonProcessingException e) {
@@ -55,16 +57,30 @@ public class TracksAggregationFilter implements GatewayFilter {
 		return exchange.getResponse().writeWith(dataBuffer);
 	}
 	
-	private Flux<ResponseTrack> collectTracks(
-			List<ResponseTrackFromAPI> tracks, 
+	protected Mono<PageResponseTrack>  getTracks(String param) { 
+		Mono<PageResponseTrackFromAPI>  tracks = fetchTracksFromService(param);
+		
+		Flux<ResponsePreviewAlbumFromAPI> albums = fetchAlbumsFromService(tracks);
+		Flux<ResponsePreviewAuthorFromAPI> authors = fetchAuthorsFromService(albums);
+		
+		return Mono.zip(
+				tracks, 
+				authors.collectList(), 
+				albums.collectList())
+				.flatMap(t -> collectTracks(t.getT1(), t.getT2(), t.getT3()));
+	}
+	
+	private Mono<PageResponseTrack> collectTracks(
+			PageResponseTrackFromAPI tracks, 
 			List<ResponsePreviewAuthorFromAPI> authors,  
 			List<ResponsePreviewAlbumFromAPI> albums
 		){
-		if (tracks == null || tracks.isEmpty()) {
-			return Flux.empty();
+		if (tracks.getEmpty()) {
+			return Mono.just(new PageResponseTrack(List.of(), tracks));
 		}
 		
-		return Flux.fromIterable(tracks)
+		List<ResponseTrack> list = tracks.getContent()
+				.stream()
 			.map(t -> {
 				ResponsePreviewAlbumFromAPI album = albums.stream()
 						.filter(p -> t.getAlbumId() == p.getId())
@@ -76,33 +92,24 @@ public class TracksAggregationFilter implements GatewayFilter {
 						.findFirst().orElseGet(ResponsePreviewAuthorFromAPI::new);
 				
 				return new ResponseTrack(t.getId(), t.getTitle(), album, author, t.getAudioUrl(), t.getDuration());
-			});
-	}
-	
-	protected Flux<ResponseTrack>  getTracks(String param) { 
-		Flux<ResponseTrackFromAPI> tracks = fetchTracksFromService(param);
-		Flux<ResponsePreviewAlbumFromAPI> albums = fetchAlbumsFromService(tracks);
-		Flux<ResponsePreviewAuthorFromAPI> authors = fetchAuthorsFromService(albums);
+			})
+			.toList();
 		
-		return Mono.zip(
-				tracks.collectList(), 
-				authors.collectList(), 
-				albums.collectList())
-		.flatMapMany(t -> collectTracks(t.getT1(), t.getT2(), t.getT3()));
+		return Mono.just(new PageResponseTrack(list, tracks));
 	}
 	
-	private Flux<ResponseTrackFromAPI> fetchTracksFromService(String param){
+	
+	private Mono<PageResponseTrackFromAPI> fetchTracksFromService(String param){
 		return builder
 				.baseUrl("http://track-service/api/tracks/" + param)
 				.build()
 				.get()
 				.accept(MediaType.APPLICATION_JSON)
-				.exchangeToFlux(t -> t.bodyToFlux(ResponseTrackFromAPI.class));
+				.exchangeToMono(t -> t.bodyToMono(PageResponseTrackFromAPI.class));
 	}
 	
-	private Flux<ResponsePreviewAuthorFromAPI> fetchAuthorsFromService(Flux<ResponsePreviewAlbumFromAPI> tracks){
-		
-		return tracks
+	private Flux<ResponsePreviewAuthorFromAPI> fetchAuthorsFromService(Flux<ResponsePreviewAlbumFromAPI> albums){
+		return albums
 				.map(ResponsePreviewAlbumFromAPI::getAuthorId)
 				.collectList()
 				.flatMapMany(t -> {
@@ -116,18 +123,18 @@ public class TracksAggregationFilter implements GatewayFilter {
 				});
 	}
 			
-	private Flux<ResponsePreviewAlbumFromAPI> fetchAlbumsFromService(Flux<ResponseTrackFromAPI> tracks){
+	private Flux<ResponsePreviewAlbumFromAPI> fetchAlbumsFromService(Mono<PageResponseTrackFromAPI> tracks){
 		return tracks
-				.map(ResponseTrackFromAPI::getAlbumId)
-				.collectList()
-				.flatMapMany(t -> {
-					return builder
+				.filter(t -> !t.getContent().isEmpty())
+				.map(t -> t.getContent().stream().map(tr -> tr.getAlbumId()).toList())
+				.flatMapMany(t -> 
+					 	builder
 							.baseUrl("http://album-service/api/albums/")
 							.build()
 							.get()
 							.uri(u -> u.queryParam("ids", t).build())
 							.accept(MediaType.APPLICATION_JSON)
-							.exchangeToFlux(e -> e.bodyToFlux(ResponsePreviewAlbumFromAPI.class));
-				});
+							.exchangeToFlux(e -> e.bodyToFlux(ResponsePreviewAlbumFromAPI.class))
+				);
 	}
 }

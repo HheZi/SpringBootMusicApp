@@ -4,6 +4,7 @@ import java.net.URLDecoder;
 import java.nio.charset.Charset;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,15 +41,19 @@ public class TrackContoller {
 	private final AudioValidatorService audioValidatorService;
 
 	@GetMapping
-	public Flux<ResponseTrack> getTracks(
+	public Mono<Page<ResponseTrack>> getTracks(
 			@RequestParam(value = "name", required = false) String trackName, 
 			@RequestParam(value = "albumId", required = false) List<Integer> albumId,
-			@RequestParam(value = "id", required = false) List<Integer> ids
+			@RequestParam(value = "id", required = false) List<Long> ids,
+			@RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
+			@RequestParam(value = "size", required = false, defaultValue = "5") Integer size
 		){
 		return trackService.getTracks(
 				trackName != null ? URLDecoder.decode(trackName, Charset.defaultCharset()) : trackName, 
 						albumId,
-						ids
+						ids,
+						page,
+						size
 					);
 	}
 
@@ -58,8 +63,11 @@ public class TrackContoller {
 	}
 	
 	@GetMapping("/duration")
-	public Mono<ResponseTotalDuration> getTotalDuration(@RequestParam("ids") List<Long> ids){
-		return  trackService.totalTimeOfTracks(ids);
+	public Mono<ResponseTotalDuration> getTotalDuration(
+			@RequestParam(value = "ids", required = false) List<Long> ids,
+			@RequestParam(value = "albumId", required = false) Integer albumId
+		){
+		return  trackService.totalTimeOfTracks(ids, albumId);
 	}
 	
 	@PostMapping
