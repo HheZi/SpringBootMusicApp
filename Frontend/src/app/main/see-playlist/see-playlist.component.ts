@@ -56,7 +56,7 @@ export class SeePlaylistComponent implements OnInit {
         if (this.playlist.trackIds.length != 0) {
           this.trackService.getTrackByIds(this.playlist.trackIds).subscribe({
             next: (tracksResp: any) => {
-              this.trackService.getDurationByIds(tracksResp.map((t: any) => t.id)).subscribe(
+              this.trackService.getDurationByIds(tracksResp.content.map((t: any) => t.id)).subscribe(
                 (resp: any) => this.playlist.totalDuration = resp.duration
               )
 

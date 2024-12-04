@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { TrackService } from '../../services/track/track.service';
 import { PlaylistService } from '../../services/playlist/playlist.service';
+import { HttpParams } from '@angular/common/http';
 
 @Component({
   selector: 'app-track-list',
@@ -21,10 +22,17 @@ export class TrackListComponent {
   protected addTrackDialogVisible: boolean = false;
   protected playlists: any[] = [];
   protected isPlaylistsNotFound: boolean = false;
-  
+
+  protected totalTracks: number = 0;
+  protected totalPages: number = 0;
+  protected pageSize: number = 5;
+  protected currentPage: number = 0;
+
+  protected notDisplayPagination: boolean = true;
+
   private indexOfEditingTrack: number = -1;
   private selectedTrackId: number = 0;
-  private funcToDeleteTrack: Function = (id: number) => {};
+  private funcToDeleteTrack: Function = (id: number) => { };
   private warningMessageToDisplayInConfirmDialog: string = "Do you want to do this?";
 
 
@@ -35,47 +43,75 @@ export class TrackListComponent {
     private trackService: TrackService,
     private playlistService: PlaylistService,
     private messageService: MessageService
-  ){}
+  ) { }
 
-  public setTracks(tracks: any): void{
-    this.tracks = [];
-      tracks.forEach((track: any) => {
-        this.tracks.push({
-          id: track.id,
-          title: track.title,
-          audioUrl: track.audioUrl,
-          author: track.author.name,  
-          authorId: track.author.id,
-          imageUrl: track.album.imageUrl,  
-          albumName: track.album.name,  
-          albumId: track.album.id,
-          isNowPlaying: false,
-          duration: track.duration,
-          isEditing: false
-        });
+  public setTracks(tracks: any | null): void {
+    if (tracks == null) return;
+    
+    this.makeTracksEmpty();
+    tracks.content.forEach((track: any) => {
+      this.tracks.push({
+        id: track.id,
+        title: track.title,
+        audioUrl: track.audioUrl,
+        author: track.author.name,
+        authorId: track.author.id,
+        imageUrl: track.album.imageUrl,
+        albumName: track.album.name,
+        albumId: track.album.id,
+        isNowPlaying: false,
+        duration: track.duration,
+        isEditing: false
       });
+    });
+    
+    if(tracks.last && tracks.first){
+      this.notDisplayPagination = true;
+    }
+    else{
+      this.totalTracks = tracks.totalElements;
+      this.totalPages = tracks.totalPages;  
+      this.notDisplayPagination = false;
+    }
+  }
+  
+  private makeTracksEmpty(): void{
+    this.tracks = [];
+    this.totalPages = 0;
+    this.totalPages = 0;
+  }
+
+  protected onPageChange(event: any): void {
+    this.currentPage = event.page;
+    this.loadTracks(this.currentPage);
+  }
+
+  protected loadTracks(page: number): void {
+    this.trackService.getTracks(new HttpParams().append("page", page)).subscribe((response: any) => {
+      this.setTracks(response);
+    });
   }
 
   protected playTrack(index: number): void {
     this.audioService.setTracks(this.tracks, index);
   }
 
-  protected seeAlbum(value: number): void{
-    this.router.navigate(["/album/"+ value]);
+  protected seeAlbum(value: number): void {
+    this.router.navigate(["/album/" + value]);
   }
 
-  protected seeAuthor(value: number): void{
+  protected seeAuthor(value: number): void {
     this.router.navigate(["author/" + value]);
   }
 
-  public onDelete(warningMessage: string, func: Function){
+  public onDelete(warningMessage: string, func: Function) {
     this.canBeDeleted = true;
     this.funcToDeleteTrack = func;
     this.warningMessageToDisplayInConfirmDialog = warningMessage;
   }
 
-  public makeUpdatable(){
-    this.canBeRenamed = true;
+  public makeUpdatable(value: boolean) {
+    this.canBeRenamed = value;
   }
 
   protected confirmDeletionOfTrack(id: number) {
@@ -83,16 +119,16 @@ export class TrackListComponent {
       message: this.warningMessageToDisplayInConfirmDialog,
       header: "Confirmation",
       icon: "pi pi-exclamation-triangle",
-      accept: () =>  {
+      accept: () => {
         this.funcToDeleteTrack(id)
         this.tracks.splice(this.tracks.findIndex(t => t.id == id), 1);
       },
-      reject: () => {}
+      reject: () => { }
     });
   }
 
   protected updateTrackTitle(track: Track) {
-    if(this.canBeRenamed)
+    if (this.canBeRenamed)
       this.trackService.updateTrackTitle(track.id, this.newTitle).subscribe(() => {
         this.messageService.add({ severity: "success", summary: "You have updated the track title", closable: true });
         track.title = this.newTitle;
@@ -111,10 +147,10 @@ export class TrackListComponent {
     this.indexOfEditingTrack = isTheSameIndex ? -1 : track.id;
   }
 
-  protected makeEditDialogVisible(id: number){
+  protected makeEditDialogVisible(id: number) {
     this.playlistService.getPlaylistsByOwner().subscribe({
       next: (playlists: any) => this.playlists = playlists,
-      error: ()  =>  this.isPlaylistsNotFound = true
+      error: () => this.isPlaylistsNotFound = true
     })
     this.selectedTrackId = id;
     this.addTrackDialogVisible = true;
@@ -123,10 +159,10 @@ export class TrackListComponent {
   protected addTrackToPlaylist(playlistId: number) {
     this.playlistService.addTrackToPlaylist(playlistId, this.selectedTrackId).subscribe({
       next: () => {
-        this.messageService.add({closable: true, summary: "Track has been added to playlist", severity: "success"})
+        this.messageService.add({ closable: true, summary: "Track has been added to playlist", severity: "success" })
         this.addTrackDialogVisible = false;
       },
-      error: () => this.messageService.add({closable: true, summary: "Already in playlist", severity: "error"})
+      error: () => this.messageService.add({ closable: true, summary: "Already in playlist", severity: "error" })
     })
   }
 

@@ -54,7 +54,7 @@ export class HomeComponent implements OnInit {
   public getTracks(headers: HttpParams | null = null): void {
     this.isNotFound = false;
     this.playlistList?.setPlaylists([]);
-    this.trackList?.setTracks([]);
+    this.trackList?.setTracks(null);
     
     this.trackService.getTracks(headers).subscribe({
       next: tracksResp => this.populateTracks(tracksResp),
@@ -73,7 +73,7 @@ export class HomeComponent implements OnInit {
   public getTracksByName(): void {
     this.isNotFound = false;
     this.playlistList?.setPlaylists([]);
-    this.trackList?.setTracks([]);
+    this.trackList?.setTracks(null);
 
     if (this.radioVal === "Track") {
       var params = new HttpParams();
@@ -97,7 +97,7 @@ export class HomeComponent implements OnInit {
   }
 
   private checkIfNotFound(value: any): void {
-    this.isNotFound = (value as Array<Object>).length > 0 ? false : true;
+    this.isNotFound = value.empty;
   }
 
   private fetchTracksByAuthors(authors: any[]): void {

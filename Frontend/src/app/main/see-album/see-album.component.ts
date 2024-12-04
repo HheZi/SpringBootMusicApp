@@ -60,7 +60,9 @@ export class SeeAlbumComponent {
           releaseDate: album.releaseDate,
           totalDuration: album.totalDuration
         };
-        this.trackList.setTracks(album.tracks);
+        this.trackService.getTracksByAlbumId(albumId).subscribe({
+          next: (resp) => this.trackList.setTracks(resp)
+        })
         this.editableAlbum.name = this.album.name;
       }
     })
@@ -68,6 +70,7 @@ export class SeeAlbumComponent {
     this.albumService.getIsUserIsOwnerOfAlbum(albumId).subscribe({
       next: (resp: any) => {
         this.isOwnerOfAlbum = resp;
+        this.trackList.makeUpdatable(resp)
         this.trackList.onDelete('Delete this track from album?', (trackId: number) => {
           this.trackService.deleteTrack(trackId).subscribe(() => {
             this.messageService.add({ closable: true, severity: "success", summary: "Track deleted" });

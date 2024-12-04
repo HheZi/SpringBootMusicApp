@@ -40,6 +40,7 @@ import { CreatePlaylistComponent } from './main/create-playlist/create-playlist.
 import { PlaylistListComponent } from './main/playlist-list/playlist-list.component';
 import { TrackListComponent } from './main/track-list/track-list.component';
 import { SeePlaylistComponent } from './main/see-playlist/see-playlist.component';
+import { PaginatorModule } from 'primeng/paginator';
 
 
 @NgModule({
@@ -84,7 +85,8 @@ import { SeePlaylistComponent } from './main/see-playlist/see-playlist.component
     MenuModule,
     DialogModule,
     CalendarModule,
-    ConfirmDialogModule 
+    ConfirmDialogModule,
+    PaginatorModule
   ],
   providers: [ {provide: HTTP_INTERCEPTORS, useClass: AuthorizationInterceptorService, multi: true}],
   bootstrap: [AppComponent]

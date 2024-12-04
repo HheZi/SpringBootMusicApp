@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { AppConts } from '../../app.consts';
 import { AuthService } from '../auth/auth.service';
@@ -15,7 +15,7 @@ export class TrackService {
   
   constructor(private httpClient: HttpClient, private authService: AuthService) { }
   
-  public getTracks(header: any) : Observable<Object>{
+  public getTracks(header: HttpParams | null) : Observable<Object>{
     if(!header){
       return this.httpClient.get(this.TRACK_URL_TO_GET_FROM_AGGREGATION);
     }

@@ -46,6 +46,7 @@
         </div>
     </div>
 </div>
+<p-paginator [rows]="pageSize" [totalRecords]="totalTracks" [ngClass]="{'d-none': notDisplayPagination}" (onPageChange)="onPageChange($event)"></p-paginator>
 <p-dialog [(visible)]="addTrackDialogVisible" [style]="{width: '35vw'}" [modal]="true" header="Add Track to Playlist" class="add-track-dialog">
     <div *ngIf="!isPlaylistsNotFound; else NotFound">
         <ul class="list-group playlists-list">
