@@ -1,0 +1,63 @@
+services:
+  eureka-server: 
+    build: ./Backend/eureka-server/
+    container_name: eureka-server
+    ports:
+      - 8761:8761
+    networks:
+      - eureka-network
+  
+  api-gateway:
+    build: ./Backend/api-gateway/
+    container_name: api-gateway
+    ports:
+      - 8080:8080
+    depends_on:
+      - eureka-server
+    environment:
+      - eureka.instance.preferIpAddress=true
+      - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
+    networks:
+      - eureka-network
+
+  album-db:
+    image: postgres
+    container_name: album-db
+    volumes: 
+    - album-db-volume:/var/lib/postgresql/data
+    - ./Backend/album-service/init_script.sql:/docker-entrypoint-initdb.d/init_script.sql
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRESS_USER=postgres
+      - POSTGRES_DB=AlbumDB
+    ports:
+      - 5432:5432
+    networks:
+      - album-network
+
+  album-service:
+    build: ./Backend/album-service/
+    container_name: album-service
+    environment:
+      - eureka.instance.preferIpAddress=true
+      - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
+      - file.temp=/home/app/temp/
+      - spring.r2dbc.url=r2dbc:postgresql://album-db:5432/AlbumDB
+      - spring.r2dbc.username=postgres
+      - spring.r2dbc.password=postgres
+    networks:
+      - eureka-network
+      - album-network
+    depends_on:
+      - album-db
+      - eureka-server
+
+networks:
+  eureka-network:
+    name: eureka-network
+    driver: bridge
+  album-network:
+    name: album-network
+    driver: bridge
+volumes:
+  album-db-volume:

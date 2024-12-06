@@ -1,2 +1,4 @@
-/.metadata/
-/.vscode/
+.metadata/
+.vscode/
+.settings/
+.project
