@@ -1,3 +1,25 @@
+networks:
+  eureka-network:
+    name: eureka-network
+    driver: bridge
+  album-network:
+    name: album-network
+    driver: bridge
+  user-network:
+    name: user-network
+    driver: bridge
+  auth-network:
+    name: auth-network
+    driver: bridge 
+  author-network:
+    name: author-network
+    driver: bridge    
+volumes:
+  album-db-volume:
+  user-db-volume:
+  auth-db-volume:
+  author-db-volume:
+
 services:
   eureka-server: 
     build: ./Backend/eureka-server/
@@ -32,6 +54,8 @@ services:
       - POSTGRES_DB=AlbumDB
     ports:
       - 5432:5432
+    expose:
+      - 5432
     networks:
       - album-network
 
@@ -81,13 +105,97 @@ services:
     depends_on:
       - eureka-server  
 
+  user-db:
+    image: postgres
+    container_name: user-db
+    volumes: 
+    - user-db-volume:/var/lib/postgresql/data
+    - ./Backend/user-service/init_script.sql:/docker-entrypoint-initdb.d/init_script.sql
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRESS_USER=postgres
+      - POSTGRES_DB=UserDB
+    ports:
+      - 5433:5432
+    networks:
+      - user-network
 
-networks:
-  eureka-network:
-    name: eureka-network
-    driver: bridge
-  album-network:
-    name: album-network
-    driver: bridge
-volumes:
-  album-db-volume:
+  user-service:
+    build: ./Backend/user-service
+    container_name: user-service
+    environment:
+      - eureka.instance.preferIpAddress=true
+      - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
+      - spring.r2dbc.url=r2dbc:postgresql://user-db:5433/UserDB
+      - spring.r2dbc.username=postgres
+      - spring.r2dbc.password=postgres
+    depends_on:
+      - eureka-server
+      - user-db
+    networks:
+      - eureka-network
+      - user-network
+      
+  auth-db:
+    image: postgres
+    container_name: auth-db
+    volumes: 
+    - auth-db-volume:/var/lib/postgresql/data
+    - ./Backend/auth-service/init_script.sql:/docker-entrypoint-initdb.d/init_script.sql
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRESS_USER=postgres
+      - POSTGRES_DB=AuthDB
+    ports:
+      - 5434:5432
+    networks:
+      - auth-network
+
+  auth-service:
+    build: ./Backend/auth-service
+    container_name: auth-service
+    environment:
+      - eureka.instance.preferIpAddress=true
+      - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
+      - spring.r2dbc.url=r2dbc:postgresql://auth-db:5434/AuthDB
+      - spring.r2dbc.username=postgres
+      - spring.r2dbc.password=postgres
+    depends_on:
+      - eureka-server
+      - auth-db
+    networks:
+      - eureka-network
+      - auth-network
+
+  author-db:
+    image: postgres
+    container_name: author-db
+    volumes: 
+    - author-db-volume:/var/lib/postgresql/data
+    - ./Backend/author-service/init_script.sql:/docker-entrypoint-initdb.d/init_script.sql
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRESS_USER=postgres
+      - POSTGRES_DB=AuthorDB
+    ports:
+      - 5435:5432
+    networks:
+      - author-network
+
+  author-service:
+    build: ./Backend/author-service
+    container_name: author-service
+    environment:
+      - eureka.instance.preferIpAddress=true
+      - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
+      - file.temp=/home/app/temp/
+      - spring.r2dbc.url=r2dbc:postgresql://author-db:5435/AuthorDB
+      - spring.r2dbc.username=postgres
+      - spring.r2dbc.password=postgres
+    networks:
+      - author-network
+      - eureka-network
+    depends_on:
+      - eureka-server
+      - author-db
+    

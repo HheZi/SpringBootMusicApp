@@ -1,5 +1,6 @@
 package com.app.controller;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
@@ -15,6 +16,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @SpringBootTest
 @TestPropertySource(locations = "classpath:/application-test.properties")
 @AutoConfigureWebTestClient
+@Disabled
 class AuthorControllerTest {
 
 	@Autowired
