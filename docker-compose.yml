@@ -52,6 +52,36 @@ services:
       - album-db
       - eureka-server
 
+  audio-service:
+    build: ./Backend/audio-service/
+    container_name: audio-service
+    environment:
+      - eureka.instance.preferIpAddress=true
+      - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
+      - audio.path=/home/app/audio/
+    volumes:
+      - ~/app/audio/:/audio
+    networks:
+      - eureka-network
+    depends_on:
+      - eureka-server
+  
+  image-service:
+    build: ./Backend/image-service
+    container_name: image-service
+    environment:
+      - eureka.instance.preferIpAddress=true
+      - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
+      - image.default=/home/app/images/default_image.png
+      - image.path=/home/app/images/
+    volumes:
+      - ~/app/images/:/images
+    networks:
+      - eureka-network
+    depends_on:
+      - eureka-server  
+
+
 networks:
   eureka-network:
     name: eureka-network
