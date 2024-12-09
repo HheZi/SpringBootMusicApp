@@ -5,6 +5,9 @@ spring:
     url: r2dbc:postgresql://localhost:5432/AlbumDB
     username: postgres
     password: postgres
+  sql:
+    init:
+      mode: always
 server:
   port: 0
 logging:

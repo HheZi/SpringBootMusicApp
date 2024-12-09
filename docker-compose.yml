@@ -8,12 +8,20 @@ networks:
   auth-network:
     name: auth-network
   author-network:
-    name: author-network    
+   name: author-network    
+  kafka-network:
+   name: kafka-network
+  track-network: 
+   name: track-network
+  playlist-network:
+   name: playlist-network
 volumes:
   album-db-volume:
   user-db-volume:
   auth-db-volume:
   author-db-volume:
+  track-db-volume:
+  playlist-db-volume:
 
 services:
   eureka-server: 
@@ -147,7 +155,7 @@ services:
       - spring.r2dbc.url=r2dbc:postgresql://auth-db:5432/AuthDB
       - spring.r2dbc.username=postgres
       - spring.r2dbc.password=postgres
-      - logging.level.org.springframework.data.r2dbc=DEBUG
+      - logging.level.org.springframework.r2dbc.core=DEBUG
     depends_on:
       - eureka-server
       - auth-db
@@ -178,6 +186,7 @@ services:
       - spring.r2dbc.url=r2dbc:postgresql://author-db:5432/AuthorDB
       - spring.r2dbc.username=postgres
       - spring.r2dbc.password=postgres
+      - logging.level.org.springframework.r2dbc.core=DEBUG
     networks:
       - author-network
       - eureka-network
@@ -185,3 +194,98 @@ services:
       - eureka-server
       - author-db
     
+  zookeeper:
+    image: zookeeper
+    container_name: zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - kafka-network
+    
+  kafka: 
+    image: apache/kafka
+    container_name: kafka
+    environment:
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+      KAFKA_ADVERTISED_LISTENERS: INSIDE://kafka:9092,OUTSIDE://localhost:9093
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:SASL_PLAINTEXT
+      KAFKA_LISTENERS: INSIDE://0.0.0.0:9092,OUTSIDE://0.0.0.0:9093
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
+      KAFKA_SASL_ENABLED_MECHANISMS: PLAIN
+      KAFKA_SASL_MECHANISM_INTER_BROKER_PROTOCOL: PLAIN
+      KAFKA_RESTART_ATTEMPTS: "10"
+      KAFKA_RESTART_DELAY: "5"
+    depends_on:
+      - zookeeper
+    networks:
+      - kafka-network
+    
+  track-db:
+    image: postgres
+    container_name: track-db
+    volumes: 
+    - track-db-volume:/var/lib/postgresql/data
+    - ./Backend/track-service/init_script.sql:/docker-entrypoint-initdb.d/init_script.sql
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=TrackDB
+    networks:
+      - track-network
+  
+  track-service:
+    build: ./Backend/track-service
+    container_name: track-service
+    environment:
+      - eureka.instance.preferIpAddress=true
+      - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
+      - file.temp=/home/app/temp/
+      - spring.r2dbc.url=r2dbc:postgresql://track-db:5432/TrackDB
+      - spring.r2dbc.username=postgres
+      - spring.r2dbc.password=postgres
+      - spring.kafka.bootstrap-servers=kafka:9092
+      - logging.level.org.springframework.r2dbc.core=DEBUG
+    depends_on:
+      - track-db
+      - eureka-server
+      - kafka
+    networks:
+      - eureka-network
+      - track-network
+      - kafka-network
+
+  playlist-db:
+    image: postgres
+    container_name: playlist_db
+    volumes: 
+    - playlist-db-volume:/var/lib/postgresql/data
+    - ./Backend/playlist-service/init_script.sql:/docker-entrypoint-initdb.d/init_script.sql
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=PlaylistDB
+    networks:
+      - playlist-network
+
+  playlist-service:
+    build: ./Backend/playlist-service
+    container_name: playlist-service
+    environment:
+      - eureka.instance.preferIpAddress=true
+      - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
+      - file.temp=/home/app/temp/
+      - spring.r2dbc.url=r2dbc:postgresql://playlist-db:5432/PlaylistDB
+      - spring.r2dbc.username=postgres
+      - spring.r2dbc.password=postgres
+      - spring.kafka.bootstrap-servers=kafka:9092
+      - logging.level.org.springframework.r2dbc.core=DEBUG
+    depends_on:
+      - playlist-db
+      - eureka-server
+      - kafka
+    networks:
+      - eureka-network
+      - playlist-network
+      - kafka-network
