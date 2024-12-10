@@ -7,6 +7,10 @@ spring:
     username: postgres
 server:
   port: 0
+eureka:
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${server.port}
 logging:
   level:
     '[org.springframework.web]': debug

@@ -4,8 +4,12 @@ spring:
 server:
   port: 0
 image:
-  path: /Programming/Java/StreamingService/Backend/image-service/images
-  default: /Programming/Java/StreamingService/Backend/image-service/images/default_audio.png
+  path: /home/hhezi/Programming/JavaProjects/StreamingService/Backend/image-service/images
+  default: /home/hhezi/Programming/JavaProjects/StreamingService/Backend/image-service/images/default_image.png
+eureka:
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${server.port}
 logging:
   level:
     '[org.springframework.web]': debug

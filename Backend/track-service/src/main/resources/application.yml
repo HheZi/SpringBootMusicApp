@@ -18,6 +18,10 @@ server:
 logging:
   level:
     org.springframework.web: debug
-file.temp: \Programming\Java\StreamingService\Backend\track-service\temp
+eureka:
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${server.port}
+file.temp: /home/hhezi/Programming/JavaProjects/StreamingService/Backend/track-service/temp
 file.max-size: 37748736 #36MB
 kafka.topic.name: track-deletion-topic

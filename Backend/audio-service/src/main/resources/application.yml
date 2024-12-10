@@ -5,9 +5,13 @@ spring:
     multipart:
       max-file-size: 36MB
       max-request-size: 36MB
+eureka:
+  instance:
+    instance-id: ${spring.application.name}:${server.port}
+    prefer-ip-address: true
 server:
   port: 0
-audio.path: /Programming/Java/StreamingService/Backend/audio-service/audio
+audio.path: /home/hhezi/Programming/JavaProjects/StreamingService/Backend/audio-service/audio
 logging:
   level:
     '[org.springframework.web]': debug

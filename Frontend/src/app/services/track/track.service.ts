@@ -9,7 +9,7 @@ import { Observable } from 'rxjs';
 })
 export class TrackService {
   
-  private readonly TRACK_URL_TO_GET_FROM_AGGREGATION = AppConts.BASE_URL + '/tracks';
+  private readonly TRACK_URL_TO_GET_FROM_AGGREGATION = AppConts.BASE_URL + '/tracks/';
   
   private readonly TRACK_URL = AppConts.BASE_URL + "/api/tracks/"
   
