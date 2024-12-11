@@ -62,7 +62,8 @@ export class CreateTrackComponent implements  OnInit{
   
   public searchAlbum(event: any): void{
     this.albumService.getAlbumsBySymbol(event.query).subscribe({
-      next: (resp: any) => this.albums = resp
+      next: (resp: any) => this.albums = resp,
+      error: (error) => this.albums = []
     });
   }
 

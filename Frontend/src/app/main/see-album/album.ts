@@ -4,7 +4,7 @@ export interface Album{
     name: string;
     imageUrl: string;
     numberOfTracks: number,
-    releaseDate: Date | null | string
+    releaseDate: Date | string
     totalDuration: string
     authorName: string;
     authorImageUrl: string;

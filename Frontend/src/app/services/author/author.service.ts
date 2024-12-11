@@ -29,8 +29,11 @@ export class AuthorService {
     return this.httpClient.get(this.AUTHOR_URL + "owner/" + id);
   }
 
-  public updateAuthor(data: FormData, id: number){
+  public updateAuthor(data: FormData, id: number): Observable<Object>{
     return this.httpClient.put(this.AUTHOR_URL + id, data);
   }
 
+  public deleteAuthorImage(id: number): Observable<Object>{
+    return this.httpClient.delete(this.AUTHOR_URL + id);
+  }
 }

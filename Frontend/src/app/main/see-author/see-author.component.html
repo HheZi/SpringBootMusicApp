@@ -56,6 +56,7 @@
   </div>
 
   <ng-template pTemplate="footer">
+    <button type="button" class="btn btn-danger me-2" (click)="removeImage()">Remove Image</button>
     <button type="button" class="btn btn-secondary me-2" (click)="updateDialog = false">Cancel</button>
     <button type="button" class="btn btn-primary" (click)="editAuthor()">Save</button>
   </ng-template>

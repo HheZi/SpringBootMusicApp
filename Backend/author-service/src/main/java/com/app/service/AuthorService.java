@@ -129,4 +129,13 @@ public class AuthorService {
 		
 	}
 	
+	public Mono<Void> deleteAuthorImage(Integer id) {
+		return authorRepository.findById(id).flatMap(arg0 -> {
+			builder.build().delete().uri("http://image-service/api/images/" + arg0.getImageName()).retrieve()
+					.bodyToMono(Void.class);
+			arg0.setImageName(null);
+			return authorRepository.save(arg0);
+		})
+		.then();
+	}
 }

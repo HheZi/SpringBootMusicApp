@@ -45,9 +45,8 @@ export class CreateAlbumComponent implements OnInit {
 
   public searchAuthors(event: any) {
     this.authorService.getAuthorsBySymbol(event.query).subscribe({
-      next: (authors: any) => {
-        this.authors = authors;
-      }
+      next: (authors: any) => this.authors = authors,
+      error: (error: any) => this.authors = []
     })
   }
 

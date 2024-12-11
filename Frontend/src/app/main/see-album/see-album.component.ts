@@ -17,14 +17,14 @@ import { TrackListComponent } from '../track-list/track-list.component';
   providers: [ConfirmationService]
 })
 export class SeeAlbumComponent {
-  public album: Album = { id: 0, imageUrl: "", name: "", numberOfTracks: 0, albumType: "", releaseDate: null, totalDuration: '', authorId: 0, authorImageUrl: '', authorName: '' };
+  public album: Album = { id: 0, imageUrl: "", name: "", numberOfTracks: 0, albumType: "", releaseDate: '', totalDuration: '', authorId: 0, authorImageUrl: '', authorName: '' };
   public isOwnerOfAlbum = false;
   public isNotFound = false;
 
   @ViewChild(TrackListComponent) trackList!: TrackListComponent;
 
   public editDialogVisible = false;
-  public editableAlbum: Album = { id: 0, imageUrl: "", name: "", numberOfTracks: 0, albumType: "", releaseDate: null, totalDuration: '', authorId: 0, authorImageUrl: '', authorName: '' };
+  public editableAlbum: Album = { id: 0, imageUrl: "", name: "", numberOfTracks: 0, albumType: "", releaseDate: '', totalDuration: '', authorId: 0, authorImageUrl: '', authorName: '' };
   private selectedFile: File | null = null;
   public previewImage: string | ArrayBuffer | null = null;
 
@@ -64,6 +64,7 @@ export class SeeAlbumComponent {
           next: (resp) => this.trackList.setTracks(resp)
         })
         this.editableAlbum.name = this.album.name;
+        this.editableAlbum.releaseDate = new Date(this.album.releaseDate);
       }
     })
 

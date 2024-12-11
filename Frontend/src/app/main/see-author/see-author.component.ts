@@ -16,8 +16,8 @@ import { TrackListComponent } from '../track-list/track-list.component';
   styleUrl: './see-author.component.css'
 })
 export class SeeAuthorComponent implements OnInit {
-
-
+  
+  
   public author: Author = { id: 0, name: '', imageUrl: '' };
   public albums: any[] = [];
   public canModify: boolean = false;
@@ -36,7 +36,6 @@ export class SeeAuthorComponent implements OnInit {
     private albumService: AlbumService,
     private trackService: TrackService,
     private messageService: MessageService,
-    private audioService: AudioService,
     private router: Router,
     private title: Title
   ) { }
@@ -85,13 +84,13 @@ export class SeeAuthorComponent implements OnInit {
 
   editAuthor(): void {
     var formData = new FormData();
-
+    
     formData.append("name", this.editableAuthor.name);
-
+    
     if (this.selectedFile) {
       formData.append("cover", this.selectedFile);
     }
-
+    
     this.authorService.updateAuthor(formData, this.author.id).subscribe({
       next: () => {
         this.messageService.add({ severity: 'success', summary: 'Albums updated successfully' });
@@ -103,7 +102,18 @@ export class SeeAuthorComponent implements OnInit {
       })
     })
   }
-
+  
+  protected removeImage() {
+    this.authorService.deleteAuthorImage(this.author.id).subscribe({
+      next: (resp: any) => {
+        this.loadAuthor(this.author.id);
+        this.messageService.add({closable: true, detail: "Image deleted", severity: "success"});
+        this.updateDialog = false;
+      },
+      error: (error: any) => this.messageService.add({closable: true, detail: "Something went wrong", severity: "error"})
+    })
+  }
+  
   public seeAlbum(albumId: number) {
     this.router.navigate(["album/" + albumId]);
   }
