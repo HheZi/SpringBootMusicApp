@@ -20,7 +20,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.app.model.Album;
-import com.app.model.enums.AlbumType;
 import com.app.payload.request.RequestAlbum;
 import com.app.payload.request.RequestToUpdateAlbum;
 import com.app.payload.response.AlbumPreviewResponse;
@@ -99,9 +98,6 @@ public class AlbumService {
 
 	}
 
-	public Flux<AlbumType> getAlbumTypes() {
-		return Flux.fromArray(AlbumType.values());
-	}
 
 	public Mono<Boolean> userIsOwnerOfAlbum(Integer playlistId, Integer userId){
 		return albumRepository.findById(playlistId)

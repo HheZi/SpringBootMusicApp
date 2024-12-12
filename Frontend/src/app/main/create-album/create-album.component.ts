@@ -13,8 +13,6 @@ import { Title } from '@angular/platform-browser';
 export class CreateAlbumComponent implements OnInit {
   public albumForm: FormGroup;
 
-  public albumTypes: string[] = [];
-
   public authors: string[] = [];
 
   constructor(
@@ -28,18 +26,12 @@ export class CreateAlbumComponent implements OnInit {
       title: ['', Validators.required],
       cover: [null],
       author: [null, Validators.required],
-      releaseDate: [null],
-      albumType: ['', Validators.required]
+      releaseDate: [null]
     });
   }
 
   ngOnInit(): void {
-    this.title.setTitle("Create Album")
-    this.albumService.getAlbumTypes().subscribe({
-      next: (types: any) => {
-        this.albumTypes = types;
-      }
-    })
+    this.title.setTitle("Create Album");
 
   }
 
@@ -54,11 +46,11 @@ export class CreateAlbumComponent implements OnInit {
     if (this.albumForm.valid) {
       const formData = new FormData();
 
-      if(this.albumForm.get("cover")?.value)
+      if(this.albumForm.get("cover")?.value){
         formData.append("cover", this.albumForm.get("cover")?.value);
+      }
       formData.append("authorId", this.albumForm.get("author")?.value.id)
       formData.append("name", this.albumForm.get("title")?.value);
-      formData.append("albumType", this.albumForm.get("albumType")?.value);
       formData.append("releaseDate", this.parseReleasDate());
 
       this.albumService.createAlbum(formData).subscribe({

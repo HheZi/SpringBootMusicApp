@@ -2,7 +2,6 @@ package com.app.payload.response;
 
 import java.time.LocalDate;
 
-import com.app.model.enums.AlbumType;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 
@@ -26,6 +25,4 @@ public class ResponseAlbum {
 	@JsonFormat(shape = Shape.STRING, pattern = "yyyy-MM-dd")
 	private LocalDate releaseDate;
 	
-	@JsonFormat(shape = Shape.STRING)
-	private AlbumType albumType;
 }

@@ -4,8 +4,8 @@ spring:
 server:
   port: 0
 image:
-  path: /home/hhezi/Programming/JavaProjects/StreamingService/Backend/image-service/images
-  default: /home/hhezi/Programming/JavaProjects/StreamingService/Backend/image-service/images/default_image.png
+  path: /Programming/Java/StreamingService/Backend/image-service/images
+  default: default_image.png
 eureka:
   instance:
     prefer-ip-address: true

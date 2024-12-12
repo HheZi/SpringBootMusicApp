@@ -21,6 +21,5 @@ public class ResponseAlbumFromService {
 	
 	private LocalDate releaseDate;
 	
-	private String albumType;
 	
 }

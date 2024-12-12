@@ -5,7 +5,6 @@ import java.util.UUID;
 import org.springframework.stereotype.Component;
 
 import com.app.model.Album;
-import com.app.model.enums.AlbumType;
 import com.app.payload.request.RequestAlbum;
 import com.app.payload.response.AlbumPreviewResponse;
 import com.app.payload.response.ResponseAlbum;
@@ -23,7 +22,6 @@ public class AlbumMapper {
 				.imageName(coverIsPresent ?  UUID.randomUUID() : null)
 				.createdBy(userId)
 				.authorId(dto.getAuthorId())
-				.albumType(dto.getAlbumType())
 				.releaseDate(dto.getReleaseDate())
 				.build();
 	}
@@ -32,7 +30,6 @@ public class AlbumMapper {
 		return ResponseAlbum.builder()
 				.id(album.getId())
 				.name(album.getName())
-				.albumType(album.getAlbumType())
 				.releaseDate(album.getReleaseDate())
 				.authorId(album.getAuthorId())
 				.imageUrl(album.getImageName() != null ? IMAGE_URL + album.getImageName().toString() : DEFAULT_IMAGE_URL)

@@ -22,8 +22,6 @@ public class ResponseAlbum {
 	
 	private LocalDate releaseDate;
 	
-	private String albumType;
-	
 	private Integer numberOfTracks;
 	
 	private String totalDuration;

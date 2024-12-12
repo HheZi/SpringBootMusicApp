@@ -11,7 +11,8 @@ eureka:
     prefer-ip-address: true
 server:
   port: 0
-audio.path: /home/hhezi/Programming/JavaProjects/StreamingService/Backend/audio-service/audio
+audio.path: /Programming/Java/StreamingService/Backend/audio-service/audio
 logging:
   level:
     '[org.springframework.web]': debug
+chunk.max-size: 1_048_576 #1MB

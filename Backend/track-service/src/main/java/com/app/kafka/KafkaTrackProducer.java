@@ -15,6 +15,7 @@ public class KafkaTrackProducer {
 	
 	@Value("${kafka.topic.name}")
 	private String TOPIC_NAME;
+	
 	private final KafkaTemplate<String, TrackDeletionMessage> kafkaTemplate;
 	
 	public void sendMessage(TrackDeletionMessage message) {

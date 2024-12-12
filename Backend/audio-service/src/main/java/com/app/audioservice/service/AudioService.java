@@ -1,6 +1,5 @@
 package com.app.audioservice.service;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -19,7 +18,8 @@ import lombok.SneakyThrows;
 @Service
 public class AudioService {
 
-	public final int CHUNK_OF_AUDIO = 1024 * 1024;
+	@Value("${chunk.max-size}")
+	public Integer CHUNK_OF_AUDIO;
 
 	@Value("${audio.path}")
 	private String audioPath;

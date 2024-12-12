@@ -39,10 +39,6 @@ export class AlbumService {
     return this.httpClient.get(this.ALBUM_URL + "owner/" + albumId);
   }
 
-  public getAlbumTypes(): Observable<Object>{
-    return this.httpClient.get(this.ALBUM_URL + "types",  {responseType: "json"});
-  }
-  
   public createAlbum(formData: FormData): Observable<Object>{
     return this.httpClient.post(this.ALBUM_URL, formData, );
   }  

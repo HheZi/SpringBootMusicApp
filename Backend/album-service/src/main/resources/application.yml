@@ -14,5 +14,5 @@ eureka:
   instance:
     instance-id: ${spring.application.name}:${server.port}
     prefer-ip-address: true
-file.temp: /home/hhezi/Programming/JavaProjects/StreamingService/Backend/album-service/temp
+file.temp: /Programming/Java/StreamingService/Backend/albums-service/temp
 file.max-size: 1_048_576 #1MB

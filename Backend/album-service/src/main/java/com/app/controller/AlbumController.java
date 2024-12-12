@@ -4,7 +4,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.app.model.enums.AlbumType;
 import com.app.payload.request.RequestAlbum;
 import com.app.payload.request.RequestToUpdateAlbum;
 import com.app.payload.response.AlbumPreviewResponse;
@@ -62,10 +61,6 @@ public class AlbumController {
 		return albumService.getAlbumById(id);
 	}
 	
-	@GetMapping("/types")
-	public Flux<AlbumType> getAlbumTypes() {
-		return albumService.getAlbumTypes();
-	}
 	
 	@GetMapping("/symbol/{symbol}")
 	public Flux<AlbumPreviewResponse> getAlbumBySymbol(@PathVariable("symbol") String symbol){

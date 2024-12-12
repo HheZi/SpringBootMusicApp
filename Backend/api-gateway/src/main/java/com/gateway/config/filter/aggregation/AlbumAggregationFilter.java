@@ -117,7 +117,6 @@ public class AlbumAggregationFilter implements GatewayFilter{
 		return Mono.zip(albumDuration, tracksInAlbum, author)
 		.map(t -> ResponseAlbum.builder()
 				.id(albumFromService.getId())
-				.albumType(albumFromService.getAlbumType())
 				.author(t.getT3())
 				.numberOfTracks(t.getT2())
 				.totalDuration(t.getT1())

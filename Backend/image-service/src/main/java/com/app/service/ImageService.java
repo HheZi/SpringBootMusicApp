@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.app.payload.RequestImage;
 
@@ -30,24 +31,24 @@ public class ImageService {
 	private String imagePath;
 
 	@Value("${image.default}")
-	private String defaultImagePath;
+	private String defaultImageName;
 	
-	@SneakyThrows
 	public Mono<ResponseEntity<FileSystemResource>> getImage(String name){
-		return Mono.just(ResponseEntity.ok()
-				.contentType(MediaType.IMAGE_JPEG)
-				.body(new FileSystemResource(Path.of(imagePath, name))));
+		return Mono.just(new File(imagePath, name))
+				.filter(t -> t.exists())
+				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)))
+				.map(t -> ResponseEntity.ok()
+						.contentType(MediaType.IMAGE_JPEG)
+						.body(new FileSystemResource(t)));
 	}
 
-	@SneakyThrows
 	public Mono<ResponseEntity<FileSystemResource>> getDefaultImage() {
 		return Mono.just(ResponseEntity.ok()
 				.contentType(MediaType.IMAGE_PNG)
 				.cacheControl(CacheControl.maxAge(1, TimeUnit.DAYS))
-				.body(new FileSystemResource(Path.of(defaultImagePath))));
+				.body(new FileSystemResource(Path.of(imagePath, defaultImageName))));
 	}
 	
-	@SneakyThrows
 	public Mono<ResponseEntity<?>> saveImage(RequestImage image) {
 		return image.getFile()
 				.transferTo(Path.of(imagePath, image.getName()))
@@ -55,8 +56,11 @@ public class ImageService {
 	}
 	
 	public Mono<Void> deleteImage(String name) {
-		new File(imagePath, name).delete();
-		return Mono.empty();
+		return Mono.just(new File(imagePath, name))
+				.filter(t -> t.exists() || name.equals(defaultImageName))
+				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)))
+				.doOnNext(t -> t.delete())
+				.then();
 	}
 	
 }

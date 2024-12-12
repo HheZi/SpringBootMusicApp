@@ -141,7 +141,6 @@ public class TrackService {
 		
 	}
 	
-	
 	@Transactional
 	public Mono<Void> deleteTrack(Long id){
 		return repository.findById(id)
@@ -170,7 +169,6 @@ public class TrackService {
 		.retrieve()
 		.bodyToMono(Void.class)
 		.subscribe();
-		
 	}
 	
 	@Transactional
