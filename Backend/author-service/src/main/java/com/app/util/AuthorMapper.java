@@ -23,10 +23,11 @@ public class AuthorMapper {
 				.build();
 	}
 	
-	public AuthorResponse fromAuthorToAuthorResponse(Author author) {
+	public AuthorResponse fromAuthorToAuthorResponse(Author author, boolean includeDescription) {
 		return AuthorResponse.builder()
 				.id(author.getId())
 				.name(author.getName())
+				.description(includeDescription ? author.getDescription() : null)
 				.imageUrl(author.getImageName() == null ? IMAGE_URL_DEFAULT : IMAGE_URL_FORMAT + author.getImageName())
 				.build();
 	}

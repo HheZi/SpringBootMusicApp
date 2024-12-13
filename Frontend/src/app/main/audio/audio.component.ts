@@ -2,6 +2,7 @@ import { Component, ElementRef, numberAttribute, OnDestroy, OnInit, ViewChild } 
 import Plyr from 'plyr';
 import { AudioService } from '../../services/audio/audio.service';
 import { TracksToPlay } from '../../services/audio/tracks-to-play';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-audio',
@@ -9,6 +10,7 @@ import { TracksToPlay } from '../../services/audio/tracks-to-play';
   styleUrl: './audio.component.css'
 })
 export class AudioComponent implements OnInit, OnDestroy {
+
 
   @ViewChild('audioPlayer', { static: true })
   private audioPlayerRef!: ElementRef;
@@ -23,7 +25,7 @@ export class AudioComponent implements OnInit, OnDestroy {
   private tracksToPlay!: TracksToPlay;
   private excludedIndices: number[] = [];
   private indexOfExcludedIndices: number = 0;
-  constructor(private audioService: AudioService) { }
+  constructor(private audioService: AudioService, private router: Router) { }
 
   ngOnInit(): void {
     this.plyr = new Plyr(this.audioPlayerRef.nativeElement, { controls: ['progress', 'current-time', 'mute', 'volume'] });
@@ -175,6 +177,17 @@ export class AudioComponent implements OnInit, OnDestroy {
     }
   }
 
+  protected seeAlbumOfTrack() {
+    if(this.tracksToPlay){
+      this.router.navigate(["album/"+ this.tracksToPlay.tracks[this.tracksToPlay.indexOfCurrentTrack].albumId]);
+    }
+  }
+
+  protected seeAuthorOfTrack(){
+    if(this.tracksToPlay){
+      this.router.navigate(["author/"+ this.tracksToPlay.tracks[this.tracksToPlay.indexOfCurrentTrack].authorId]);
+    }
+  }
 
   ngOnDestroy(): void {
     if (this.plyr)

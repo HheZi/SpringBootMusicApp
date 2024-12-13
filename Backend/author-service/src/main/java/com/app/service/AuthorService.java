@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ResponseStatusException;
@@ -44,21 +45,22 @@ public class AuthorService {
 		return authorRepository
 				.findById(id)
 				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)))
-				.map(authorMapper::fromAuthorToAuthorResponse);
+				.map(a -> authorMapper.fromAuthorToAuthorResponse(a, true));
 	}
 	
 	public Flux<AuthorResponse> getAuthorsByIds(List<Integer> ids){
 		return authorRepository.findAllById(ids)
-				.map(authorMapper::fromAuthorToAuthorResponse);
+				.map(a -> authorMapper.fromAuthorToAuthorResponse(a, false));
 	}
 	
 	public Flux<AuthorResponse> getAuthorByFirstSymbols(String symbols){
 		return authorRepository
 				.findByNameStartingWithIgnoreCase(symbols)
 				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)))
-				.map(authorMapper::fromAuthorToAuthorResponse);
+				.map(a -> authorMapper.fromAuthorToAuthorResponse(a, false));
 	}
 
+	@Transactional
 	public Mono<ResponseEntity<?>> saveAuthor(AuthorCreateOrUpdateRequest dto, Integer userId) {
 		if (dto.getCover() != null) {
 			Path path = Path.of(tempFolder, dto.getCover().filename());
@@ -76,11 +78,11 @@ public class AuthorService {
 				.map(t -> ResponseEntity.status(HttpStatus.CREATED).build());
 	}
 	
+	@Transactional
 	public Mono<Void> updateAuthor(AuthorCreateOrUpdateRequest dto, Integer id, Integer userId){
 		Function<Author, Mono<Author>> function = t -> {
-			if (dto.getName() != null && !dto.getName().isEmpty() && !dto.getName().isBlank()) {
 				t.setName(dto.getName());
-			}
+				t.setDescription(dto.getDescription());
 			if (t.getImageName() == null && dto.getCover() != null) {
 				t.setImageName(UUID.randomUUID());
 			}
@@ -130,11 +132,11 @@ public class AuthorService {
 	}
 	
 	public Mono<Void> deleteAuthorImage(Integer id) {
-		return authorRepository.findById(id).flatMap(arg0 -> {
-			builder.build().delete().uri("http://image-service/api/images/" + arg0.getImageName()).retrieve()
+		return authorRepository.findById(id).flatMap(t -> {
+			builder.build().delete().uri("http://image-service/api/images/" + t.getImageName()).retrieve()
 					.bodyToMono(Void.class);
-			arg0.setImageName(null);
-			return authorRepository.save(arg0);
+			t.setImageName(null);
+			return authorRepository.save(t);
 		})
 		.then();
 	}

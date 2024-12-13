@@ -4,8 +4,6 @@ import { MessageService } from 'primeng/api';
 import { AuthorService } from '../../services/author/author.service';
 import { AlbumService } from '../../services/album/album.service';
 import { TrackService } from '../../services/track/track.service';
-import { Track } from '../track-list/track';
-import { AudioService } from '../../services/audio/audio.service';
 import { Title } from '@angular/platform-browser';
 import { Author } from './author';
 import { TrackListComponent } from '../track-list/track-list.component';
@@ -18,13 +16,13 @@ import { TrackListComponent } from '../track-list/track-list.component';
 export class SeeAuthorComponent implements OnInit {
   
   
-  public author: Author = { id: 0, name: '', imageUrl: '' };
+  public author: Author = { id: 0, name: '', imageUrl: '', description: ''};
   public albums: any[] = [];
   public canModify: boolean = false;
   public updateDialog: boolean = false;
   public isNotFound: boolean = false;
 
-  public editableAuthor: Author = { id: 0, name: '', imageUrl: '' };
+  public editableAuthor: Author = { id: 0, name: '', imageUrl: '', description: ''};
   public previewImage: string | ArrayBuffer | null = null;
   private selectedFile: File | null = null;
 
@@ -52,6 +50,7 @@ export class SeeAuthorComponent implements OnInit {
       next: (author: any) => {
         this.author = author;
         this.editableAuthor.name = this.author.name;
+        this.editableAuthor.description = this.author.description;
         this.title.setTitle(this.author.name);
         this.authorService.canModify(this.author.id).subscribe((resp: any) => {
           this.canModify = resp;
@@ -59,8 +58,7 @@ export class SeeAuthorComponent implements OnInit {
         this.albumService.getAlbumsByAuthorId(this.author.id).subscribe((albums: any) => {
           this.albums = albums;
           this.trackService.getTracksByAlbumId(albums.map((a: any) => a.id)).subscribe((tracksResp: any) => {
-            this.trackList.setTracks(tracksResp);
-            var ids = tracksResp.map((t: any) => t.album.id);
+            this.trackList.setTracks(tracksResp)
           });
         });
       },
@@ -86,7 +84,7 @@ export class SeeAuthorComponent implements OnInit {
     var formData = new FormData();
     
     formData.append("name", this.editableAuthor.name);
-    
+    formData.append("description", this.editableAuthor.description);
     if (this.selectedFile) {
       formData.append("cover", this.selectedFile);
     }

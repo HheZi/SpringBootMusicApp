@@ -78,18 +78,18 @@ public class AudioService {
 //	}
 	
 	@SneakyThrows
-	public Mono<ResponseEntity<?>> saveAudio(SaveAudioDTO dto) {
-		return dto.getFile().transferTo(Path.of(audioPath, dto.getName()))
-		.map(t -> ResponseEntity.status(HttpStatus.CREATED).build());
+	public void saveAudio(SaveAudioDTO dto) {
+		Files.write(Path.of(audioPath, dto.getName()), dto.getFile().getBytes());
 	}
 
-	@SneakyThrows
-	public Mono<Void> deleteAudio(String name) {
-		return Mono.just(new File(audioPath, name))
-				.filter(t -> t.exists())
-				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)))
-				.doOnNext(t -> t.delete())
-				.then();
+	public void deleteAudio(String name) {
+		File file = new File(audioPath, name);
+		
+		if (!file.exists()) {
+			throw  new ResponseStatusException(HttpStatus.NOT_FOUND);
+		}
+		
+		file.delete();
 	}
 
 }

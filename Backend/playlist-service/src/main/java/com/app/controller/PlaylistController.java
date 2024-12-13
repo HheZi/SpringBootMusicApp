@@ -48,7 +48,7 @@ public class PlaylistController {
 		return playlistService.findPlaylistsBySymbol(symbol);
 	}
 	
-	@GetMapping("{id}/owner")
+	@GetMapping("owner/{id}")
 	public Mono<Boolean> getIsCreatorOfPlaylist(
 			@PathVariable("id") Integer id, 
 			@RequestHeader("userId") Integer userId
@@ -95,7 +95,7 @@ public class PlaylistController {
 		return playlistService.deleteTrackFromPlaylist(id, trackId);
 	}
 	
-	@DeleteMapping("{id}/cover")
+	@DeleteMapping("cover/{id}")
 	public Mono<Void> deleteCover(@PathVariable("id") Integer id){
 		return playlistService.deleteCover(id);
 	}

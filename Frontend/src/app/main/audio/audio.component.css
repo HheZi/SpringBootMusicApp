@@ -18,29 +18,46 @@
 }
 
 .track-title {
-  max-width: 250px;
-  font-weight: bold;
-  font-size: 14px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #343a40;
+  margin-bottom: 0.25rem;
+  transition: color 0.3s ease;
+}
+
+.track-title:hover {
+  color: #007bff;
+  text-decoration: underline;
+  cursor: pointer;
 }
 
 .track-artist {
   color: #666;
   font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+  transition: color 0.3s ease;
 }
 
-.icon{
+.track-artist:hover {
+  color: #007bff;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.icon {
   font-size: 1.10rem;
 }
 
-.icon:hover{
+.icon:hover {
   cursor: pointer;
   color: #aaa9a9;
 }
 
-.selected{
+.selected {
   color: #007bff;
 }
 
-.audio-controlls{
+.audio-controlls {
   max-width: 60%;
 }

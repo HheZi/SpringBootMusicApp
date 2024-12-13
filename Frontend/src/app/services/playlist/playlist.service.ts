@@ -12,7 +12,7 @@ export class PlaylistService {
 
   constructor(
     private httpClient: HttpClient
-  ) { }
+  ){}
 
   public getTracksBySymbol(symbol: string): Observable<Object>{
     return this.httpClient.get(this.PLAYLIST_URL + "symbol/" + symbol);
@@ -31,7 +31,7 @@ export class PlaylistService {
   }
 
   public getIsOwnerOfPlaylist(id: number): Observable<Object>{
-    return this.httpClient.get(this.PLAYLIST_URL + id +"/owner");
+    return this.httpClient.get(this.PLAYLIST_URL + "owner/" + id );
   }
 
   public savePlaylist(formData: FormData, id: number): Observable<Object>{
@@ -47,7 +47,7 @@ export class PlaylistService {
   }
 
   public deleteCover(id: number): Observable<Object>{
-    return this.httpClient.delete(this.PLAYLIST_URL + id + "/cover");
+    return this.httpClient.delete(this.PLAYLIST_URL + "cover/" + id  );
   }
 
   public deletePlaylist(id: number){

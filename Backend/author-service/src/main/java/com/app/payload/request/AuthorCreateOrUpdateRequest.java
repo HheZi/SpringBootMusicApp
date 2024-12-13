@@ -1,5 +1,6 @@
 package com.app.payload.request;
 
+import org.hibernate.validator.constraints.Length;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.validation.annotation.Validated;
 
@@ -15,7 +16,12 @@ import lombok.NoArgsConstructor;
 public class AuthorCreateOrUpdateRequest {
 
 	@NotBlank(message = "Name can't be blank")
+	@Length(max = 75, message = "Name allows only 75 symbols")
 	private String name;
+	
+	@NotBlank(message = "Description can't be blank")
+	@Length(max = 360, message = "Description allows only 360 symbols")
+	private String description;
 	
 	@Nullable
 	private FilePart cover;

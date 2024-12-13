@@ -1,9 +1,9 @@
-<footer class="mainAudio d-flex align-items-center">
+<footer class="mainAudio d-flex align-items-center shadow-sm">
         <div class="d-flex align-items-center col-auto position-absolute">
                 <img src="{{coverUrl}}" alt="Cover" class="track-cover me-3" />
                 <div>
-                        <p class="track-title mb-1">{{ title }}</p>
-                        <p class="track-artist mb-0">{{ author }}</p>
+                        <p class="track-title mb-1" (click)="seeAlbumOfTrack()">{{ title }}</p>
+                        <p class="track-artist mb-0" (click)="seeAuthorOfTrack()">{{ author }}</p>
                 </div>
         </div>
         <div></div>

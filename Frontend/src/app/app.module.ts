@@ -41,6 +41,7 @@ import { PlaylistListComponent } from './main/playlist-list/playlist-list.compon
 import { TrackListComponent } from './main/track-list/track-list.component';
 import { SeePlaylistComponent } from './main/see-playlist/see-playlist.component';
 import { PaginatorModule } from 'primeng/paginator';
+import { PanelModule } from 'primeng/panel';
 
 
 @NgModule({
@@ -86,7 +87,8 @@ import { PaginatorModule } from 'primeng/paginator';
     DialogModule,
     CalendarModule,
     ConfirmDialogModule,
-    PaginatorModule
+    PaginatorModule,
+    PanelModule 
   ],
   providers: [ {provide: HTTP_INTERCEPTORS, useClass: AuthorizationInterceptorService, multi: true}],
   bootstrap: [AppComponent]

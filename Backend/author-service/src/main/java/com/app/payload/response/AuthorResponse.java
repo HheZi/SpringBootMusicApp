@@ -1,5 +1,8 @@
 package com.app.payload.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,4 +19,7 @@ public class AuthorResponse {
 	private String name;
 	
 	private String imageUrl;
+	
+	@JsonInclude(value = Include.NON_NULL)
+	private String description;
 }

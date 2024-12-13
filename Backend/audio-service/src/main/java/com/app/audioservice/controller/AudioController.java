@@ -51,12 +51,15 @@ public class AudioController {
 	}
 	
 	@PostMapping
-	public Mono<ResponseEntity<?>> saveAudio(@ModelAttribute SaveAudioDTO dto) {
-		return audioService.saveAudio(dto);
+	public ResponseEntity<?> saveAudio(@ModelAttribute SaveAudioDTO dto) {
+		audioService.saveAudio(dto);
+		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 	
 	@DeleteMapping("/{name}")
-	public Mono<Void> deleteAudio(@PathVariable("name") String name){
-		return audioService.deleteAudio(name);
+	public ResponseEntity<?> deleteAudio(@PathVariable("name") String name){
+		audioService.deleteAudio(name);
+		
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 }

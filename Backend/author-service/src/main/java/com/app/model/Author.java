@@ -29,4 +29,6 @@ public class Author {
 	@Column("created_by")
 	private Integer createdBy;
 	
+	private String description;
+	
 }

@@ -4,9 +4,16 @@
     <div>
       <h1 class="author-name mb-1">
         {{ author.name }}
-        <i *ngIf="canModify"class="pi pi-pencil icon btn btn-outline-secondary btn-sm" (click)="openOrCloseDialog()"></i>
+        <i *ngIf="canModify" class="pi pi-pencil icon btn btn-outline-secondary btn-sm"
+          (click)="openOrCloseDialog()"></i>
       </h1>
-      <p class="text-muted mb-0">View and explore {{ author.name }}'s albums and tracks</p>
+      <p class="text-muted mb-0 mb-2">View and explore {{ author.name }}'s albums and tracks</p>
+      <p-panel *ngIf="author.description" [collapsed]="true" header="Author Description"
+        [toggleable]="true">
+        <div class="author-description">
+          {{author.description}}
+        </div>
+      </p-panel>
     </div>
   </div>
 
@@ -44,11 +51,15 @@
 <p-dialog [(visible)]="updateDialog" [header]="'Edit Author'" [modal]="true" [closable]="true"
   [style]="{width: '500px'}">
 
-  <div class="form-group mt-2">
-    <input type="text" id="albumName" class="form-control" [(ngModel)]="editableAuthor.name" placeholder="Name" />
+  <div class="form-group mt-3">
+    <input type="text" id="authorName" class="form-control" [(ngModel)]="editableAuthor.name" placeholder="Name" />
+  </div>
+  <div class="form-group mt-3">
+    <textarea name="description" placeholder="Enter some information about author" rows="5"
+      [(ngModel)]="editableAuthor.description" class="form-control"></textarea>
   </div>
 
-  <div class="form-group">
+  <div class="form-group mt-3">
     <label for="albumCover">Image</label>
     <input type="file" id="albumCover" class="form-control" (change)="onFileChange($event)" />
     <img *ngIf="previewImage" [src]="previewImage" alt="Cover Preview" class="img-thumbnail mt-2"
