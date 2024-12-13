@@ -12,5 +12,5 @@ public class SaveAudioDTO {
 	
 	private String name;
 	
-	private MultipartFile file;
+	private FilePart file;
 }

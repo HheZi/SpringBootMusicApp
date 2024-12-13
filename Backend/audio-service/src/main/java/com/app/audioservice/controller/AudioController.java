@@ -3,6 +3,7 @@ package com.app.audioservice.controller;
 import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.support.ResourceRegion;
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.app.audioservice.payload.SaveAudioDTO;
 import com.app.audioservice.service.AudioService;
+
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 
 @RestController
@@ -41,25 +45,18 @@ public class AudioController {
 					.build();
 		}
 		
-		
-		return ResponseEntity
-				.status(HttpStatus.PARTIAL_CONTENT)
+		return ResponseEntity.status(HttpStatus.PARTIAL_CONTENT)
 				.contentType(MediaType.APPLICATION_OCTET_STREAM)
-				.cacheControl(CacheControl.noStore())
 				.body(audioService.getResource(filename, rangeHeader));
 	}
 	
 	@PostMapping
-	public ResponseEntity<?> saveAudio(@ModelAttribute SaveAudioDTO dto) {
-		
-		audioService.saveAudio(dto);
-		
-		return ResponseEntity.status(HttpStatus.CREATED).build();
+	public Mono<ResponseEntity<?>> saveAudio(@ModelAttribute SaveAudioDTO dto) {
+		return audioService.saveAudio(dto);
 	}
 	
 	@DeleteMapping("/{name}")
-	public ResponseEntity<?> deleteAudio(@PathVariable("name") String name){
-		audioService.deleteAudio(name);
-		return ResponseEntity.ok().build();
+	public Mono<Void> deleteAudio(@PathVariable("name") String name){
+		return audioService.deleteAudio(name);
 	}
 }
