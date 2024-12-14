@@ -6,6 +6,7 @@ import { ConfirmationService, MessageService } from 'primeng/api';
 import { TrackService } from '../../services/track/track.service';
 import { PlaylistService } from '../../services/playlist/playlist.service';
 import { HttpParams } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-track-list',
@@ -22,6 +23,7 @@ export class TrackListComponent {
   protected addTrackDialogVisible: boolean = false;
   protected playlists: any[] = [];
   protected isPlaylistsNotFound: boolean = false;
+  protected tracksNotFound: boolean = false;
 
   protected totalTracks: number = 0;
   protected totalPages: number = 0;
@@ -32,7 +34,8 @@ export class TrackListComponent {
 
   private indexOfEditingTrack: number = -1;
   private selectedTrackId: number = 0;
-  private funcToDeleteTrack: Function = (id: number) => { };
+  private funcToDeleteTrackFromService: Function = (id: number) => { };
+  private funcToGetTracksFromService: Function = (page: number) => {};
   private warningMessageToDisplayInConfirmDialog: string = "Do you want to do this?";
 
 
@@ -45,9 +48,21 @@ export class TrackListComponent {
     private messageService: MessageService
   ) { }
 
-  public setTracks(tracks: any | null): void {
+  public setTracks(funcToGetTracks: Function): void {
+    this.funcToGetTracksFromService = funcToGetTracks;
+    this.loadTracks(this.funcToGetTracksFromService(0));
+  }
+  
+  private loadTracks(resp: Observable<Object>){
+    resp.subscribe({
+      next: (tracks: any) => this.populateTracks(tracks),
+      error: (error: any) => this.tracksNotFound = true
+    });
+  }
+  
+  private populateTracks(tracks: any){
     if (tracks == null) return;
-    
+        
     this.makeTracksEmpty();
     tracks.content.forEach((track: any) => {
       this.tracks.push({
@@ -74,8 +89,8 @@ export class TrackListComponent {
       this.notDisplayPagination = false;
     }
   }
-  
-  private makeTracksEmpty(): void{
+
+  public makeTracksEmpty(): void{
     this.tracks = [];
     this.totalPages = 0;
     this.totalPages = 0;
@@ -83,13 +98,7 @@ export class TrackListComponent {
 
   protected onPageChange(event: any): void {
     this.currentPage = event.page;
-    this.loadTracks(this.currentPage);
-  }
-
-  protected loadTracks(page: number): void {
-    this.trackService.getTracks(new HttpParams().append("page", page)).subscribe((response: any) => {
-      this.setTracks(response);
-    });
+    this.loadTracks(this.funcToGetTracksFromService(event.page));
   }
 
   protected playTrack(index: number): void {
@@ -104,9 +113,9 @@ export class TrackListComponent {
     this.router.navigate(["author/" + value]);
   }
 
-  public onDelete(warningMessage: string, func: Function) {
+  public onDelete(warningMessage: string, funcToDeleteTrack: Function) {
     this.canBeDeleted = true;
-    this.funcToDeleteTrack = func;
+    this.funcToDeleteTrackFromService = funcToDeleteTrack;
     this.warningMessageToDisplayInConfirmDialog = warningMessage;
   }
 
@@ -120,7 +129,7 @@ export class TrackListComponent {
       header: "Confirmation",
       icon: "pi pi-exclamation-triangle",
       accept: () => {
-        this.funcToDeleteTrack(id)
+        this.funcToDeleteTrackFromService(id)
         this.tracks.splice(this.tracks.findIndex(t => t.id == id), 1);
       },
       reject: () => { }

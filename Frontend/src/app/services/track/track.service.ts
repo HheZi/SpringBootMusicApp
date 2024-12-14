@@ -15,23 +15,27 @@ export class TrackService {
   
   constructor(private httpClient: HttpClient, private authService: AuthService) { }
   
-  public getTracks(header: HttpParams | null) : Observable<Object>{
-    if(!header){
-      return this.httpClient.get(this.TRACK_URL_TO_GET_FROM_AGGREGATION);
+  public getTracks(httpParams: HttpParams | null) : Observable<Object>{
+    if(httpParams){
+      return this.httpClient.get(this.TRACK_URL_TO_GET_FROM_AGGREGATION, {params: httpParams});
     }
-    return this.httpClient.get(this.TRACK_URL_TO_GET_FROM_AGGREGATION, {params: header});
+    return this.httpClient.get(this.TRACK_URL_TO_GET_FROM_AGGREGATION);
   }
 
-  public getDurationByIds(ids: number): Observable<Object>{
+  public getDurationByIds(ids: number | number[]): Observable<Object>{
     return this.httpClient.get(this.TRACK_URL + "duration", {params: {"ids": ids}});
   }
 
-  public getTracksByAlbumId(id: any) : Observable<Object> {
-    return this.httpClient.get(this.TRACK_URL_TO_GET_FROM_AGGREGATION, {params: {albumId: id}});
+  public getTracksByTrackName(name: string, page: number): Observable<Object>{
+    return this.httpClient.get(this.TRACK_URL_TO_GET_FROM_AGGREGATION, {params: {name: name, page: page}})
   }
 
-  public getTrackByIds(ids: number[]){
-    return this.httpClient.get(this.TRACK_URL_TO_GET_FROM_AGGREGATION, {params: {"id": ids}});
+  public getTracksByAlbumId(id: number[] | number, page: number) : Observable<Object> {
+    return this.httpClient.get(this.TRACK_URL_TO_GET_FROM_AGGREGATION, {params: {albumId: id, page: page}});
+  }
+
+  public getTrackByIds(ids: number[], page: number){
+    return this.httpClient.get(this.TRACK_URL_TO_GET_FROM_AGGREGATION, {params: {"id": ids, page: page}});
   }
 
   public createTrack(tracks: any): Observable<Object>{

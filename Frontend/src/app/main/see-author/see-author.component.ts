@@ -57,9 +57,8 @@ export class SeeAuthorComponent implements OnInit {
         })
         this.albumService.getAlbumsByAuthorId(this.author.id).subscribe((albums: any) => {
           this.albums = albums;
-          this.trackService.getTracksByAlbumId(albums.map((a: any) => a.id)).subscribe((tracksResp: any) => {
-            this.trackList.setTracks(tracksResp)
-          });
+
+          this.trackList.setTracks((page: number) => this.trackService.getTracksByAlbumId(albums.map((a: any) => a.id), page));
         });
       },
       error: () => this.isNotFound = true

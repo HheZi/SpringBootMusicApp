@@ -60,9 +60,8 @@ export class SeeAlbumComponent {
           releaseDate: album.releaseDate,
           totalDuration: album.totalDuration
         };
-        this.trackService.getTracksByAlbumId(albumId).subscribe({
-          next: (resp) => this.trackList.setTracks(resp)
-        })
+        this.trackList.setTracks((page: number) => this.trackService.getTracksByAlbumId(albumId, page))
+        
         this.editableAlbum.name = this.album.name;
         this.editableAlbum.releaseDate = new Date(this.album.releaseDate);
       }

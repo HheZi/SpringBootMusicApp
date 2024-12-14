@@ -54,37 +54,32 @@ export class SeePlaylistComponent implements OnInit {
         this.editablePlaylist.name = playlist.name;
 
         if (this.playlist.trackIds.length != 0) {
-          this.trackService.getTrackByIds(this.playlist.trackIds).subscribe({
-            next: (tracksResp: any) => {
-              this.trackService.getDurationByIds(tracksResp.content.map((t: any) => t.id)).subscribe(
-                (resp: any) => this.playlist.totalDuration = resp.duration
-              )
-
-              this.trackList.setTracks(tracksResp);
-
-              this.trackList.onDelete("Delete track from playlist?", (trackId: number) => {
-                this.playlistService.deleteTrackFromPlaylist(this.playlist.id, trackId).subscribe({
-                  next: () => {
-                    this.messageService.add({closable: true, severity: "success", summary: "Track deleted from playlist"});
-                    this.playlist.numberOfTracks--;
-                  },
-                  error: () => this.messageService.add({closable: true, severity: "error", summary: "Something went wrong"})
-                })
-              })
-            }
+          this.trackList.setTracks((page: number) => this.trackService.getTrackByIds(this.playlist.trackIds, page))
+          this.getDurationOfPlaylist();
+          this.trackList.onDelete("Delete track from playlist?", (trackId: number) => {
+            this.playlistService.deleteTrackFromPlaylist(this.playlist.id, trackId).subscribe({
+              next: () => {
+                this.messageService.add({closable: true, severity: "success", summary: "Track deleted from playlist"});
+                this.playlist.numberOfTracks--;
+              },
+              error: () => this.messageService.add({closable: true, severity: "error", summary: "Something went wrong"})
+            })
           })
         }
         else{
           this.isTracksNotFound = true;
         }
-
         this.playlistService.getIsOwnerOfPlaylist(this.playlist.id).subscribe((resp: any) => this.canModify = resp)
-
-
       },
       error: () => this.isPlaylistNotFound = true
     })
 
+  }
+
+  private getDurationOfPlaylist(){
+    this.trackService.getDurationByIds(this.playlist.trackIds).subscribe(
+      (resp: any) => this.playlist.totalDuration = resp.duration
+    )
   }
 
   onFileChange(event: any): void {
