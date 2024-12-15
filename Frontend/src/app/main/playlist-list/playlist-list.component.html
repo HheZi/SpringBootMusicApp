@@ -1,4 +1,4 @@
-<div class="playlists-container d-flex flex-wrap">
+<div class="playlists-container d-flex flex-wrap" *ngIf="!playlistNotFound; else notFound">
   <div
     *ngFor="let playlist of playlists; let i = index"
     class="card playlist-card shadow-sm m-2"
@@ -11,3 +11,9 @@
     </div>
   </div>
 </div>
+
+<ng-template #notFound>
+  <div class="text-center py-5">
+    <h3 class="text-muted">Playlists Not Found</h3>
+  </div>
+</ng-template>

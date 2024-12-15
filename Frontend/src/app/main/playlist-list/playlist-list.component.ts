@@ -12,6 +12,8 @@ export class PlaylistListComponent {
 
   protected playlists: Playlist[] = [];
 
+  protected playlistNotFound = false;
+
   constructor(
     private router: Router 
   ){
@@ -23,6 +25,15 @@ export class PlaylistListComponent {
 
   public setPlaylists(playlists: any[]): void{
     this.playlists = playlists; 
+  }
+
+  public makePlaylistEmpty(){
+    this.playlists = [];
+    this.playlistNotFound = false;
+  }
+
+  public notFound(){
+    this.playlistNotFound = true;
   }
 
   protected navigateToPlaylist(id: number){

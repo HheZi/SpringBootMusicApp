@@ -33,6 +33,7 @@ public class Track {
 	@Column("created_by")
 	private Integer createdBy;
 	
-	private Long duration;
+	@Builder.Default
+	private Long duration = 0L;
 	
 }

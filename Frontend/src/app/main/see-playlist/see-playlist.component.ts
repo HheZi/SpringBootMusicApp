@@ -20,7 +20,6 @@ export class SeePlaylistComponent implements OnInit {
   protected playlist: Playlist = { id: 0, name: "", imageUrl: "", description: "", trackIds: [], numberOfTracks: 0, totalDuration: ''};
   protected editablePlaylist: Playlist = { id: 0, name: "", imageUrl: "", description: "", trackIds: [], numberOfTracks: 0, totalDuration: ''};
   protected isPlaylistNotFound: boolean = false;
-  protected isTracksNotFound: boolean = false;
 
   protected canModify: boolean = false;
   protected editDialogeVisible: boolean = false
@@ -67,11 +66,11 @@ export class SeePlaylistComponent implements OnInit {
           })
         }
         else{
-          this.isTracksNotFound = true;
+          this.trackList.setTracksNotFound(true)
         }
         this.playlistService.getIsOwnerOfPlaylist(this.playlist.id).subscribe((resp: any) => this.canModify = resp)
       },
-      error: () => this.isPlaylistNotFound = true
+      error: () => this.trackList.setTracksNotFound(true)
     })
 
   }

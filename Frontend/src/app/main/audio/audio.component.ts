@@ -28,7 +28,7 @@ export class AudioComponent implements OnInit, OnDestroy {
   constructor(private audioService: AudioService, private router: Router) { }
 
   ngOnInit(): void {
-    this.plyr = new Plyr(this.audioPlayerRef.nativeElement, { controls: ['progress', 'current-time', 'mute', 'volume'] });
+    this.plyr = new Plyr(this.audioPlayerRef.nativeElement, { controls: ['settings', 'progress', 'current-time','duration', 'mute', 'volume', ]  });
     this.audioService.TracksToPlay$.subscribe({
       next: (value) => {
         let tracksToPlay = value as TracksToPlay;

@@ -1,12 +1,9 @@
 import { Component, ViewChild } from '@angular/core';
-import { ActivatedRoute, Route, Router } from '@angular/router';
-import { AudioService } from '../../services/audio/audio.service';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AlbumService } from '../../services/album/album.service';
-import { Track } from '../track-list/track';
 import { TrackService } from '../../services/track/track.service';
 import { Title } from '@angular/platform-browser';
 import { ConfirmationService, MessageService } from 'primeng/api';
-import { AppConts } from '../../app.consts';
 import { Album } from './album';
 import { TrackListComponent } from '../track-list/track-list.component';
 
@@ -60,11 +57,13 @@ export class SeeAlbumComponent {
           releaseDate: album.releaseDate,
           totalDuration: album.totalDuration
         };
+        this.title.setTitle(this.album.name);
         this.trackList.setTracks((page: number) => this.trackService.getTracksByAlbumId(albumId, page))
         
         this.editableAlbum.name = this.album.name;
         this.editableAlbum.releaseDate = new Date(this.album.releaseDate);
-      }
+      },
+      error: () => this.isNotFound = true
     })
 
     this.albumService.getIsUserIsOwnerOfAlbum(albumId).subscribe({
@@ -82,7 +81,7 @@ export class SeeAlbumComponent {
 
   }
 
-  onFileChange(event: any): void {
+  protected onFileChange(event: any): void {
     this.selectedFile = event.target.files[0];
     if (this.selectedFile) {
       const reader = new FileReader();

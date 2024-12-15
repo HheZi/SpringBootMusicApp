@@ -15,7 +15,6 @@ import { TrackListComponent } from '../track-list/track-list.component';
 })
 export class SeeAuthorComponent implements OnInit {
   
-  
   public author: Author = { id: 0, name: '', imageUrl: '', description: ''};
   public albums: any[] = [];
   public canModify: boolean = false;
@@ -79,7 +78,7 @@ export class SeeAuthorComponent implements OnInit {
     this.updateDialog = !this.updateDialog;
   }
 
-  editAuthor(): void {
+  protected editAuthor(): void {
     var formData = new FormData();
     
     formData.append("name", this.editableAuthor.name);

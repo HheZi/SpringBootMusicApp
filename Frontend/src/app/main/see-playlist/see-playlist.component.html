@@ -31,13 +31,9 @@
         </div>
     </ng-template>
 
-    <div *ngIf="!isTracksNotFound; else TracksNotFound" class="tracks-list">
+    <div class="tracks-list">
         <app-track-list></app-track-list>
     </div>
-
-    <ng-template #TracksNotFound>
-        <h3 class="text-center">Playlist Is Empty</h3>
-    </ng-template>
 
     <p-dialog
         [(visible)]="editDialogeVisible"

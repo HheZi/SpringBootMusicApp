@@ -106,7 +106,7 @@ public class TrackService {
 		}
 		
 		return tracks
-				.switchIfEmpty(Flux.error(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)))
+				.switchIfEmpty(Flux.just(new Track()))
 				.map(t -> t.getDuration())
 				.reduce(Long::sum)
 				.map(mapper::getDurationOfTrack);

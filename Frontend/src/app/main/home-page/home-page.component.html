@@ -36,14 +36,5 @@
     </div>
   </div>
   
-  <div class="results-section mt-4" *ngIf="!isNotFound; else noTracks">
-    <app-playlist-list></app-playlist-list>
-    <app-track-list></app-track-list>
-  </div>
-  
-  <ng-template #noTracks>
-    <div class="text-center py-5">
-      <h3 class="text-muted">Not found</h3>
-    </div>
-  </ng-template>
-  
+  <app-playlist-list></app-playlist-list>
+  <app-track-list></app-track-list>

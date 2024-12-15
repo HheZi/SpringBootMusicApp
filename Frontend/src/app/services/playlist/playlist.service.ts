@@ -14,7 +14,7 @@ export class PlaylistService {
     private httpClient: HttpClient
   ){}
 
-  public getTracksBySymbol(symbol: string): Observable<Object>{
+  public getPlaylistBySymbol(symbol: string): Observable<Object>{
     return this.httpClient.get(this.PLAYLIST_URL + "symbol/" + symbol);
   }
 

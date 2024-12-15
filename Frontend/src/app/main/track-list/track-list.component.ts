@@ -56,13 +56,16 @@ export class TrackListComponent {
   private loadTracks(resp: Observable<Object>){
     resp.subscribe({
       next: (tracks: any) => this.populateTracks(tracks),
-      error: (error: any) => this.tracksNotFound = true
+      error: (error: any) => this.setTracksNotFound(true)
     });
   }
   
   private populateTracks(tracks: any){
-    if (tracks == null) return;
-        
+    if (tracks == null || tracks.empty) {
+      this.tracksNotFound = true; 
+      return;
+    }
+
     this.makeTracksEmpty();
     tracks.content.forEach((track: any) => {
       this.tracks.push({
@@ -94,6 +97,8 @@ export class TrackListComponent {
     this.tracks = [];
     this.totalPages = 0;
     this.totalPages = 0;
+    this.tracksNotFound = false;
+    this.notDisplayPagination = true;
   }
 
   protected onPageChange(event: any): void {
@@ -121,6 +126,10 @@ export class TrackListComponent {
 
   public makeUpdatable(value: boolean) {
     this.canBeRenamed = value;
+  }
+
+  public setTracksNotFound(value: boolean){
+    this.tracksNotFound = value;
   }
 
   protected confirmDeletionOfTrack(id: number) {

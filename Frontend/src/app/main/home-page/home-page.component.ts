@@ -47,33 +47,31 @@ export class HomeComponent implements  AfterViewInit {
   }
 
   public getTracks(): void {
-    this.isNotFound = false;
-    this.playlistList.setPlaylists([]);
-    
+    this.playlistList.makePlaylistEmpty();
+    this.trackList.makeTracksEmpty();
     this.trackList.setTracks((page: number) => this.trackService.getTracks(new HttpParams().append("page", page)));
   }
 
   public getTracksByName(): void {
-    this.isNotFound = false;
-    this.playlistList.setPlaylists([]);
+    this.playlistList.makePlaylistEmpty();
     this.trackList.makeTracksEmpty();
-
+    
     if (this.radioVal === "Track") {
       this.fetchTracksByName();
     } else if (this.radioVal === "Author") {
       this.authorService.getAuthorsBySymbol(this.searchValue).subscribe({
         next: (authors: any) => this.fetchTracksByAuthors(authors),
-        error: err => this.isNotFound = true
+        error: err => this.trackList.setTracksNotFound(true)
       });
     } else if (this.radioVal === "Album") {
       this.albumService.getAlbumsBySymbol(this.searchValue).subscribe({
         next: (albums: any) => this.fetchTracksByAlbums(albums),
-        error: err => this.isNotFound = true
+        error: err => this.trackList.setTracksNotFound(true)
       });
     } else if(this.radioVal === "Playlist"){
-      this.playlistService.getTracksBySymbol(this.searchValue).subscribe({
+      this.playlistService.getPlaylistBySymbol(this.searchValue).subscribe({
         next: (playlists: any) => this.fetchPlaylist(playlists),
-        error: err => this.isNotFound = true
+        error: err => this.playlistList.notFound()
       })
     }
   }
