@@ -18,6 +18,8 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.app.kafka.KafkaImageProducer;
+import com.app.kafka.message.ImageDeletionMessage;
 import com.app.model.Author;
 import com.app.payload.request.AuthorCreateOrUpdateRequest;
 import com.app.payload.response.AuthorResponse;
@@ -37,6 +39,8 @@ public class AuthorService {
 	private final AuthorMapper authorMapper;
 	
 	private final WebClient.Builder builder;
+	
+	private final KafkaImageProducer kafkaImageProducer;
 	
 	@Value("${file.temp}")
 	private String tempFolder;
@@ -132,12 +136,13 @@ public class AuthorService {
 	}
 	
 	public Mono<Void> deleteAuthorImage(Integer id) {
-		return authorRepository.findById(id).flatMap(t -> {
-			builder.build().delete().uri("http://image-service/api/images/" + t.getImageName()).retrieve()
-					.bodyToMono(Void.class);
-			t.setImageName(null);
-			return authorRepository.save(t);
-		})
-		.then();
+		return authorRepository
+			.findById(id)
+			.doOnNext(t -> {
+				kafkaImageProducer.sendMessageToDeleteImage(new ImageDeletionMessage(t.getImageName()));
+				t.setImageName(null);
+			})
+			.flatMap(authorRepository::save)
+			.then();
 	}
 }

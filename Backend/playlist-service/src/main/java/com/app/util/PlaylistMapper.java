@@ -37,16 +37,16 @@ public class PlaylistMapper {
 				.build();
 	}
 	
+	public ResponsePlaylist fromPlaylistToResponsePlaylist(Playlist playlist) {
+		return fromPlaylistToResponsePlaylist(playlist, null);
+	}
+	
 	public ResponsePlaylistPreview fromPlaylistToResponsePlaylistPreview(Playlist playlist) {
 		return new ResponsePlaylistPreview(
 				playlist.getId(),
 				playlist.getName(), 
 				playlist.getImageName() != null ? IMAGE_URL_FORMAT + playlist.getImageName() : IMAGE_URL_DEFAULT
 			);
-	}
-	 
-	public ResponsePlaylist fromPlaylistToResponsePlaylist(Playlist playlist) {
-		return fromPlaylistToResponsePlaylist(playlist, null);
 	}
 	
 }

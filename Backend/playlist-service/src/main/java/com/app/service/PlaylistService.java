@@ -15,7 +15,9 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.app.kafka.message.ImageDeletionMessage;
 import com.app.kafka.message.TrackDeletionMessage;
+import com.app.kafka.producer.KafkaImageProducer;
 import com.app.model.Playlist;
 import com.app.model.PlaylistTrack;
 import com.app.payload.request.CreateOrUpdatePlaylist;
@@ -40,6 +42,8 @@ public class PlaylistService {
 	private final PlaylistMapper playlistMapper;
 	
 	private final WebClient.Builder builder;
+	
+	private final KafkaImageProducer kafkaImageProducer;
 
 	@Value("${file.temp}")
 	private String tempFolder;
@@ -95,7 +99,7 @@ public class PlaylistService {
 	public Mono<Void> deleteCover(Integer id) {
 		return playlistRepository.findById(id)
 				.doOnNext(t -> {
-					deletePlalyistCover(t.getImageName());
+					kafkaImageProducer.sendMessageToDeleteImage(new ImageDeletionMessage(t.getImageName()));
 					t.setImageName(null);
 				})
 				.flatMap(playlistRepository::save)
@@ -106,7 +110,7 @@ public class PlaylistService {
 	public Mono<Void> deletePlaylist(Integer id){
 		return playlistTrackRepository.deleteByPlaylistId(id)
 				.then(playlistRepository.findById(id))
-				.doOnNext(t -> deletePlalyistCover(t.getImageName()))
+				.doOnNext(t -> kafkaImageProducer.sendMessageToDeleteImage(new ImageDeletionMessage(t.getImageName())))
 				.flatMap(playlistRepository::delete);
 				
 	}
@@ -180,15 +184,4 @@ public class PlaylistService {
 		
 	}
 	
-	private void deletePlalyistCover(UUID cover) {
-		if (cover == null) return;
-			
-		builder
-		.baseUrl("http://image-service/api/images/" + cover.toString())
-		.build()
-		.delete()
-		.retrieve()
-		.bodyToMono(Void.class)
-		.subscribe();
-	}
 }
