@@ -70,12 +70,14 @@ export class SeeAlbumComponent {
       next: (resp: any) => {
         this.isOwnerOfAlbum = resp;
         this.trackList.makeUpdatable(resp)
-        this.trackList.onDelete('Delete this track from album?', (trackId: number) => {
-          this.trackService.deleteTrack(trackId).subscribe(() => {
-            this.messageService.add({ closable: true, severity: "success", summary: "Track deleted" });
-            this.album.numberOfTracks--;
+        if (resp){
+          this.trackList.onDelete('Delete this track from album?', (trackId: number) => {
+            this.trackService.deleteTrack(trackId).subscribe(() => {
+              this.messageService.add({ closable: true, severity: "success", summary: "Track deleted" });
+              this.album.numberOfTracks--;
+            });
           });
-        });
+        }
       }
     })
 

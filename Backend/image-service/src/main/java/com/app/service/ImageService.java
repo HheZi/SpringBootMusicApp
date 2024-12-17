@@ -58,7 +58,6 @@ public class ImageService {
 	public Mono<Void> deleteImage(String name) {
 		return Mono.just(new File(imagePath, name))
 				.filter(t -> t.exists() || name.equals(defaultImageName))
-				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)))
 				.doOnNext(t -> t.delete())
 				.then();
 	}

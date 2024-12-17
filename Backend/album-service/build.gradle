@@ -35,8 +35,10 @@ dependencies {
 	compileOnly 'org.projectlombok:lombok'
 	implementation 'org.postgresql:r2dbc-postgresql'
 	annotationProcessor 'org.projectlombok:lombok'
+	implementation 'org.springframework.kafka:spring-kafka'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'io.projectreactor:reactor-test'
+	testImplementation 'org.springframework.kafka:spring-kafka-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 

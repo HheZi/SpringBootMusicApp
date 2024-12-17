@@ -4,19 +4,19 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
 import com.app.kafka.message.TrackDeletionMessage;
-import com.app.service.PlaylistService;
+import com.app.service.AudioService;
 
 import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
 public class KafkaTrackConsumer {
+
+	private final AudioService audioService;
 	
-	private final PlaylistService playlistService;
-	
-	@KafkaListener(topics = "track-deletion-topic", groupId = "playlist-group")
-	public void consumeTrackDeletionMessage(TrackDeletionMessage deletionMessage) { 
-		playlistService.deleteTrackFromAllPlaylists(deletionMessage);
+	@KafkaListener(topics = "track-deletion-topic", groupId = "audio-group")
+	public void consumeTrackDeletionMessage(TrackDeletionMessage deletionMessage) {
+		audioService.deleteAudio(deletionMessage.audioName());
 	}
 	
 }

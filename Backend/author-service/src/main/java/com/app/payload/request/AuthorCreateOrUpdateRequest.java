@@ -19,7 +19,6 @@ public class AuthorCreateOrUpdateRequest {
 	@Length(max = 75, message = "Name allows only 75 symbols")
 	private String name;
 	
-	@NotBlank(message = "Description can't be blank")
 	@Length(max = 360, message = "Description allows only 360 symbols")
 	private String description;
 	

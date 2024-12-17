@@ -22,8 +22,8 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.app.kafka.KafkaTrackProducer;
 import com.app.kafka.message.TrackDeletionMessage;
+import com.app.kafka.producer.KafkaTrackProducer;
 import com.app.model.Track;
 import com.app.payload.request.CreateTrackDto;
 import com.app.payload.request.UpdateTrackRequest;
@@ -145,8 +145,7 @@ public class TrackService {
 	public Mono<Void> deleteTrack(Long id){
 		return repository.findById(id)
 		.doOnNext(t -> {
-			deleteTrackFile(t.getAudioName());
-			kafkaTrackProducer.sendMessage(new TrackDeletionMessage(t.getId()));
+			kafkaTrackProducer.sendMessage(new TrackDeletionMessage(t.getId(), t.getAudioName().toString()));
 		})
 		.flatMap(repository::delete);
 	}
@@ -155,20 +154,10 @@ public class TrackService {
 	public Mono<Void> deleteTracksByAlbumId(Integer albumId) {
 		return repository.findByAlbumId(albumId)
 		.doOnNext(t -> {
-			deleteTrackFile(t.getAudioName());
-			kafkaTrackProducer.sendMessage(new TrackDeletionMessage(t.getId()));
+			kafkaTrackProducer.sendMessage(new TrackDeletionMessage(t.getId(), t.getAudioName().toString()));
 		})
 		.collectList()
 		.flatMap(repository::deleteAll);
-	}
-	
-	private void deleteTrackFile(UUID trackName) {
-		webClient.baseUrl("http://audio-service/api/audio/" + trackName.toString())
-		.build()
-		.delete()
-		.retrieve()
-		.bodyToMono(Void.class)
-		.subscribe();
 	}
 	
 	@Transactional

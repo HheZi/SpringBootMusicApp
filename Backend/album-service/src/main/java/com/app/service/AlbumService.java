@@ -19,6 +19,10 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.app.kafka.KafkaAlbumProducer;
+import com.app.kafka.KafkaImageProducer;
+import com.app.kafka.message.AlbumDeletionMessage;
+import com.app.kafka.message.ImageDeletionMessage;
 import com.app.model.Album;
 import com.app.payload.request.RequestAlbum;
 import com.app.payload.request.RequestToUpdateAlbum;
@@ -40,6 +44,10 @@ public class AlbumService {
 	private final AlbumMapper albumMapper;
 
 	private final WebClient.Builder builder;
+	
+	private final KafkaAlbumProducer kafkaAlbumProducer;
+	
+	private final KafkaImageProducer kafkaImageProducer;
 	
 	@Value("${file.temp}")
 	private String tempFolder;
@@ -139,8 +147,8 @@ public class AlbumService {
 		return albumRepository.findById(id)
 				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)))
 				.doOnNext(t -> {
-					deleteAlbumCover(t.getImageName());
-					deleteAllTrackByAlbumId(t.getId());
+					kafkaAlbumProducer.sendDeleteAlbumMessage(new AlbumDeletionMessage(t.getId()));
+					kafkaImageProducer.sendMessageToDeleteImage(new ImageDeletionMessage(t.getImageName()));
 				})
 				.flatMap(albumRepository::delete);
 	}
@@ -148,32 +156,11 @@ public class AlbumService {
 	public Mono<Void> deleteCoverById(Integer id) {
 		return albumRepository.findById(id)
 				.doOnNext(t -> {
-					deleteAlbumCover(t.getImageName());
+					kafkaImageProducer.sendMessageToDeleteImage(new ImageDeletionMessage(t.getImageName()));
 					t.setImageName(null);
 				})
 				.flatMap(albumRepository::save)
 				.then();
 	}
 	
-	private void deleteAlbumCover(UUID cover) {
-		if (cover == null) return;
-			
-		builder
-		.baseUrl("http://image-service/api/images/" + cover.toString())
-		.build()
-		.delete()
-		.retrieve()
-		.bodyToMono(Void.class)
-		.subscribe();
-	}
-	
-	private void deleteAllTrackByAlbumId(Integer id) {
-		builder
-		.baseUrl("http://track-service/api/tracks/?playlistId=" + id)
-		.build()
-		.delete()
-		.retrieve()
-		.bodyToMono(Void.class)
-		.subscribe();
-	}
 }

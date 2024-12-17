@@ -16,7 +16,6 @@ spring:
           allowedMethods: "*"
 eureka:
    client:
-    register-with-eureka: false
     fetch-registry: true
     registry-fetch-interval-seconds: 5
    instance:

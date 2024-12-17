@@ -1,4 +1,4 @@
-package com.app.audioservice.service;
+package com.app.service;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,7 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.app.audioservice.payload.SaveAudioDTO;
+import com.app.payload.SaveAudioDTO;
 
 import lombok.SneakyThrows;
 import reactor.core.publisher.Flux;
@@ -85,11 +85,9 @@ public class AudioService {
 	public void deleteAudio(String name) {
 		File file = new File(audioPath, name);
 		
-		if (!file.exists()) {
-			throw  new ResponseStatusException(HttpStatus.NOT_FOUND);
+		if (file.exists()) {
+			file.delete();
 		}
-		
-		file.delete();
 	}
 
 }

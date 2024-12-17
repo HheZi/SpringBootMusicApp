@@ -1,4 +1,4 @@
-package com.app.audioservice.controller;
+package com.app.controller;
 
 import java.io.IOException;
 
@@ -19,8 +19,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.app.audioservice.payload.SaveAudioDTO;
-import com.app.audioservice.service.AudioService;
+import com.app.payload.SaveAudioDTO;
+import com.app.service.AudioService;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
