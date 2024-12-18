@@ -99,7 +99,7 @@ public class AuthorService {
 			return dto.getCover().transferTo(path)
 					.then(authorRepository.findById(id))
 					.filter(t -> t.getCreatedBy() == userId)
-					.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE)))
+					.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.FORBIDDEN)))
 					.flatMap(function)
 					.flatMap(t -> saveAuthorImage(t.getImageName(), path))
 					.doFinally(t -> path.toFile().delete())
@@ -108,7 +108,7 @@ public class AuthorService {
 		
 		return authorRepository.findById(id)
 				.filter(t -> t.getCreatedBy() == userId)
-				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE)))
+				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.FORBIDDEN)))
 				.flatMap(function)
 				.then();
 		
@@ -135,9 +135,11 @@ public class AuthorService {
 		
 	}
 	
-	public Mono<Void> deleteAuthorImage(Integer id) {
+	public Mono<Void> deleteAuthorImage(Integer id, Integer userId) {
 		return authorRepository
 			.findById(id)
+			.filter(t -> t.getCreatedBy() == userId)
+			.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.FORBIDDEN)))
 			.doOnNext(t -> {
 				kafkaImageProducer.sendMessageToDeleteImage(new ImageDeletionMessage(t.getImageName()));
 				t.setImageName(null);

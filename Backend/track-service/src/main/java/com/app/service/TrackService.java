@@ -142,12 +142,15 @@ public class TrackService {
 	}
 	
 	@Transactional
-	public Mono<Void> deleteTrack(Long id){
+	public Mono<Void> deleteTrack(Long id, Integer userId){
 		return repository.findById(id)
-		.doOnNext(t -> {
-			kafkaTrackProducer.sendMessage(new TrackDeletionMessage(t.getId(), t.getAudioName().toString()));
-		})
-		.flatMap(repository::delete);
+				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)))
+				.filter(t -> t.getCreatedBy() == userId)
+				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.FORBIDDEN)))
+				.doOnNext(t -> {
+					kafkaTrackProducer.sendMessage(new TrackDeletionMessage(t.getId(), t.getAudioName().toString()));
+				})
+				.flatMap(repository::delete);
 	}
 	
 	@Transactional
@@ -164,7 +167,7 @@ public class TrackService {
 	public Mono<Void> updateTrackTitle(UpdateTrackRequest updateTrack, Long trackId, Integer userId){
 		return repository.findById(trackId)
 		.filter(t -> t.getCreatedBy() == userId)
-		.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE)))
+		.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.FORBIDDEN)))
 		.doOnNext(t -> {
 				t.setTitle(updateTrack.getTitle());
 		})

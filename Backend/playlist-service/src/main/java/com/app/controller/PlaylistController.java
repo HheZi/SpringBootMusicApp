@@ -38,7 +38,7 @@ public class PlaylistController {
 		return playlistService.getPlaylistById(id);
 	}
 	
-	@GetMapping("{id}/tracks")
+	@GetMapping("tracks/{id}")
 	public Flux<Long> getTrackId(@PathVariable("id") Integer id){
 		return playlistService.getTrackIdsByPlaylist(id);
 	}
@@ -73,35 +73,44 @@ public class PlaylistController {
 	@PatchMapping("{id}/{trackId}")
 	public Mono<Void> addTrack(
 			@PathVariable("id") Integer id, 
-			@PathVariable("trackId")  Long trackId
+			@PathVariable("trackId")  Long trackId,
+			@RequestHeader("userId") Integer userId
 		){
-		return playlistService.addTrackToPlaylist(id, trackId);
+		return playlistService.addTrackToPlaylist(id, trackId, userId);
 	}
 	
 	@PutMapping("{id}")
 	public Mono<Void> updatePlaylist(
 			@Valid @ModelAttribute CreateOrUpdatePlaylist dto,
-			@PathVariable("id") Integer id
+			@PathVariable("id") Integer id,
+			@RequestHeader("userId") Integer userId
 		){
 		return imageValidatorService.validateImageFile(dto.getCover())
-				.flatMap(t -> playlistService.updatePlaylist(dto, id));
+				.flatMap(t -> playlistService.updatePlaylist(dto, id, userId));
 	}
 	
 	@DeleteMapping("{id}/{trackId}")
 	public Mono<Void> deleteTrackFromPlaylist(
 			@PathVariable("id") Integer id, 
-			@PathVariable("trackId")  Long trackId
+			@PathVariable("trackId")  Long trackId,
+			@RequestHeader("userId") Integer userId
 		){
-		return playlistService.deleteTrackFromPlaylist(id, trackId);
+		return playlistService.deleteTrackFromPlaylist(id, trackId, userId);
 	}
 	
 	@DeleteMapping("cover/{id}")
-	public Mono<Void> deleteCover(@PathVariable("id") Integer id){
-		return playlistService.deleteCover(id);
+	public Mono<Void> deleteCover(
+			@PathVariable("id") Integer id,
+			@RequestHeader("userId") Integer userId
+		){
+		return playlistService.deleteCover(id, userId);
 	}
 	
 	@DeleteMapping("{id}")
-	public Mono<Void> deletePlaylist(@PathVariable("id") Integer id){
-		return playlistService.deletePlaylist(id);
+	public Mono<Void> deletePlaylist(
+			@PathVariable("id") Integer id,
+			@RequestHeader("userId") Integer userId
+		){
+		return playlistService.deletePlaylist(id, userId);
 	}
 }

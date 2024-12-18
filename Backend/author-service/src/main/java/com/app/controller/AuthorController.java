@@ -82,7 +82,10 @@ public class AuthorController {
 	}
 	
 	@DeleteMapping("/{id}")
-	public Mono<Void> deleteAuthorImage(@PathVariable("id") Integer id){
-		return authorService.deleteAuthorImage(id);
+	public Mono<Void> deleteAuthorImage(
+			@PathVariable("id") Integer id,
+			@RequestHeader("userId") Integer userId
+		){
+		return authorService.deleteAuthorImage(id, userId);
 	}
 }

@@ -97,13 +97,19 @@ public class AlbumController {
 	}
 	
 	@DeleteMapping("cover/{id}")
-	public Mono<Void> deleteCoverOfAlbum(@PathVariable("id") Integer id){
-		return albumService.deleteCoverById(id);
+	public Mono<Void> deleteCoverOfAlbum(
+			@PathVariable("id") Integer id,
+			@RequestHeader("userId") Integer userId
+		){
+		return albumService.deleteCoverById(id, userId);
 	}
 	
 	@DeleteMapping("/{id}")
-	public Mono<Void> deleteAlbum(@PathVariable("id") Integer id){
-		return albumService.deleteAlbum(id);
+	public Mono<Void> deleteAlbum(
+			@PathVariable("id") Integer id,
+			@RequestHeader("userId") Integer userId
+		){
+		return albumService.deleteAlbum(id, userId);
 	}
 	
 	

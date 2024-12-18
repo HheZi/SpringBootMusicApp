@@ -8,6 +8,6 @@ create table playlists(
 
 create table playlists_tracks(
     id serial primary key,
-    playlist_id int references playlists(id),
+    playlist_id int references playlists(id) on delete cascade,
     track_id bigint
 );

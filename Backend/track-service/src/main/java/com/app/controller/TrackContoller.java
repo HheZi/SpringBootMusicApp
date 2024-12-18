@@ -89,8 +89,11 @@ public class TrackContoller {
 	}
 	
 	@DeleteMapping("/{id}")
-	public Mono<Void> deleteTrack(@PathVariable("id") Long id){
-		return trackService.deleteTrack(id);
+	public Mono<Void> deleteTrack(
+			@PathVariable("id") Long id,
+			@RequestHeader("userId") Integer userId
+		){
+		return trackService.deleteTrack(id, userId);
 	}
 	
 	@DeleteMapping

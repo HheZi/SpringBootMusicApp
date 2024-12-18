@@ -96,8 +96,11 @@ public class PlaylistService {
 	}
 	
 	@Transactional
-	public Mono<Void> deleteCover(Integer id) {
+	public Mono<Void> deleteCover(Integer id, Integer userId) {
 		return playlistRepository.findById(id)
+				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)))
+				.filter(t -> t.getCreatedBy() == userId)
+				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.FORBIDDEN)))
 				.doOnNext(t -> {
 					kafkaImageProducer.sendMessageToDeleteImage(new ImageDeletionMessage(t.getImageName()));
 					t.setImageName(null);
@@ -107,16 +110,17 @@ public class PlaylistService {
 	}
 	
 	@Transactional
-	public Mono<Void> deletePlaylist(Integer id){
-		return playlistTrackRepository.deleteByPlaylistId(id)
-				.then(playlistRepository.findById(id))
+	public Mono<Void> deletePlaylist(Integer id, Integer userId){
+		return playlistRepository.findById(id)
+				.filter(t -> t.getCreatedBy() == userId)
+				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.FORBIDDEN)))
 				.doOnNext(t -> kafkaImageProducer.sendMessageToDeleteImage(new ImageDeletionMessage(t.getImageName())))
 				.flatMap(playlistRepository::delete);
 				
 	}
 	
 	@Transactional
-	public Mono<Void> updatePlaylist(CreateOrUpdatePlaylist dto, Integer id){
+	public Mono<Void> updatePlaylist(CreateOrUpdatePlaylist dto, Integer id, Integer userId){
 		Function<Playlist, Mono<Playlist>> func = playlist -> {
 			playlist.setName(dto.getName());
 			playlist.setDescription(dto.getDescription());
@@ -131,6 +135,8 @@ public class PlaylistService {
 			
 			return dto.getCover().transferTo(path)
 					.then(playlistRepository.findById(id))
+					.filter(t -> t.getCreatedBy() == userId)
+					.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.FORBIDDEN)))
 					.flatMap(func)
 					.flatMap(t -> saveAuthorImage(t.getImageName(), path))
 					.doFinally(t -> path.toFile().delete())
@@ -139,14 +145,18 @@ public class PlaylistService {
 		}
 		
 		return playlistRepository.findById(id)
+				.filter(t -> t.getCreatedBy() == userId)
+				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.FORBIDDEN)))
 				.flatMap(func)
 				.then();
 	}
 	
 	@Transactional
-	public Mono<Void> addTrackToPlaylist(Integer id, Long trackId){
+	public Mono<Void> addTrackToPlaylist(Integer id, Long trackId, Integer userId){
 		return playlistRepository.findById(id)
 				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)))
+				.filter(t -> t.getCreatedBy() == userId)
+				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.FORBIDDEN)))
 				.flatMap(t -> playlistTrackRepository.existsByPlaylistIdAndTrackId(id, trackId))
 				.filter(t -> !t)
 				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.CONFLICT)))
@@ -155,8 +165,11 @@ public class PlaylistService {
 	}
 	
 	@Transactional
-	public Mono<Void> deleteTrackFromPlaylist(Integer id, Long trackId){
-		return playlistTrackRepository.findByPlaylistIdAndTrackId(id, trackId)
+	public Mono<Void> deleteTrackFromPlaylist(Integer id, Long trackId, Integer userId){
+		return playlistRepository.findById(id)
+				.filter(t -> t.getCreatedBy() == userId)
+				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.FORBIDDEN)))
+				.flatMap(t -> playlistTrackRepository.findByPlaylistIdAndTrackId(id, trackId))
 				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)))
 				.flatMap(playlistTrackRepository::delete);
 	}

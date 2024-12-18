@@ -129,7 +129,7 @@ public class AlbumService {
 			return dto.getCover().transferTo(path)
 					.then(albumRepository.findById(playlistId))
 					.filter(t -> t.getCreatedBy() == userId)
-					.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE)))
+					.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.FORBIDDEN)))
 					.flatMap(function)
 					.flatMap(t -> saveAlbumCover(t.getImageName(), path))
 					.doFinally(t -> path.toFile().delete())
@@ -138,13 +138,15 @@ public class AlbumService {
 		
 		return albumRepository.findById(playlistId)
 				.filter(t -> t.getCreatedBy() == userId)
-				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE)))
+				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.FORBIDDEN)))
 				.flatMap(function)
 				.then();
 	}
 	
-	public Mono<Void> deleteAlbum(Integer id){
-		return albumRepository.findById(id)
+	public Mono<Void> deleteAlbum(Integer id, Integer userId){
+		return albumRepository
+				.findById(id)
+				.filter(t -> t.getCreatedBy() == userId)
 				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)))
 				.doOnNext(t -> {
 					kafkaAlbumProducer.sendDeleteAlbumMessage(new AlbumDeletionMessage(t.getId()));
@@ -153,8 +155,10 @@ public class AlbumService {
 				.flatMap(albumRepository::delete);
 	}
 	
-	public Mono<Void> deleteCoverById(Integer id) {
+	public Mono<Void> deleteCoverById(Integer id, Integer userId) {
 		return albumRepository.findById(id)
+				.filter(t -> t.getCreatedBy() == userId)
+				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.FORBIDDEN)))
 				.doOnNext(t -> {
 					kafkaImageProducer.sendMessageToDeleteImage(new ImageDeletionMessage(t.getImageName()));
 					t.setImageName(null);
