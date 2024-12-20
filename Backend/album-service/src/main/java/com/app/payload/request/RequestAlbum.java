@@ -19,7 +19,6 @@ public class RequestAlbum {
 	@NotBlank(message = "Name can't be blank")
 	private String name;
 	
-	
 	@PastOrPresent(message = "Album release date can't be in future")
 	@NotNull
 	private LocalDate releaseDate;

@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: favorite-service
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/FavoriteDB
+    password: postgres
+    username: postgres
+  kafka:
+    bootstrap-servers:
+      - localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+server:
+  port: 0
+eureka:
+  instance:
+    instance-id: ${spring.application.name}:${server.port}
+    prefer-ip-address: true 

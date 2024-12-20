@@ -3,4 +3,6 @@ plugins {
 }
 
 rootProject.name = "Backend"
-include("audio-service", "eureka-server", "api-gateway", "auth-service", "track-service", "album-service", "image-service", "user-service", "author-service", "playlist-service")
+include("audio-service", "eureka-server", "api-gateway", "auth-service", 
+"track-service", "album-service", "image-service", 
+"user-service", "author-service", "playlist-service", "favorite-service")

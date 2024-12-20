@@ -47,6 +47,9 @@ public class WebConfig {
 				
 				.route("image-service", 
 						t -> t.path("/api/images/**").filters(f -> f.filter(authenticationGatewayFilter)).uri("lb://image-service"))
+				
+				.route("favorite-service", 
+						t -> t.path("/api/favorites/**").filters(f -> f.filter(authenticationGatewayFilter)).uri("lb://favorite-service"))
 
 				.route("playlist-service", 
 						t -> t.path("/api/playlists/**").filters(f -> f.filter(authenticationGatewayFilter)).uri("lb://playlist-service"))

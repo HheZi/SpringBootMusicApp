@@ -24,7 +24,6 @@ import com.user.payload.response.ValidatedUser;
 @SpringBootTest
 @TestPropertySource(locations = "classpath:/application-test.properties")
 @AutoConfigureMockMvc
-@Disabled
 class UserControllerTest {
 
 	@Autowired
