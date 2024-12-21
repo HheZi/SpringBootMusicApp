@@ -21,4 +21,6 @@ public class ResponseTrack {
 	
 	private String duration;
 	
+	private Boolean inFavorites;
+	
 }

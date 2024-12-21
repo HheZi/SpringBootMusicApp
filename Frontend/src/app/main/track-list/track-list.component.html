@@ -31,10 +31,14 @@
             <div class="d-flex align-items-center me-3">
                 <span class="track-duration text-muted">{{ track.duration }}</span>
             </div>
+
+            <div class="d-flex align-items-center me-3">
+                <i class="pi icon" style="color: blue;" [ngClass]="{'pi-heart': !track.inFavorites, 'pi-heart-fill': track.inFavorites}" (click)="addToFavoritesOrDelete(track)"></i>
+            </div>
     
             <div class="track-actions d-flex align-items-center" >
                 <span *ngIf="canBeRenamed">
-                    <i class="pi icon me-3" [ngClass]="{'pi-pen-to-square': !track.isEditing, 'pi-times': track.isEditing}"
+                    <i class="pi me-3" [ngClass]="{'pi-pen-to-square': !track.isEditing, 'pi-times': track.isEditing}"
                     (click)="makeTrackEditableOrNot(track)"></i>
                 </span>
                 <span *ngIf="canBeDeleted">

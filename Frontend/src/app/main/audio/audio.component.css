@@ -61,3 +61,9 @@
 .audio-controlls {
   max-width: 60%;
 }
+
+.pi-heart-container {
+  margin-left: 20px; 
+  display: flex;
+  align-items: center;
+}

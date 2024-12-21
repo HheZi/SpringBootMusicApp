@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.app.payload.response.FavoriteTrackResponse;
 import com.app.service.FavoriteTrackService;
 
 import lombok.RequiredArgsConstructor;
@@ -29,7 +30,7 @@ public class FavoriteTracksController {
 	private final FavoriteTrackService service;
 	
 	@GetMapping
-	public Flux<Long> getTracksInFavorites(
+	public Flux<FavoriteTrackResponse> getTracksInFavorites(
 			@RequestParam("trackIds") List<Long> trackIds,
 			@RequestHeader("userId") Integer userId
 		) {

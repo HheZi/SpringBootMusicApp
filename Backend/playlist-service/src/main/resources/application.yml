@@ -23,6 +23,6 @@ eureka:
   instance:
     prefer-ip-address: true
     instance-id: ${spring.application.name}:${server.port}
-file.temp: /Programming/Java/StreamingService/Backend/playlist-service/temp
+file.temp: /Programming/Java/SpringBootMusicApp/Backend/playlist-service/temp
 file.max-size: 1_048_576 #1MB
 kafka.topic.name: "image-deletion-topic"

@@ -16,6 +16,7 @@ import org.springframework.web.server.ServerWebExchange;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gateway.payload.response.FavoriteTrackResponse;
 import com.gateway.payload.response.PageResponseTrack;
 import com.gateway.payload.response.PageResponseTrackFromAPI;
 import com.gateway.payload.response.ResponsePreviewAlbumFromAPI;
@@ -42,7 +43,9 @@ public class TracksAggregationFilter implements GatewayFilter {
 		int indexOf = path.indexOf('?');
 		String substring = indexOf == -1 ?  "" : path.substring(indexOf);
 		
-		Mono<DataBuffer> dataBuffer = getTracks(substring).map(t -> {
+		String userId = exchange.getRequest().getHeaders().getOrEmpty("userId").get(0);
+		
+		Mono<DataBuffer> dataBuffer = getTracks(substring, userId).map(t -> {
 				try {
 					return mapper.writeValueAsBytes(t);
 				} catch (JsonProcessingException e) {
@@ -57,23 +60,26 @@ public class TracksAggregationFilter implements GatewayFilter {
 		return exchange.getResponse().writeWith(dataBuffer);
 	}
 	
-	protected Mono<PageResponseTrack>  getTracks(String param) { 
+	protected Mono<PageResponseTrack>  getTracks(String param, String userId) { 
 		Mono<PageResponseTrackFromAPI>  tracks = fetchTracksFromService(param);
 		
 		Flux<ResponsePreviewAlbumFromAPI> albums = fetchAlbumsFromService(tracks);
 		Flux<ResponsePreviewAuthorFromAPI> authors = fetchAuthorsFromService(albums);
+		Flux<FavoriteTrackResponse> tracksInFavorites = fetchTracksInFavorites(tracks, userId);
 		
 		return Mono.zip(
 				tracks, 
 				authors.collectList(), 
-				albums.collectList())
-				.flatMap(t -> collectTracks(t.getT1(), t.getT2(), t.getT3()));
+				albums.collectList(),
+				tracksInFavorites.collectList())
+				.flatMap(t -> collectTracks(t.getT1(), t.getT2(), t.getT3(), t.getT4()));
 	}
 	
 	private Mono<PageResponseTrack> collectTracks(
 			PageResponseTrackFromAPI tracks, 
 			List<ResponsePreviewAuthorFromAPI> authors,  
-			List<ResponsePreviewAlbumFromAPI> albums
+			List<ResponsePreviewAlbumFromAPI> albums,
+			List<FavoriteTrackResponse> tracksInFavorites
 		){
 		if (tracks.getEmpty()) {
 			return Mono.just(new PageResponseTrack(List.of(), tracks));
@@ -91,7 +97,12 @@ public class TracksAggregationFilter implements GatewayFilter {
 						.filter(a -> a.getId() == album.getAuthorId())
 						.findFirst().orElseGet(ResponsePreviewAuthorFromAPI::new);
 				
-				return new ResponseTrack(t.getId(), t.getTitle(), album, author, t.getAudioUrl(), t.getDuration());
+				Boolean isInFavorites = tracksInFavorites
+				.stream()
+				.filter(r -> r.getTrackId() == t.getId())
+				.findFirst().map(r -> true).orElse(false);
+								
+				return new ResponseTrack(t.getId(), t.getTitle(), album, author, t.getAudioUrl(), t.getDuration(), isInFavorites);
 			})
 			.toList();
 		
@@ -136,5 +147,19 @@ public class TracksAggregationFilter implements GatewayFilter {
 							.accept(MediaType.APPLICATION_JSON)
 							.exchangeToFlux(e -> e.bodyToFlux(ResponsePreviewAlbumFromAPI.class))
 				);
+	}
+	
+	private Flux<FavoriteTrackResponse> fetchTracksInFavorites(Mono<PageResponseTrackFromAPI> tracks, String userId){
+		return tracks
+				.map(t -> t.getContent().stream().map(r -> r.getId()).toList())
+				.flatMapMany(t -> 
+						builder
+						.baseUrl("http://favorite-service/api/favorites/tracks/")
+						.build()
+						.get()
+						.uri(u -> u.queryParam("trackIds", t).build())
+						.header("userId", userId + "")
+						.accept(MediaType.APPLICATION_JSON)
+						.exchangeToFlux(e -> e.bodyToFlux(FavoriteTrackResponse.class)));
 	}
 }

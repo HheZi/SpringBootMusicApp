@@ -13,7 +13,7 @@ spring:
 server:
   port: 0
 image:
-  path: /Programming/Java/StreamingService/Backend/image-service/images
+  path: /Programming/Java/SpringBootMusicApp/Backend/image-service/images
   default: default_image.png
 eureka:
   instance:

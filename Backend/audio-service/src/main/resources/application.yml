@@ -20,7 +20,7 @@ eureka:
     prefer-ip-address: true
 server:
   port: 0
-audio.path: /Programming/Java/StreamingService/Backend/audio-service/audio
+audio.path: /Programming/Java/SpringBootMusicApp/Backend/audio-service/audio
 logging:
   level:
     org.springframework.kafka: DEBUG

@@ -3,6 +3,9 @@ import Plyr from 'plyr';
 import { AudioService } from '../../services/audio/audio.service';
 import { TracksToPlay } from '../../services/audio/tracks-to-play';
 import { Router } from '@angular/router';
+import { FavoriteService } from '../../services/favorite/favorite.service';
+import { MessageService } from 'primeng/api';
+import { Track } from '../track-list/track';
 
 @Component({
   selector: 'app-audio',
@@ -11,12 +14,12 @@ import { Router } from '@angular/router';
 })
 export class AudioComponent implements OnInit, OnDestroy {
 
-
   @ViewChild('audioPlayer', { static: true })
   private audioPlayerRef!: ElementRef;
   private plyr!: Plyr;
   public author: string = 'Author';
   public title: string = 'Title';
+  public currTrack?: Track;
   public coverUrl: string = 'http://localhost:8080/api/images/default';
   public isStopped: boolean = true;
   public isRepeated: boolean = false;
@@ -25,10 +28,15 @@ export class AudioComponent implements OnInit, OnDestroy {
   private tracksToPlay!: TracksToPlay;
   private excludedIndices: number[] = [];
   private indexOfExcludedIndices: number = 0;
-  constructor(private audioService: AudioService, private router: Router) { }
+  constructor(
+    private audioService: AudioService,
+    private router: Router,
+    private favoriteService: FavoriteService,
+    private messageService: MessageService
+  ) { }
 
   ngOnInit(): void {
-    this.plyr = new Plyr(this.audioPlayerRef.nativeElement, { controls: ['settings', 'progress', 'current-time','duration', 'mute', 'volume', ]  });
+    this.plyr = new Plyr(this.audioPlayerRef.nativeElement, { controls: ['settings', 'progress', 'current-time', 'duration', 'mute', 'volume',] });
     this.audioService.TracksToPlay$.subscribe({
       next: (value) => {
         let tracksToPlay = value as TracksToPlay;
@@ -48,6 +56,7 @@ export class AudioComponent implements OnInit, OnDestroy {
     this.makeAllTracksIsNotPlayingProperty();
     track.isNowPlaying = true;
     this.isStopped = false
+    this.currTrack = track;
 
     this.plyr.source = {
       type: 'audio',
@@ -178,14 +187,37 @@ export class AudioComponent implements OnInit, OnDestroy {
   }
 
   protected seeAlbumOfTrack() {
-    if(this.tracksToPlay){
-      this.router.navigate(["album/"+ this.tracksToPlay.tracks[this.tracksToPlay.indexOfCurrentTrack].albumId]);
+    if (this.tracksToPlay) {
+      this.router.navigate(["album/" + this.tracksToPlay.tracks[this.tracksToPlay.indexOfCurrentTrack].albumId]);
     }
   }
 
-  protected seeAuthorOfTrack(){
-    if(this.tracksToPlay){
-      this.router.navigate(["author/"+ this.tracksToPlay.tracks[this.tracksToPlay.indexOfCurrentTrack].authorId]);
+  protected seeAuthorOfTrack() {
+    if (this.tracksToPlay) {
+      this.router.navigate(["author/" + this.tracksToPlay.tracks[this.tracksToPlay.indexOfCurrentTrack].authorId]);
+    }
+  }
+
+  protected addToFavoritesOrDelete() {
+    if(!this.tracksToPlay) return;
+
+    var track = this.tracksToPlay.tracks[this.tracksToPlay.indexOfCurrentTrack];
+
+    if (this.currTrack?.inFavorites) {
+      this.favoriteService.deleteTrackFromFavorites(track.id).subscribe({
+        next: () => {
+          this.messageService.add({ closable: true, detail: `${track.title} has been removed from favorites`, severity: "success" })
+          track.inFavorites = false;
+        }
+      })
+    }
+    else {
+      this.favoriteService.addTrackToFavorites(track.id).subscribe({
+        next: () => {
+          this.messageService.add({ closable: true, detail: `${track.title} has been added to favorites`, severity: "success" })
+          track.inFavorites = true;
+        }
+      })
     }
   }
 

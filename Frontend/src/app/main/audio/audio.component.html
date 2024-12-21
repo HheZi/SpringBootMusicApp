@@ -1,25 +1,27 @@
 <footer class="mainAudio d-flex align-items-center shadow-sm">
         <div class="d-flex align-items-center col-auto position-absolute">
-                <img src="{{coverUrl}}" alt="Cover" class="track-cover me-3" />
-                <div>
-                        <p class="track-title mb-1" (click)="seeAlbumOfTrack()">{{ title }}</p>
-                        <p class="track-artist mb-0" (click)="seeAuthorOfTrack()">{{ author }}</p>
-                </div>
+          <img src="{{coverUrl}}" alt="Cover" class="track-cover me-3" />
+          <div>
+            <p class="track-title mb-1" (click)="seeAlbumOfTrack()">{{ title }}</p>
+            <p class="track-artist mb-0" (click)="seeAuthorOfTrack()">{{ author }}</p>
+          </div>
+          <div class="pi-heart-container">
+            <i class="pi icon" style="color: blue;" [ngClass]="{'pi-heart': !currTrack?.inFavorites, 'pi-heart-fill': currTrack?.inFavorites}" (click)="addToFavoritesOrDelete()"></i>
+          </div>
         </div>
         <div></div>
-        <div class="flex-grow-1 justify-content-center audio-controlls ">
-                <div class="text-center mb-0 ">
-                    <i class="bi bi-shuffle icon me-3" [ngClass]="{'selected': isRandom}" (click)="makeRandomPlayTracks()"></i>
-                    <i class="pi pi-step-backward-alt icon me-3" (click)="playPreviousTrack()"></i>
-                    <i class="pi icon me-3" [ngClass]="{'pi-play': isStopped, 'pi-pause': !isStopped}" (click)="playOrStopTrack()"></i>  
-                    <i class="pi pi-step-forward-alt icon me-3" (click)="playNextTrack(true)"></i>  
-                    <i class="bi bi-repeat icon me-3" [ngClass]="{'selected': isRepeated}" (click)="isRepeated = !isRepeated"></i>  
-                </div>
-                <div class="audio">
-                        <audio #audioPlayer controls type="audio/mpeg"></audio>
-                </div>
+        <div class="flex-grow-1 justify-content-center audio-controlls">
+          <div class="text-center mb-0 ">
+            <i class="bi bi-shuffle icon me-3" [ngClass]="{'selected': isRandom}" (click)="makeRandomPlayTracks()"></i>
+            <i class="pi pi-step-backward-alt icon me-3" (click)="playPreviousTrack()"></i>
+            <i class="pi icon me-3" [ngClass]="{'pi-play': isStopped, 'pi-pause': !isStopped}" (click)="playOrStopTrack()"></i>  
+            <i class="pi pi-step-forward-alt icon me-3" (click)="playNextTrack(true)"></i>  
+            <i class="bi bi-repeat icon me-3" [ngClass]="{'selected': isRepeated}" (click)="isRepeated = !isRepeated"></i>  
+          </div>
+          <div class="audio">
+            <audio #audioPlayer controls type="audio/mpeg"></audio>
+          </div>
         </div>
-        <div>
-
-        </div>
-</footer>
+        <div></div>
+      </footer>
+      

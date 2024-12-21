@@ -7,6 +7,7 @@ import { TrackService } from '../../services/track/track.service';
 import { PlaylistService } from '../../services/playlist/playlist.service';
 import { HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { FavoriteService } from '../../services/favorite/favorite.service';
 
 @Component({
   selector: 'app-track-list',
@@ -45,6 +46,7 @@ export class TrackListComponent {
     private confirmationService: ConfirmationService,
     private trackService: TrackService,
     private playlistService: PlaylistService,
+    private favoriteService: FavoriteService,
     private messageService: MessageService
   ) { }
 
@@ -79,7 +81,8 @@ export class TrackListComponent {
         albumId: track.album.id,
         isNowPlaying: false,
         duration: track.duration,
-        isEditing: false
+        isEditing: false,
+        inFavorites: track.inFavorites
       });
     });
     
@@ -130,6 +133,25 @@ export class TrackListComponent {
 
   public setTracksNotFound(value: boolean){
     this.tracksNotFound = value;
+  }
+
+  protected addToFavoritesOrDelete(track: Track){
+    if(track.inFavorites){
+      this.favoriteService.deleteTrackFromFavorites(track.id).subscribe({
+        next: () => {
+          this.messageService.add({closable: true, detail: `${track.title} has been removed from favorites`, severity: "success"})
+          track.inFavorites = false;
+        }
+      })
+    }
+    else{
+      this.favoriteService.addTrackToFavorites(track.id).subscribe({
+        next: () => {
+          this.messageService.add({closable: true, detail: `${track.title} has been added to favorites`, severity: "success"})
+          track.inFavorites = true;
+        }
+      })
+    }
   }
 
   protected confirmDeletionOfTrack(id: number) {

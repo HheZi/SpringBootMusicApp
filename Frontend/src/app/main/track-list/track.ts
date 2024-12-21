@@ -10,4 +10,5 @@ export interface Track {
    isNowPlaying: boolean 
    duration: string;
    isEditing: boolean;
+   inFavorites: boolean;
 }
