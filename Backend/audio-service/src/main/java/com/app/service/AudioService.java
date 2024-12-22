@@ -37,7 +37,11 @@ public class AudioService {
 	private String audioPath;
 	
 	public ResourceRegion getResource(String filename, String rangeHeader) throws IOException {
-		FileSystemResource resource = new FileSystemResource(Path.of(audioPath, filename));
+		File file = new File(audioPath, filename);
+		if (!file.exists()) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+		}
+		FileSystemResource resource = new FileSystemResource(file);
 
 		List<HttpRange> ranges = HttpRange.parseRanges(rangeHeader);
 		long contentLength = resource.contentLength();

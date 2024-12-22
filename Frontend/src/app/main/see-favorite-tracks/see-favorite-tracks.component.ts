@@ -22,11 +22,16 @@ export class SeeFavoriteTracksComponent implements AfterViewInit{
   ){}
 
   ngAfterViewInit(): void {
-    this.title.setTitle("Favorites Tracks");
+    this.title.setTitle("Favorite Tracks");
     this.favoriteService.getFavoritesTracks().subscribe({
       next: (resp: any) => {
         this.favoriteTracksId = resp;
-        this.trackList.setTracks((page:number) => this.trackService.getTrackByIds(this.favoriteTracksId, page));
+        if(this.favoriteTracksId.length !== 0){
+          this.trackList.setTracks((page:number) => this.trackService.getTrackByIds(this.favoriteTracksId, page));
+        }
+        else{
+          this.trackList.setTracksNotFound(true);
+        }
       }
     })
   }

@@ -55,20 +55,25 @@ export class SeePlaylistComponent implements OnInit {
         if (this.playlist.trackIds.length != 0) {
           this.trackList.setTracks((page: number) => this.trackService.getTrackByIds(this.playlist.trackIds, page))
           this.getDurationOfPlaylist();
-          this.trackList.onDelete("Delete track from playlist?", (trackId: number) => {
-            this.playlistService.deleteTrackFromPlaylist(this.playlist.id, trackId).subscribe({
-              next: () => {
-                this.messageService.add({closable: true, severity: "success", summary: "Track deleted from playlist"});
-                this.playlist.numberOfTracks--;
-              },
-              error: () => this.messageService.add({closable: true, severity: "error", summary: "Something went wrong"})
-            })
-          })
+          
         }
         else{
           this.trackList.setTracksNotFound(true)
         }
-        this.playlistService.getIsOwnerOfPlaylist(this.playlist.id).subscribe((resp: any) => this.canModify = resp)
+        this.playlistService.getIsOwnerOfPlaylist(this.playlist.id).subscribe((resp: any) => {
+          this.canModify = resp;
+          if(this.canModify){
+            this.trackList.onDelete("Delete track from playlist?", (trackId: number) => {
+              this.playlistService.deleteTrackFromPlaylist(this.playlist.id, trackId).subscribe({
+                next: () => {
+                  this.messageService.add({closable: true, severity: "success", summary: "Track deleted from playlist"});
+                  this.playlist.numberOfTracks--;
+                },
+                error: () => this.messageService.add({closable: true, severity: "error", summary: "Something went wrong"})
+              })
+            })
+          }
+        })
       },
       error: () => this.trackList.setTracksNotFound(true)
     })

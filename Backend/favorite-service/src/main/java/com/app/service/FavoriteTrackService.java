@@ -52,4 +52,9 @@ public class FavoriteTrackService {
 				.flatMap(favoriteTrackRepository::delete);
 	}
 	
+	public Mono<Void> deleteTrackFromFavorites(Long trackId){
+		return favoriteTrackRepository
+				.deleteByTrackId(trackId);
+	}
+	
 }
