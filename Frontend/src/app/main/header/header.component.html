@@ -1,7 +1,12 @@
 <header class="header shadow-sm">
   <nav class="navbar navbar-expand-lg navbar-light bg-white py-2 px-3">
     <div class="navbar-brand d-flex align-items-center">
-      <i class="pi pi-home icon me-3" (click)="navigateTo('/home')"></i>
+      <i class="pi pi-home icon me-3" (click)="navigateTo('/home')" title="Go to home page"></i>
+      <i 
+        class="pi pi-heart icon me-3 text-danger" 
+        (click)="navigateTo('/favorite/tracks')" 
+        title="Favorite Tracks">
+      </i>
       <p-menu #menu [model]="items" [popup]="true"></p-menu>
       <p-button 
         (onClick)="menu.toggle($event)" 
@@ -29,7 +34,8 @@
     </form>
 
     <div class="d-flex align-items-center">
-      <i class="pi pi-sign-out icon text-danger" (click)="logout()"></i>
+      
+      <i class="pi pi-sign-out icon text-danger" (click)="logout()" title="Logout"></i>
     </div>
   </nav>
 </header>

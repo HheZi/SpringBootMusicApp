@@ -14,11 +14,15 @@ export class FavoriteService {
     private httpClient: HttpClient
   ) { }
 
+  public getFavoritesTracks(): Observable<Object>{
+    return this.httpClient.get(this.FAVORITES_TRACKS_URL);
+  }
+
   public addTrackToFavorites(trackId: number): Observable<Object>{
     return this.httpClient.post(this.FAVORITES_TRACKS_URL + trackId, null);
   }
 
-  public deleteTrackFromFavorites(trackId: number){
+  public deleteTrackFromFavorites(trackId: number): Observable<Object>{
     return this.httpClient.delete(this.FAVORITES_TRACKS_URL + trackId);
   }
 

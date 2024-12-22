@@ -7,22 +7,18 @@ import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.core.io.buffer.DataBuffer;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.server.ServerWebExchange;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gateway.payload.response.FavoriteTrackResponse;
 import com.gateway.payload.response.PageResponseTrack;
 import com.gateway.payload.response.PageResponseTrackFromAPI;
 import com.gateway.payload.response.ResponsePreviewAlbumFromAPI;
 import com.gateway.payload.response.ResponsePreviewAuthorFromAPI;
 import com.gateway.payload.response.ResponseTrack;
-import com.gateway.payload.response.ResponseTrackFromAPI;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -65,7 +61,7 @@ public class TracksAggregationFilter implements GatewayFilter {
 		
 		Flux<ResponsePreviewAlbumFromAPI> albums = fetchAlbumsFromService(tracks);
 		Flux<ResponsePreviewAuthorFromAPI> authors = fetchAuthorsFromService(albums);
-		Flux<FavoriteTrackResponse> tracksInFavorites = fetchTracksInFavorites(tracks, userId);
+		Flux<Long> tracksInFavorites = fetchTracksInFavorites(tracks, userId);
 		
 		return Mono.zip(
 				tracks, 
@@ -79,7 +75,7 @@ public class TracksAggregationFilter implements GatewayFilter {
 			PageResponseTrackFromAPI tracks, 
 			List<ResponsePreviewAuthorFromAPI> authors,  
 			List<ResponsePreviewAlbumFromAPI> albums,
-			List<FavoriteTrackResponse> tracksInFavorites
+			List<Long> tracksInFavorites
 		){
 		if (tracks.getEmpty()) {
 			return Mono.just(new PageResponseTrack(List.of(), tracks));
@@ -99,7 +95,7 @@ public class TracksAggregationFilter implements GatewayFilter {
 				
 				Boolean isInFavorites = tracksInFavorites
 				.stream()
-				.filter(r -> r.getTrackId() == t.getId())
+				.filter(r -> r == t.getId())
 				.findFirst().map(r -> true).orElse(false);
 								
 				return new ResponseTrack(t.getId(), t.getTitle(), album, author, t.getAudioUrl(), t.getDuration(), isInFavorites);
@@ -149,7 +145,7 @@ public class TracksAggregationFilter implements GatewayFilter {
 				);
 	}
 	
-	private Flux<FavoriteTrackResponse> fetchTracksInFavorites(Mono<PageResponseTrackFromAPI> tracks, String userId){
+	private Flux<Long> fetchTracksInFavorites(Mono<PageResponseTrackFromAPI> tracks, String userId){
 		return tracks
 				.map(t -> t.getContent().stream().map(r -> r.getId()).toList())
 				.flatMapMany(t -> 
@@ -157,9 +153,9 @@ public class TracksAggregationFilter implements GatewayFilter {
 						.baseUrl("http://favorite-service/api/favorites/tracks/")
 						.build()
 						.get()
-						.uri(u -> u.queryParam("trackIds", t).build())
+						.uri(u -> u.queryParam("trackId", t).build())
 						.header("userId", userId + "")
 						.accept(MediaType.APPLICATION_JSON)
-						.exchangeToFlux(e -> e.bodyToFlux(FavoriteTrackResponse.class)));
+						.exchangeToFlux(e -> e.bodyToFlux(Long.class)));
 	}
 }

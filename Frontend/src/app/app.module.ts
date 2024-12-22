@@ -42,6 +42,7 @@ import { TrackListComponent } from './main/track-list/track-list.component';
 import { SeePlaylistComponent } from './main/see-playlist/see-playlist.component';
 import { PaginatorModule } from 'primeng/paginator';
 import { PanelModule } from 'primeng/panel';
+import { SeeFavoriteTracksComponent } from './main/see-favorite-tracks/see-favorite-tracks.component';
 
 
 @NgModule({
@@ -61,7 +62,8 @@ import { PanelModule } from 'primeng/panel';
     CreatePlaylistComponent,
     PlaylistListComponent,
     TrackListComponent,
-    SeePlaylistComponent
+    SeePlaylistComponent,
+    SeeFavoriteTracksComponent
   ],
   imports: [
     BrowserModule,

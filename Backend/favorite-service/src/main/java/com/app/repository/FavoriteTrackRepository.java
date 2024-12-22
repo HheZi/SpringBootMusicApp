@@ -17,4 +17,6 @@ public interface FavoriteTrackRepository extends ReactiveCrudRepository<Favorite
 	Mono<FavoriteTrack> findByTrackIdAndUserId(Long trackId, Integer userId);
 	
 	Flux<FavoriteTrack> findByTrackIdInAndUserId(List<Long> trackId, Integer userId);
+	
+	Flux<FavoriteTrack> findByUserId(Integer userId);
 }

@@ -8,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.app.model.FavoriteTrack;
-import com.app.payload.response.FavoriteTrackResponse;
 import com.app.repository.FavoriteTrackRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -21,10 +20,16 @@ public class FavoriteTrackService {
 	
 	private final FavoriteTrackRepository favoriteTrackRepository; 
 	
-	public Flux<FavoriteTrackResponse> getTrackInFavorites(List<Long> trackIds, Integer userId){
+	public Flux<Long> getUserFavoritesTracks(Integer userId){
+		return favoriteTrackRepository
+				.findByUserId(userId)
+				.map(t -> t.getTrackId());
+	}
+	
+	public Flux<Long> getTrackInFavorites(List<Long> trackIds, Integer userId){
 		return favoriteTrackRepository
 				.findByTrackIdInAndUserId(trackIds, userId)
-				.map(t -> new FavoriteTrackResponse(t.getTrackId(), Boolean.TRUE));
+				.map(t -> t.getTrackId());
 	}
 	
 	@Transactional

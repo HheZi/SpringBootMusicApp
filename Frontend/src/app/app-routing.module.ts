@@ -12,6 +12,7 @@ import { SeeAlbumComponent } from './main/see-album/see-album.component';
 import { SeeAuthorComponent } from './main/see-author/see-author.component';
 import { CreatePlaylistComponent } from './main/create-playlist/create-playlist.component';
 import { SeePlaylistComponent } from './main/see-playlist/see-playlist.component';
+import { SeeFavoriteTracksComponent } from './main/see-favorite-tracks/see-favorite-tracks.component';
 
 const routes: Routes = [
 {
@@ -33,7 +34,8 @@ const routes: Routes = [
   {path: 'album/:id', component: SeeAlbumComponent},
   {path: 'author/:id', component: SeeAuthorComponent},
   {path: 'playlist/create', component: CreatePlaylistComponent},
-  {path: 'playlist/:id', component: SeePlaylistComponent}
+  {path: 'playlist/:id', component: SeePlaylistComponent},
+  {path: 'favorite/tracks', component: SeeFavoriteTracksComponent}
 ]
 }];
 

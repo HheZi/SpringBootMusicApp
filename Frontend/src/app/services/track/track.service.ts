@@ -34,7 +34,7 @@ export class TrackService {
     return this.httpClient.get(this.TRACK_URL_TO_GET_FROM_AGGREGATION, {params: {albumId: id, page: page}});
   }
 
-  public getTrackByIds(ids: number[], page: number){
+  public getTrackByIds(ids: number[], page: number){    
     return this.httpClient.get(this.TRACK_URL_TO_GET_FROM_AGGREGATION, {params: {"id": ids, page: page}});
   }
 
