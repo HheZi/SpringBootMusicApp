@@ -1,27 +1,13 @@
 spring:
+  cloud:
+    config:
+      fail-fast: true
+      discovery:
+        enabled: false
+        service-id: config-server
+  config:
+    import: configserver:http://localhost:8888
   application:
     name: album-service
-  r2dbc:
-    url: r2dbc:postgresql://localhost:5432/AlbumDB
-    username: postgres
-    password: postgres
-  kafka:
-    bootstrap-servers:
-      - localhost:9092
-    producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-server:
-  port: 0
-logging:
-  level:
-    '[org.springframework.web]': debug
-eureka:
-  instance:
-    instance-id: ${spring.application.name}:${server.port}
-    prefer-ip-address: true
-file.temp: /Programming/Java/SpringBootMusicApp/Backend/album-service/temp
-file.max-size: 1_048_576 #1MB
-kafka.topic:
-   track-topic.name: "album-deletion-topic"
-   image-topic.name: "image-deletion-topic"
+  profiles:
+    active: dev

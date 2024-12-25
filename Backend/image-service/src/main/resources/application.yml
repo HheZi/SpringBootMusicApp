@@ -1,24 +1,13 @@
 spring:
+  cloud:
+    config:
+      fail-fast: true
+      discovery:
+        enabled: false
+        service-id: config-server
+  config:
+    import: configserver:http://localhost:8888
   application:
     name: image-service
-  kafka:
-    bootstrap-servers:
-      - localhost:9092  
-    consumer:
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-      properties:
-        spring.json.trusted.packages: "com.app.kafka.message"
-        spring.json.default.value.type: com.app.kafka.message.ImageDeletionMessage
-server:
-  port: 0
-image:
-  path: /Programming/Java/SpringBootMusicApp/Backend/image-service/images
-  default: default_image.png
-eureka:
-  instance:
-    prefer-ip-address: true
-    instance-id: ${spring.application.name}:${server.port}
-logging:
-  level:
-    '[org.springframework.web]': debug
+  profiles:
+    active: dev

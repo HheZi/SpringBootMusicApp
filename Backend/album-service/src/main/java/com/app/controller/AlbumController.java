@@ -20,6 +20,7 @@ import java.net.URLDecoder;
 import java.nio.charset.Charset;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.codec.multipart.FilePart;
@@ -41,6 +42,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 public class AlbumController {
 
 	private final AlbumService albumService;
+	
 	
 	private final ImageValidatorService imageValidatorService;
 

@@ -1,16 +1,13 @@
 spring:
+  cloud:
+    config:
+      fail-fast: true
+      discovery:
+        enabled: false
+        service-id: config-server
+  config:
+    import: configserver:http://localhost:8888
   application:
     name: user-service
-  r2dbc:
-    url: r2dbc:postgresql://localhost:5432/UserDB
-    password: postgres
-    username: postgres
-server:
-  port: 0
-eureka:
-  instance:
-    prefer-ip-address: true
-    instance-id: ${spring.application.name}:${server.port}
-logging:
-  level:
-    '[org.springframework.web]': debug
+  profiles:
+    active: dev
