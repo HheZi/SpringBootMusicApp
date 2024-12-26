@@ -1,5 +1,6 @@
 package com.app.service;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.UUID;
@@ -49,8 +50,7 @@ public class AlbumService {
 	
 	private final KafkaImageProducer kafkaImageProducer;
 	
-	@Value("${file.temp}")
-	private String tempFolder;
+	private final String TEMP_FOLDER_NAME = "temp";
 
 	public Mono<ResponseAlbum> getAlbumById(Integer id) {
 		return albumRepository
@@ -76,13 +76,15 @@ public class AlbumService {
 
 	public Mono<ResponseEntity<Integer>> createAlbum(RequestAlbum dto, Integer userId) {
 		if (dto.getCover() != null) {
-			Path path = Path.of(tempFolder, dto.getCover().filename());
+			File file = new File(TEMP_FOLDER_NAME, dto.getCover().filename()).getAbsoluteFile();
 			
-			return dto.getCover().transferTo(path)
+			
+			
+			return dto.getCover().transferTo(file)
 					.then(Mono.fromCallable(() -> albumMapper.fromRequestAlbumToAlbum(dto, userId, true)))
 					.flatMap(albumRepository::save)
-					.flatMap(t -> saveAlbumCover(t.getImageName(), path))
-					.doFinally(t -> path.toFile().delete())
+					.flatMap(t -> saveAlbumCover(t.getImageName(), file))
+					.doFinally(t -> file.delete())
 					.map(t -> ResponseEntity.status(HttpStatus.CREATED).build());
 		}
 		
@@ -91,7 +93,7 @@ public class AlbumService {
 				.map(t -> ResponseEntity.status(HttpStatus.CREATED).body(t.getId()));
 	}
 
-	private Mono<Void> saveAlbumCover(UUID name, Path pathToFile) {
+	private Mono<Void> saveAlbumCover(UUID name, File pathToFile) {
 		if (name == null) return Mono.empty();
 
 		MultipartBodyBuilder multipartbuilder = new MultipartBodyBuilder();
@@ -124,15 +126,15 @@ public class AlbumService {
 		};
 		
 		if(dto.getCover() != null) {
-			Path path = Path.of(tempFolder, dto.getCover().filename());
+			File file = new File(TEMP_FOLDER_NAME, dto.getCover().filename()).getAbsoluteFile();
 			
-			return dto.getCover().transferTo(path)
+			return dto.getCover().transferTo(file)
 					.then(albumRepository.findById(playlistId))
 					.filter(t -> t.getCreatedBy() == userId)
 					.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.FORBIDDEN)))
 					.flatMap(function)
-					.flatMap(t -> saveAlbumCover(t.getImageName(), path))
-					.doFinally(t -> path.toFile().delete())
+					.flatMap(t -> saveAlbumCover(t.getImageName(), file))
+					.doFinally(t -> file.delete())
 					.then();
 		}
 		

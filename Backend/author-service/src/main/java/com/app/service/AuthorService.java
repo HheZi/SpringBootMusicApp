@@ -1,5 +1,6 @@
 package com.app.service;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.UUID;
@@ -42,8 +43,7 @@ public class AuthorService {
 	
 	private final KafkaImageProducer kafkaImageProducer;
 	
-	@Value("${file.temp}")
-	private String tempFolder;
+	private final String TEMP_FOLDER_NAME = "temp";
 	
 	public Mono<AuthorResponse> getAuthorById(Integer id) {
 		return authorRepository
@@ -67,13 +67,13 @@ public class AuthorService {
 	@Transactional
 	public Mono<ResponseEntity<?>> saveAuthor(AuthorCreateOrUpdateRequest dto, Integer userId) {
 		if (dto.getCover() != null) {
-			Path path = Path.of(tempFolder, dto.getCover().filename());
+			File file = new File(TEMP_FOLDER_NAME, dto.getCover().filename()).getAbsoluteFile();
 			
-			return dto.getCover().transferTo(path)
+			return dto.getCover().transferTo(file)
 					.then(Mono.fromCallable(() -> authorMapper.fromAuthorRequestToAuthor(dto, userId, true)))
 					.flatMap(authorRepository::save)
-					.flatMap(t -> saveAuthorImage(t.getImageName(), path))
-					.doFinally(t -> path.toFile().delete())
+					.flatMap(t -> saveAuthorImage(t.getImageName(), file))
+					.doFinally(t -> file.delete())
 					.map(t -> ResponseEntity.status(HttpStatus.CREATED).build());
 		}
 		
@@ -94,15 +94,15 @@ public class AuthorService {
 		};
 		
 		if(dto.getCover() != null) {
-			Path path = Path.of(tempFolder, dto.getCover().filename());
+			File file = new File(TEMP_FOLDER_NAME, dto.getCover().filename()).getAbsoluteFile();
 			
-			return dto.getCover().transferTo(path)
+			return dto.getCover().transferTo(file)
 					.then(authorRepository.findById(id))
 					.filter(t -> t.getCreatedBy() == userId)
 					.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.FORBIDDEN)))
 					.flatMap(function)
-					.flatMap(t -> saveAuthorImage(t.getImageName(), path))
-					.doFinally(t -> path.toFile().delete())
+					.flatMap(t -> saveAuthorImage(t.getImageName(), file))
+					.doFinally(t -> file.delete())
 					.then();
 		}
 		
@@ -120,7 +120,7 @@ public class AuthorService {
 		.map(t -> t.getCreatedBy() == userId);
 	}
 	
-	private Mono<Void> saveAuthorImage(UUID name, Path pathToFile) {
+	private Mono<Void> saveAuthorImage(UUID name, File pathToFile) {
 		if (name == null) return Mono.empty();
 
 		MultipartBodyBuilder multipartbuilder = new MultipartBodyBuilder();

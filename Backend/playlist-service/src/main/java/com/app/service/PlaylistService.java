@@ -1,5 +1,6 @@
 package com.app.service;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.util.UUID;
 import java.util.function.Function;
@@ -45,8 +46,7 @@ public class PlaylistService {
 	
 	private final KafkaImageProducer kafkaImageProducer;
 
-	@Value("${file.temp}")
-	private String tempFolder;
+	private final String TEMP_FOLDER_NAME = "temp";
 	
 	public Mono<ResponsePlaylist> getPlaylistById(Integer id){
 		return Mono.zip(playlistRepository.findById(id), getTrackIdsByPlaylist(id).collectList())
@@ -80,13 +80,13 @@ public class PlaylistService {
 	@Transactional
 	public Mono<ResponseEntity<?>> createPlaylist(CreateOrUpdatePlaylist dto, Integer userId){
 		if (dto.getCover() != null) {
-			Path path = Path.of(tempFolder, dto.getCover().filename());
+			File file = new File(TEMP_FOLDER_NAME, dto.getCover().filename()).getAbsoluteFile();
 			
-			return dto.getCover().transferTo(path)
+			return dto.getCover().transferTo(file)
 					.then(Mono.fromCallable(() -> playlistMapper.fromCreatePlaylistToPlaylist(dto, userId, true)))
 					.flatMap(playlistRepository::save)
-					.flatMap(t -> saveAuthorImage(t.getImageName(), path))
-					.doFinally(t -> path.toFile().delete())
+					.flatMap(t -> saveAuthorImage(t.getImageName(), file))
+					.doFinally(t -> file.delete())
 					.map(t -> ResponseEntity.status(HttpStatus.CREATED).build());
 		}
 		
@@ -131,15 +131,15 @@ public class PlaylistService {
 		};
 		
 		if (dto.getCover() != null) {
-			Path path = Path.of(tempFolder, dto.getCover().filename());
+			File file = new File(TEMP_FOLDER_NAME, dto.getCover().filename()).getAbsoluteFile();
 			
-			return dto.getCover().transferTo(path)
+			return dto.getCover().transferTo(file)
 					.then(playlistRepository.findById(id))
 					.filter(t -> t.getCreatedBy() == userId)
 					.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.FORBIDDEN)))
 					.flatMap(func)
-					.flatMap(t -> saveAuthorImage(t.getImageName(), path))
-					.doFinally(t -> path.toFile().delete())
+					.flatMap(t -> saveAuthorImage(t.getImageName(), file))
+					.doFinally(t -> file.delete())
 					.then();
 					
 		}
@@ -180,7 +180,7 @@ public class PlaylistService {
 		.subscribe();
 	}
  	
-	private Mono<Void> saveAuthorImage(UUID name, Path pathToFile) {
+	private Mono<Void> saveAuthorImage(UUID name, File pathToFile) {
 		if (name == null) Mono.empty();			
 
 		MultipartBodyBuilder multipartbuilder = new MultipartBodyBuilder();

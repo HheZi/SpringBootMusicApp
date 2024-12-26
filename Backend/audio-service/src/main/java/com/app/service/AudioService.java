@@ -3,29 +3,19 @@ package com.app.service;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.buffer.DataBuffer;
-import org.springframework.core.io.buffer.DataBufferUtils;
-import org.springframework.core.io.buffer.DefaultDataBuffer;
-import org.springframework.core.io.buffer.DefaultDataBufferFactory;
 import org.springframework.core.io.support.ResourceRegion;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpRange;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.app.payload.SaveAudioDTO;
 
 import lombok.SneakyThrows;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
 @Service
 public class AudioService {
@@ -33,11 +23,11 @@ public class AudioService {
 	@Value("${chunk.max-size}")
 	public Integer CHUNK_OF_AUDIO;
 
-	@Value("${audio.path}")
-	private String audioPath;
+	@Value("${audio.dir}")
+	private String audioDirName;
 	
 	public ResourceRegion getResource(String filename, String rangeHeader) throws IOException {
-		File file = new File(audioPath, filename);
+		File file = new File(audioDirName, filename).getAbsoluteFile();
 		if (!file.exists()) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
 		}
@@ -83,14 +73,21 @@ public class AudioService {
 	
 	@SneakyThrows
 	public void saveAudio(SaveAudioDTO dto) {
-		Files.write(Path.of(audioPath, dto.getName()), dto.getFile().getBytes());
+		if (dto.getFile() == null || dto.getName() == null) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+		}
+		
+		Files.write(new File(audioDirName, dto.getName()).getAbsoluteFile().toPath(), dto.getFile().getBytes());
 	}
 
 	public void deleteAudio(String name) {
-		File file = new File(audioPath, name);
+		File file = new File(audioDirName, name).getAbsoluteFile();
 		
 		if (file.exists()) {
 			file.delete();
+		}
+		else {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
 		}
 	}
 

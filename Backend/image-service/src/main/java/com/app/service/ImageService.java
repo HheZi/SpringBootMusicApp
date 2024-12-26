@@ -27,14 +27,14 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class ImageService {
 
-	@Value("${image.path}")
-	private String imagePath;
+	@Value("${image.dir}")
+	private String imageDirName;
 
 	@Value("${image.default}")
 	private String defaultImageName;
 	
 	public Mono<ResponseEntity<FileSystemResource>> getImage(String name){
-		return Mono.just(new File(imagePath, name))
+		return Mono.just(new File(imageDirName, name).getAbsoluteFile())
 				.filter(t -> t.exists())
 				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)))
 				.map(t -> ResponseEntity.ok()
@@ -46,17 +46,17 @@ public class ImageService {
 		return Mono.just(ResponseEntity.ok()
 				.contentType(MediaType.IMAGE_PNG)
 				.cacheControl(CacheControl.maxAge(1, TimeUnit.DAYS))
-				.body(new FileSystemResource(Path.of(imagePath, defaultImageName))));
+				.body(new FileSystemResource(new File(imageDirName, defaultImageName).getAbsoluteFile())));
 	}
 	
 	public Mono<ResponseEntity<?>> saveImage(RequestImage image) {
 		return image.getFile()
-				.transferTo(Path.of(imagePath, image.getName()))
+				.transferTo(new File(imageDirName, image.getName()).getAbsoluteFile())
 				.map(t -> ResponseEntity.status(HttpStatus.CREATED).build());
 	}
 	
 	public Mono<Void> deleteImage(String name) {
-		return Mono.just(new File(imagePath, name))
+		return Mono.just(new File(imageDirName, name).getAbsoluteFile())
 				.filter(t -> t.exists() || name.equals(defaultImageName))
 				.doOnNext(t -> t.delete())
 				.then();

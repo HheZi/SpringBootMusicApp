@@ -1,5 +1,6 @@
 package com.app.service;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.UUID;
@@ -51,8 +52,7 @@ public class TrackService {
 	
 	private final KafkaTrackProducer kafkaTrackProducer;
 	
-	@Value("${file.temp}")
-	private String tempFolder;
+	private final String TEMP_FOLDER_NAME = "temp";
 	
 	@Transactional
 	public Mono<Page<ResponseTrack>> getTracks(
@@ -114,17 +114,17 @@ public class TrackService {
 	
 	@Transactional
 	public Mono<ResponseEntity<?>> createTrack(CreateTrackDto dto, Integer userId) {
-		Path path = Path.of(tempFolder, dto.getAudio().filename());
+		File file = new File(TEMP_FOLDER_NAME, dto.getAudio().filename()).getAbsoluteFile();
 		
-		return dto.getAudio().transferTo(path)
-				.then(Mono.fromCallable(() -> new Mp3File(path.toString())))
+		return dto.getAudio().transferTo(file)
+				.then(Mono.fromCallable(() -> new Mp3File(file)))
 				.flatMap(t -> repository.save(mapper.fromCreateTrackDtoToTrack(dto, userId, t)))
-				.flatMap(t -> saveAudio(t.getAudioName().toString(), path))
-				.doFinally(t -> path.toFile().delete())
+				.flatMap(t -> saveAudio(t.getAudioName().toString(), file))
+				.doFinally(t -> file.delete())
 				.map(t -> ResponseEntity.status(HttpStatus.CREATED).build());
 	}
 
-	private Mono<Void> saveAudio(String name, Path pathToTempAudio) {
+	private Mono<Void> saveAudio(String name, File pathToTempAudio) {
 		if(name  == null || pathToTempAudio == null) return Mono.empty();
 		
 		MultipartBodyBuilder builder = new MultipartBodyBuilder();
