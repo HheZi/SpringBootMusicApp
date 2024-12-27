@@ -1,6 +1,6 @@
 networks:
-  eureka-network:
-    name: eureka-network
+  backend-network:
+    name: backend-network
   album-network:
     name: album-network
   user-network:
@@ -15,6 +15,8 @@ networks:
    name: track-network
   playlist-network:
    name: playlist-network
+  favorite-network:
+   name: favorite-network
 volumes:
   album-db-volume:
   user-db-volume:
@@ -22,6 +24,7 @@ volumes:
   author-db-volume:
   track-db-volume:
   playlist-db-volume:
+  favorite-db-volume:
 
 services:
   eureka-server: 
@@ -30,8 +33,18 @@ services:
     ports:
       - 8761:8761
     networks:
-      - eureka-network
-  
+      - backend-network
+
+  config-server:
+    build: ./Backend/config-server/
+    container_name: config-server
+    ports:
+      - 8888:8888
+    environment:
+      - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
+    networks: 
+      - backend-network 
+ 
   api-gateway:
     build: ./Backend/api-gateway/
     container_name: api-gateway
@@ -40,10 +53,10 @@ services:
     depends_on:
       - eureka-server
     environment:
-      - eureka.instance.preferIpAddress=true
       - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
+      - spring.config.import=configserver:http://config-server:8888
     networks:
-      - eureka-network
+      - backend-network
 
   album-db:
     image: postgres
@@ -68,17 +81,18 @@ services:
     container_name: album-service
     environment:
       - server.ports=8085
-      - eureka.instance.preferIpAddress=true
       - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
-      - file.temp=/home/app/temp/
       - spring.r2dbc.url=r2dbc:postgresql://album-db:5432/AlbumDB
       - spring.r2dbc.username=postgres
       - spring.r2dbc.password=postgres
+      - spring.config.import=configserver:http://config-server:8888
       - logging.level.org.springframework.r2dbc=TRACE
       - logging.level.io.r2dbc.spi=TRACE
+      - spring.kafka.bootstrap-servers=kafka:9092
     networks:
-      - eureka-network
+      - backend-network
       - album-network
+      - kafka-network
     ports: 
       - 8085:8085
     depends_on:
@@ -91,13 +105,14 @@ services:
     build: ./Backend/audio-service/
     container_name: audio-service
     environment:
-      - eureka.instance.preferIpAddress=true
       - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
-      - audio.path=/home/app/audio/
+      - spring.config.import=configserver:http://config-server:8888
+      - spring.kafka.bootstrap-servers=kafka:9092
     volumes:
       - ~/app/audio/:/audio
     networks:
-      - eureka-network
+      - backend-network
+      - kafka-network
     depends_on:
       - eureka-server
   
@@ -105,14 +120,14 @@ services:
     build: ./Backend/image-service
     container_name: image-service
     environment:
-      - eureka.instance.preferIpAddress=true
+      - spring.config.import=configserver:http://config-server:8888
       - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
-      - image.default=/home/app/images/default_image.png
-      - image.path=/home/app/images/
+      - spring.kafka.bootstrap-servers=kafka:9092
     volumes:
       - ~/app/images/:/images
     networks:
-      - eureka-network
+      - backend-network
+      - kafka-network
     depends_on:
       - eureka-server  
 
@@ -139,7 +154,7 @@ services:
     container_name: user-service
     environment:
       - server.port=8084
-      - eureka.instance.preferIpAddress=true
+      - spring.config.import=configserver:http://config-server:8888
       - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
       - spring.r2dbc.url=r2dbc:postgresql://user-db:5432/UserDB
       - spring.r2dbc.username=postgres
@@ -154,7 +169,7 @@ services:
     ports:
       - 8084:8084
     networks:
-      - eureka-network
+      - backend-network
       - user-network
       
   auth-db:
@@ -180,7 +195,7 @@ services:
     container_name: auth-service
     environment:
       - server.port=8083
-      - eureka.instance.preferIpAddress=true
+      - spring.config.import=configserver:http://config-server:8888
       - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
       - spring.r2dbc.url=r2dbc:postgresql://auth-db:5432/AuthDB
       - spring.r2dbc.username=postgres
@@ -195,7 +210,7 @@ services:
     ports:
       - 8083:8083
     networks:
-      - eureka-network
+      - backend-network
       - auth-network
 
   author-db:
@@ -221,17 +236,18 @@ services:
     container_name: author-service
     environment:
       - server.port=8082
-      - eureka.instance.preferIpAddress=true
+      - spring.config.import=configserver:http://config-server:8888
       - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
-      - file.temp=/home/app/temp/
       - spring.r2dbc.url=r2dbc:postgresql://author-db:5432/AuthorDB
       - spring.r2dbc.username=postgres
       - spring.r2dbc.password=postgres
+      - spring.kafka.bootstrap-servers=kafka:9092
       - logging.level.org.springframework.r2dbc=TRACE
       - logging.level.io.r2dbc.spi=TRACE
     networks:
       - author-network
-      - eureka-network
+      - backend-network
+      - kafka-network
     ports: 
       - 8082:8082
     depends_on:
@@ -282,9 +298,8 @@ services:
     ports:
       - 8081:8081
     environment:
-      - eureka.instance.preferIpAddress=true
+      - spring.config.import=configserver:http://config-server:8888
       - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
-      - file.temp=/home/app/temp/
       - server.port=8081
       - spring.r2dbc.url=r2dbc:postgresql://track-db:5432/TrackDB
       - spring.r2dbc.username=postgres
@@ -300,7 +315,7 @@ services:
       track-db:
         condition: service_healthy
     networks:
-      - eureka-network
+      - backend-network
       - track-network
       - kafka-network
 
@@ -326,9 +341,8 @@ services:
     build: ./Backend/playlist-service
     container_name: playlist-service
     environment:
-      - eureka.instance.preferIpAddress=true
+      - spring.config.import=configserver:http://config-server:8888
       - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
-      - file.temp=/home/app/temp/
       - spring.r2dbc.url=r2dbc:postgresql://playlist-db:5432/PlaylistDB
       - spring.r2dbc.username=postgres
       - spring.r2dbc.password=postgres
@@ -343,6 +357,50 @@ services:
       playlist-db:
         condition: service_healthy
     networks:
-      - eureka-network
+      - backend-network
       - playlist-network
       - kafka-network
+
+  favorite-db:
+    image: postgres
+    container_name: favorite_db
+    volumes: 
+    - favorite-db-volume:/var/lib/postgresql/data
+    - ./Backend/playlist-service/init_script.sql:/docker-entrypoint-initdb.d/init_script.sql
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=FavoriteDB
+      - PGUSER=postgres
+    networks:
+      - favorite-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready", "-U", "postgres", "-d", "FavoriteDB"]
+      interval: 30s
+      timeout: 60s
+  
+  favorite-service:
+    build: ./Backend/favorite-service
+    container_name: favorite-service
+    environment:
+      - spring.config.import=configserver:http://config-server:8888
+      - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
+      - spring.r2dbc.url=r2dbc:postgresql://favorite-db:5432/FavoriteDB
+      - spring.r2dbc.username=postgres
+      - spring.r2dbc.password=postgres
+      - spring.kafka.bootstrap-servers=kafka:9092    
+      - logging.level.org.springframework.r2dbc=TRACE
+      - logging.level.io.r2dbc.spi=TRACE
+    depends_on:
+      eureka-server:
+        condition: service_started
+      kafka:
+        condition: service_started
+      favorite-db:
+        condition: service_healthy
+    networks:
+      - backend-network 
+      - favorite-network
+      - kafka-network
+
+    
