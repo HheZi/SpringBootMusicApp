@@ -3,10 +3,9 @@ spring:
     config:
       fail-fast: true
       discovery:
-        enabled: false
-        service-id: config-server
+        enabled: true
   config:
-    import: configserver:http://localhost:8888
+    import: "configserver:"
   application:
     name: audio-service
   profiles:

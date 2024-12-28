@@ -34,27 +34,45 @@ services:
       - 8761:8761
     networks:
       - backend-network
+    healthcheck:
+      test: "curl http://localhost:8761/actuator/health | grep UP || exit 1"
+      interval: 20s
+      retries: 5
+      start_period: 25s
+      timeout: 10s
 
   config-server:
     build: ./Backend/config-server/
     container_name: config-server
     ports:
       - 8888:8888
-    environment:
-      - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
     networks: 
       - backend-network 
+    environment:
+      - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
+    depends_on: 
+      eureka-server:
+        condition: service_healthy
+    healthcheck:
+      test: "curl http://localhost:8888/actuator/health | grep UP || exit 1"
+      interval: 20s
+      retries: 5
+      start_period: 25s
+      timeout: 20s
  
   api-gateway:
     build: ./Backend/api-gateway/
     container_name: api-gateway
+    restart: always
     ports:
       - 8080:8080
     depends_on:
-      - eureka-server
+      eureka-server:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
     environment:
       - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
-      - spring.config.import=configserver:http://config-server:8888
     networks:
       - backend-network
 
@@ -79,13 +97,13 @@ services:
   album-service:
     build: ./Backend/album-service/
     container_name: album-service
+    restart: always
     environment:
       - server.ports=8085
       - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
       - spring.r2dbc.url=r2dbc:postgresql://album-db:5432/AlbumDB
       - spring.r2dbc.username=postgres
       - spring.r2dbc.password=postgres
-      - spring.config.import=configserver:http://config-server:8888
       - logging.level.org.springframework.r2dbc=TRACE
       - logging.level.io.r2dbc.spi=TRACE
       - spring.kafka.bootstrap-servers=kafka:9092
@@ -97,16 +115,20 @@ services:
       - 8085:8085
     depends_on:
       eureka-server:
-        condition: service_started 
+        condition: service_healthy 
       album-db:
         condition: service_healthy
-
+      kafka:
+        condition: service_started  
+      config-server:
+        condition: service_healthy
+  
   audio-service:
     build: ./Backend/audio-service/
     container_name: audio-service
+    restart: always
     environment:
       - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
-      - spring.config.import=configserver:http://config-server:8888
       - spring.kafka.bootstrap-servers=kafka:9092
     volumes:
       - ~/app/audio/:/audio
@@ -114,14 +136,21 @@ services:
       - backend-network
       - kafka-network
     depends_on:
-      - eureka-server
+      eureka-server:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+      kafka:
+        condition: service_started
   
   image-service:
     build: ./Backend/image-service
     container_name: image-service
+    restart: always
     environment:
       - spring.config.import=configserver:http://config-server:8888
       - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
+      - spring.cloud.config.uri=http://config-server:8888
       - spring.kafka.bootstrap-servers=kafka:9092
     volumes:
       - ~/app/images/:/images
@@ -129,7 +158,12 @@ services:
       - backend-network
       - kafka-network
     depends_on:
-      - eureka-server  
+      eureka-server:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy  
+      kafka:
+        condition: service_started
 
   user-db:
     image: postgres
@@ -152,9 +186,9 @@ services:
   user-service:
     build: ./Backend/user-service
     container_name: user-service
+    restart: always
     environment:
       - server.port=8084
-      - spring.config.import=configserver:http://config-server:8888
       - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
       - spring.r2dbc.url=r2dbc:postgresql://user-db:5432/UserDB
       - spring.r2dbc.username=postgres
@@ -163,8 +197,10 @@ services:
       - logging.level.io.r2dbc.spi=TRACE
     depends_on:
       eureka-server:
-        condition: service_started
+        condition: service_healthy
       user-db:
+        condition: service_healthy
+      config-server:
         condition: service_healthy
     ports:
       - 8084:8084
@@ -193,9 +229,9 @@ services:
   auth-service:
     build: ./Backend/auth-service
     container_name: auth-service
+    restart: always
     environment:
       - server.port=8083
-      - spring.config.import=configserver:http://config-server:8888
       - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
       - spring.r2dbc.url=r2dbc:postgresql://auth-db:5432/AuthDB
       - spring.r2dbc.username=postgres
@@ -206,7 +242,9 @@ services:
       auth-db:
         condition: service_healthy
       eureka-server:
-        condition: service_started
+        condition: service_healthy
+      config-server:
+        condition: service_healthy  
     ports:
       - 8083:8083
     networks:
@@ -234,9 +272,9 @@ services:
   author-service:
     build: ./Backend/author-service
     container_name: author-service
+    restart: always
     environment:
       - server.port=8082
-      - spring.config.import=configserver:http://config-server:8888
       - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
       - spring.r2dbc.url=r2dbc:postgresql://author-db:5432/AuthorDB
       - spring.r2dbc.username=postgres
@@ -252,8 +290,12 @@ services:
       - 8082:8082
     depends_on:
       eureka-server:
-        condition: service_started
+        condition: service_healthy
       author-db:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+      config-server:
         condition: service_healthy
     
   kafka:
@@ -295,10 +337,10 @@ services:
   track-service:
     build: ./Backend/track-service
     container_name: track-service
+    restart: always
     ports:
       - 8081:8081
     environment:
-      - spring.config.import=configserver:http://config-server:8888
       - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
       - server.port=8081
       - spring.r2dbc.url=r2dbc:postgresql://track-db:5432/TrackDB
@@ -309,10 +351,12 @@ services:
       - logging.level.io.r2dbc.spi=TRACE
     depends_on:
       eureka-server:
-        condition: service_started
+        condition: service_healthy
       kafka:
         condition: service_started
       track-db:
+        condition: service_healthy
+      config-server:
         condition: service_healthy
     networks:
       - backend-network
@@ -340,8 +384,8 @@ services:
   playlist-service:
     build: ./Backend/playlist-service
     container_name: playlist-service
+    restart: always
     environment:
-      - spring.config.import=configserver:http://config-server:8888
       - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
       - spring.r2dbc.url=r2dbc:postgresql://playlist-db:5432/PlaylistDB
       - spring.r2dbc.username=postgres
@@ -351,10 +395,12 @@ services:
       - logging.level.io.r2dbc.spi=TRACE
     depends_on:
       eureka-server:
-        condition: service_started
+        condition: service_healthy
       kafka:
         condition: service_started
       playlist-db:
+        condition: service_healthy
+      config-server:
         condition: service_healthy
     networks:
       - backend-network
@@ -382,8 +428,8 @@ services:
   favorite-service:
     build: ./Backend/favorite-service
     container_name: favorite-service
+    restart: always
     environment:
-      - spring.config.import=configserver:http://config-server:8888
       - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
       - spring.r2dbc.url=r2dbc:postgresql://favorite-db:5432/FavoriteDB
       - spring.r2dbc.username=postgres
@@ -393,14 +439,14 @@ services:
       - logging.level.io.r2dbc.spi=TRACE
     depends_on:
       eureka-server:
-        condition: service_started
+        condition: service_healthy
       kafka:
         condition: service_started
       favorite-db:
+        condition: service_healthy
+      config-server:
         condition: service_healthy
     networks:
       - backend-network 
       - favorite-network
       - kafka-network
-
-    
