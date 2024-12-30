@@ -47,7 +47,7 @@ public class AlbumController {
 	private final ImageValidatorService imageValidatorService;
 
 	@GetMapping
-	public Flux<AlbumPreviewResponse> getAlbumByIds(
+	public Flux<AlbumPreviewResponse> getAlbums(
 			@RequestParam(value = "ids", required = false) List<Integer> ids,
 			@RequestParam(value = "authorId", required = false) List<Integer> authorId
 		){

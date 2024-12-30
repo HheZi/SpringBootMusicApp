@@ -111,6 +111,7 @@ public class AlbumService {
 
 	public Mono<Boolean> userIsOwnerOfAlbum(Integer playlistId, Integer userId){
 		return albumRepository.findById(playlistId)
+				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)))
 				.flatMap(t -> t.getCreatedBy() == userId ? Mono.just(true) : Mono.just(false));
 	}
 
