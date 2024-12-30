@@ -9,4 +9,4 @@ spring:
   application:
     name: author-service
   profiles:
-    active: dev
+    active: local

@@ -9,4 +9,4 @@ spring:
   application:
     name: playlist-service
   profiles:
-    active: dev
+    active: local
