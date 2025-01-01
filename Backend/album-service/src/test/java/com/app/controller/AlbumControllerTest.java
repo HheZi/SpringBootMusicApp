@@ -3,27 +3,32 @@ package com.app.controller;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.kafka.test.EmbeddedKafkaBroker;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.web.reactive.function.BodyInserters;
 
 import com.app.payload.response.AlbumPreviewResponse;
 import com.app.payload.response.ResponseAlbum;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.maciejwalkowiak.wiremock.spring.EnableWireMock;
 
 @SpringBootTest
 @EmbeddedKafka(partitions = 1, brokerProperties = { "listeners=PLAINTEXT://localhost:9092", "port=9092" })
 @TestPropertySource(locations = "classpath:/application.properties")
 @AutoConfigureWebTestClient
 @DirtiesContext
+@EnableWireMock
 class AlbumControllerTest {
 
 	@Autowired
@@ -43,7 +48,8 @@ class AlbumControllerTest {
 		.accept(MediaType.APPLICATION_JSON)
 		.exchange()
 		.expectStatus().is2xxSuccessful()
-		.expectBodyList(AlbumPreviewResponse.class);
+		.expectBodyList(AlbumPreviewResponse.class)
+		.hasSize(2);
 	}
 	
 	@Test
@@ -54,7 +60,8 @@ class AlbumControllerTest {
 		.accept(MediaType.APPLICATION_JSON)
 		.exchange()
 		.expectStatus().is2xxSuccessful()
-		.expectBodyList(AlbumPreviewResponse.class);
+		.expectBodyList(AlbumPreviewResponse.class)
+		.hasSize(2);
 	}
 	
 	@Test
@@ -177,4 +184,78 @@ class AlbumControllerTest {
 		.expectStatus().isNotFound();
 	}
 	
+	@Test
+	public void create_album_without_cover() {
+		var bodyBuilder = new MultipartBodyBuilder();
+		
+		bodyBuilder.part("name", "test");
+		bodyBuilder.part("releaseDate", "1990-07-07");
+		bodyBuilder.part("authorId", "2");
+		
+		testClient
+		.post()
+		.uri(t -> t.path("/api/albums/").build())
+		.header("userId", "1")
+		.contentType(MediaType.MULTIPART_FORM_DATA)
+		.body(BodyInserters.fromMultipartData(bodyBuilder.build()))
+		.accept(MediaType.APPLICATION_JSON)
+		.exchange()
+		.expectStatus().isCreated()
+		.expectBody(Integer.class)
+		.isEqualTo(11);
+	}
+	
+	@Test
+	public void create_album_with_wrong_payload() {
+		var bodyBuilder = new MultipartBodyBuilder();
+		
+		bodyBuilder.part("name", " ");
+		bodyBuilder.part("releaseDate", LocalDate.now().plus(1, ChronoUnit.YEARS).toString());
+		
+		testClient
+		.post()
+		.uri(t -> t.path("/api/albums/").build())
+		.header("userId", "1")
+		.contentType(MediaType.MULTIPART_FORM_DATA)
+		.body(BodyInserters.fromMultipartData(bodyBuilder.build()))
+		.accept(MediaType.APPLICATION_JSON)
+		.exchange()
+		.expectStatus().isBadRequest();
+	}
+	
+	
+	@Test
+	public void update_album_without_cover() {
+		var bodyBuilder = new MultipartBodyBuilder();
+		
+		bodyBuilder.part("name", "test");
+		bodyBuilder.part("releaseDate", "1990-07-07");
+		
+		testClient
+		.put()
+		.uri(t -> t.path("/api/albums/"+10).build())
+		.header("userId", "10")
+		.contentType(MediaType.MULTIPART_FORM_DATA)
+		.body(BodyInserters.fromMultipartData(bodyBuilder.build()))
+		.accept(MediaType.APPLICATION_JSON)
+		.exchange()
+		.expectStatus().isOk();
+		
+		ResponseAlbum expected = ResponseAlbum.builder()
+				.name("test")
+				.authorId(210)
+				.id(10)
+				.imageUrl("http://localhost:8080/api/images/default")
+				.releaseDate(LocalDate.parse("1990-07-07"))
+				.build();
+				
+		testClient
+		.get()
+		.uri(t -> t.path("/api/albums/10").build())
+		.accept(MediaType.APPLICATION_JSON)
+		.exchange()
+		.expectStatus().is2xxSuccessful()
+		.expectBody(ResponseAlbum.class)
+		.isEqualTo(expected);
+	}
 }
