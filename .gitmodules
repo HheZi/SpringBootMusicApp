@@ -1,0 +1,3 @@
+[submodule "SpringBootMusicAppConfig"]
+	path = SpringBootMusicAppConfig
+	url = https://github.com/HheZi/SpringBootMusicAppConfig.git
