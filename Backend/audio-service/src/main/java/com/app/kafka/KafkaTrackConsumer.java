@@ -16,7 +16,7 @@ public class KafkaTrackConsumer {
 	
 	@KafkaListener(topics = "track-deletion-topic", groupId = "audio-group")
 	public void consumeTrackDeletionMessage(TrackDeletionMessage deletionMessage) {
-		audioService.deleteAudio(deletionMessage.audioName());
+		audioService.deleteAudio(deletionMessage.audioName()).subscribe();
 	}
 	
 }

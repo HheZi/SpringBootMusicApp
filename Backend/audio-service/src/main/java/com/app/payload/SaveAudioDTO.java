@@ -1,6 +1,6 @@
 package com.app.payload;
 
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.http.codec.multipart.FilePart;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,5 +11,5 @@ public class SaveAudioDTO {
 	
 	private String name;
 	
-	private MultipartFile file;
+	private FilePart file;
 }
