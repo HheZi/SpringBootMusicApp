@@ -2,12 +2,9 @@ package com.app.payload.request;
 
 import org.hibernate.validator.constraints.Length;
 import org.springframework.http.codec.multipart.FilePart;
-import org.springframework.validation.annotation.Validated;
 
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

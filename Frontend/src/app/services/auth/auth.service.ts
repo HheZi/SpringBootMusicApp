@@ -10,7 +10,7 @@ export class AuthService {
   
   private readonly TOKEN_KEY_NAME = 'token';
   
-  private readonly  REFRESH_TOKEN_KEY_NAME = "refreshToken";
+  private readonly REFRESH_TOKEN_KEY_NAME = "refreshToken";
   
   constructor(private httpClient: HttpClient) { }
   
@@ -21,10 +21,9 @@ export class AuthService {
   
   public saveJwtToken(tokenToSave: any){
     localStorage.setItem(this.TOKEN_KEY_NAME, tokenToSave.token);
-    localStorage.setItem(this.REFRESH_TOKEN_KEY_NAME, tokenToSave.refreshToken);
   }
   
-  public refreshToken(): Observable<Object>{
+  public updateToken(): Observable<Object>{
     return this.httpClient.post(AppConts.BASE_URL + "/api/auth/refresh", {refreshToken: this.getRefreshToken()});
   }
   

@@ -27,7 +27,7 @@ public class AuthController {
 	}
 	
 	@PostMapping("/refresh")
-	public Mono<AuthResponse> refreshJWTtoken(@RequestBody Mono<RefreshTokenRequest> refreshToken){
+	public Mono<JwtTokenResponse> refreshJWTtoken(@RequestBody Mono<RefreshTokenRequest> refreshToken){
 		return refreshToken.flatMap(authService::refreshJWTToken);
 	}
 	

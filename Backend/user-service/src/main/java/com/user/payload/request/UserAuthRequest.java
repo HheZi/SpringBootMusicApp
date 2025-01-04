@@ -1,6 +1,5 @@
 package com.user.payload.request;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

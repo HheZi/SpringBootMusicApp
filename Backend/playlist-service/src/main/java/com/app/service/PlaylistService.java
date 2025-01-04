@@ -1,11 +1,9 @@
 package com.app.service;
 
 import java.io.File;
-import java.nio.file.Path;
 import java.util.UUID;
 import java.util.function.Function;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

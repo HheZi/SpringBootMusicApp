@@ -2,7 +2,6 @@ package com.app.payload.request;
 
 import org.springframework.http.codec.multipart.FilePart;
 
-
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

@@ -2,16 +2,14 @@ package com.auth.service;
 
 
 import java.time.Instant;
-import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -25,8 +23,6 @@ import com.auth.repository.RefreshTokenRepository;
 import com.auth.util.JwtUtil;
 
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
 @Service
@@ -39,7 +35,8 @@ public class AuthService {
 	
 	private final RefreshTokenRepository refreshTokenRepository;
 	
-	private final Integer EXPIRATION_DATE_OF_REFRESH_TOKEN_IN_DAYS = 30;
+	@Value("${refreshToken.expirationInDays}")
+	private Integer EXPIRATION_DATE_OF_REFRESH_TOKEN_IN_DAYS;
 	
 	public Mono<AuthResponse> loginUser(AuthRequest authRequest) {
 		return webClient.build()
@@ -47,7 +44,7 @@ public class AuthService {
                 .uri("http://user-service/api/users/validate")
                 .bodyValue(authRequest)
                 .retrieve()
-                .onStatus(HttpStatusCode::is4xxClientError, response -> Mono.error(new ResponseStatusException(HttpStatus.FORBIDDEN, "Bad Credential")))
+                .onStatus(HttpStatusCode::is4xxClientError, response -> Mono.error(new ResponseStatusException(HttpStatus.FORBIDDEN)))
                 .bodyToMono(UserDetails.class)
                 .flatMap(this::generateResponseForLogin);
 	}
@@ -67,20 +64,15 @@ public class AuthService {
 				.map(t -> new AuthResponse(jwtToken, t.getToken().toString()));
 	}
 
-	public Mono<AuthResponse> refreshJWTToken(RefreshTokenRequest refreshToken) {
+	public Mono<JwtTokenResponse> refreshJWTToken(RefreshTokenRequest refreshToken) {
 		if (refreshToken.getRefreshToken() == null) 
-			return Mono.error(() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "You need to login"));
+			return Mono.error(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST));
 		
-		
-		return refreshTokenRepository.findByToken(UUID.fromString(refreshToken.getRefreshToken()))
+		return refreshTokenRepository
+				.findByToken(refreshToken.getRefreshToken())
 				.filter(t -> t.getExpirationDate().compareTo(Instant.now()) > 0)
-				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "You need to login")))
-				.flatMap(t -> {
-					t.setToken(UUID.randomUUID());
-					t.setExpirationDate(Instant.now().plus(EXPIRATION_DATE_OF_REFRESH_TOKEN_IN_DAYS, ChronoUnit.DAYS));
-					return refreshTokenRepository.save(t);
-				})
-				.map(t -> new AuthResponse(jwtUtil.createJwtToken(t.getUserId()), t.getToken().toString()));
+				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.FORBIDDEN)))
+				.map(t -> new JwtTokenResponse(jwtUtil.createJwtToken(t.getUserId())));
 	}
 	
 }

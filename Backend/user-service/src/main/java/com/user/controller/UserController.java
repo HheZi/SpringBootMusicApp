@@ -1,25 +1,19 @@
 package com.user.controller;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
 import com.user.payload.request.UserAuthRequest;
 import com.user.payload.request.UserFormRequest;
-import com.user.payload.response.BadValidationResponse;
 import com.user.payload.response.ValidatedUser;
 import com.user.service.UserService;
 
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequestMapping("/api/users/")

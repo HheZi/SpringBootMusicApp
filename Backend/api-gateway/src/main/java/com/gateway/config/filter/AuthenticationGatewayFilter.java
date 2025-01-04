@@ -1,6 +1,7 @@
 package com.gateway.config.filter;
 
-import static org.springframework.http.HttpMethod.*;
+import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpMethod.POST;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -72,8 +73,12 @@ public class AuthenticationGatewayFilter implements GatewayFilter {
 	}
 
 	private String getTokenFromHeader(ServerHttpRequest request) {
-		List<String> vals = request.getHeaders().get(HttpHeaders.AUTHORIZATION);
-		return vals == null ? null : vals.get(0).split("\s+")[1];
+		try {
+			List<String> vals = request.getHeaders().get(HttpHeaders.AUTHORIZATION);
+			return vals == null ? null : vals.get(0).split("\s+")[1];
+		} catch (ArrayIndexOutOfBoundsException e) {
+			return null;
+		}
 	}
 
 	private boolean isEndpointNotSecured(ServerHttpRequest request) {

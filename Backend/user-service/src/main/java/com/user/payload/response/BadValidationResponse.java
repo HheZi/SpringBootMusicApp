@@ -1,10 +1,7 @@
 package com.user.payload.response;
 
-import org.springframework.http.HttpStatusCode;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor

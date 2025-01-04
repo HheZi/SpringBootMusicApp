@@ -47,7 +47,7 @@ export class AuthorizationInterceptorService implements HttpInterceptor {
       this.isRefreshing = true;
       this.refreshTokenSubject.next(null);
 
-      return this.authService.refreshToken().pipe(
+      return this.authService.updateToken().pipe(
         switchMap((tokenResp: any) => {
             this.isRefreshing = false;
             this.refreshTokenSubject.next(tokenResp.token);
@@ -56,7 +56,7 @@ export class AuthorizationInterceptorService implements HttpInterceptor {
         }),
         catchError((err) => {
             this.isRefreshing = false;
-            this.router.navigate(['/login']);
+            this.router.navigate(['login']);
             return throwError(() => err); 
         })
     );

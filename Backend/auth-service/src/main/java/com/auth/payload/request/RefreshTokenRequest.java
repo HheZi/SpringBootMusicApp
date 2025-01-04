@@ -1,5 +1,7 @@
 package com.auth.payload.request;
 
+import java.util.UUID;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -7,6 +9,6 @@ import lombok.NoArgsConstructor;
 @Data
 public class RefreshTokenRequest {
 
-	private String refreshToken;
+	private UUID refreshToken;
 	
 }
