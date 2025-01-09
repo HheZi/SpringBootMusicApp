@@ -13,6 +13,13 @@ volumes:
   audio-volume:
 
 services:
+  angular:
+    build: ./Frontend
+    container_name: angular
+    restart: always
+    ports: 
+      - 4200:4200
+
   eureka-server: 
     build: ./Backend/eureka-server/
     container_name: eureka-server
@@ -44,7 +51,7 @@ services:
       interval: 20s
       retries: 5
       start_period: 25s
-      timeout: 20s
+      timeout: 10s
  
   api-gateway:
     build: ./Backend/api-gateway/
@@ -86,8 +93,6 @@ services:
     container_name: album-service
     restart: always
     environment:
-      - logging.level.org.springframework.r2dbc=TRACE
-      - logging.level.io.r2dbc.spi=TRACE
       - spring.profiles.active=container
       - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
     networks:
@@ -110,7 +115,7 @@ services:
       - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
       - spring.profiles.active=container
     volumes:
-      - audio-volume:/audio
+      - audio-volume:/home/app/audio
     networks:
       - backend-network
     depends_on:
@@ -129,7 +134,7 @@ services:
       - spring.profiles.active=container
       - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
     volumes:
-      - image-volume:/images
+      - image-volume:/home/app/images
     networks:
       - backend-network
     depends_on:
@@ -165,8 +170,6 @@ services:
     environment:
       - spring.profiles.active=container
       - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
-      - logging.level.org.springframework.r2dbc=TRACE
-      - logging.level.io.r2dbc.spi=TRACE
     depends_on:
       eureka-server:
         condition: service_healthy
@@ -202,8 +205,7 @@ services:
     environment:
       - spring.profiles.active=container
       - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
-      - logging.level.org.springframework.r2dbc=TRACE
-      - logging.level.io.r2dbc.spi=TRACE
+      
     depends_on:
       auth-db:
         condition: service_healthy
@@ -239,8 +241,6 @@ services:
     environment:
       - spring.profiles.active=container
       - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
-      - logging.level.org.springframework.r2dbc=TRACE
-      - logging.level.io.r2dbc.spi=TRACE
     networks:
       - backend-network
     depends_on:
@@ -300,8 +300,7 @@ services:
     environment:
       - spring.profiles.active=container
       - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
-      - logging.level.org.springframework.r2dbc=TRACE
-      - logging.level.io.r2dbc.spi=TRACE
+      
     depends_on:
       eureka-server:
         condition: service_healthy
@@ -339,8 +338,6 @@ services:
     environment:
       - spring.profiles.active=container
       - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
-      - logging.level.org.springframework.r2dbc=TRACE
-      - logging.level.io.r2dbc.spi=TRACE
     depends_on:
       eureka-server:
         condition: service_healthy
@@ -378,8 +375,6 @@ services:
     environment:
       - spring.profiles.active=container
       - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
-      - logging.level.org.springframework.r2dbc=TRACE
-      - logging.level.io.r2dbc.spi=TRACE
     depends_on:
       eureka-server:
         condition: service_healthy
@@ -390,4 +385,4 @@ services:
       config-server:
         condition: service_healthy
     networks:
-      - backend-network
+      - backend-network 
