@@ -34,7 +34,14 @@ SpringBootMusicApp is a music streaming application built with a Spring Boot bac
 
 - Java 18 or higher
 - Node.js and npm
+-  Docker (Optional)
 - Angular CLI
+### Docker
+
+* If you have installed docker on your PC, you can use the [docker-compose](docker-compose.yml) file:
+```sh
+docker compose up
+```
 
 ### Backend
 
@@ -51,7 +58,7 @@ SpringBootMusicApp is a music streaming application built with a Spring Boot bac
 
 3. Create all databases in PostgresSQL
 
-4. Run Kafka in container
+4. Run Kafka in container  (If you don't have docker, run Kafka installed localy on your machine)
     ```sh
     cd ./Backend/
     docker compose up
