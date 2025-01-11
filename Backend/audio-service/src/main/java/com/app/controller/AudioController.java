@@ -29,15 +29,15 @@ public class AudioController {
 	private AudioService audioService;
 	
 	@GetMapping("/{filename}")
-	public ResponseEntity<Flux<DataBuffer>> getAudio(
+	public Mono<ResponseEntity<Flux<DataBuffer>>> getAudio(
 			@PathVariable("filename") String filename, 
 			@RequestHeader(value = "Range", required = false) String rangeHeader
 		) throws IOException{
 		
 		if (rangeHeader == null) {
-			return ResponseEntity
+			return Mono.just(ResponseEntity
 					.status(HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE)
-					.build();
+					.build());
 		}
 		
 		return audioService.getResource(filename, rangeHeader);

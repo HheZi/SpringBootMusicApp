@@ -1,8 +1,9 @@
 package com.app.service;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.List;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
@@ -15,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.app.payload.SaveAudioDTO;
 
@@ -31,33 +33,36 @@ public class AudioService {
 	@Value("${audio.dir}")
 	private String audioDirName;
 	
-
-	public ResponseEntity<Flux<DataBuffer>> getResource(String filename, String rangeHeader) throws IOException{
-		FileSystemResource resource = new FileSystemResource(new File(audioDirName, filename).getAbsoluteFile());
-		
-		List<HttpRange> ranges = HttpRange.parseRanges(rangeHeader);
-		long contentLength = resource.contentLength();
-		
-		HttpRange range = ranges.get(0); 
-        long rangeStart = range.getRangeStart(contentLength);
-        long rangeEnd = Math.min(range.getRangeEnd(contentLength), rangeStart + CHUNK_OF_AUDIO - 1);
-        
-        Flux<DataBuffer> body = DataBufferUtils.read(
-	            resource,
-	            rangeStart,
-	            new DefaultDataBufferFactory(),
-	            CHUNK_OF_AUDIO
-	        )
-			.take(1);
-        
-		return ResponseEntity
-		.status(HttpStatus.PARTIAL_CONTENT)
-		.contentType(MediaType.APPLICATION_OCTET_STREAM)
-		.header(HttpHeaders.CONTENT_RANGE, String.format("bytes %d-%d/%d", rangeStart, rangeEnd, contentLength))
-		.body(body);
+	public Mono<ResponseEntity<Flux<DataBuffer>>> getResource(String filename, String rangeHeader) {
+	    Path filePath = Paths.get(audioDirName, filename);
+	    
+	    return Mono.fromCallable(() -> Files.exists(filePath) ? filePath : null)
+	        .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND)))
+	        .flatMap(t -> buildResponse(HttpRange.parseRanges(rangeHeader).get(0), filePath));
 	}
 	
 	@SneakyThrows
+	private Mono<ResponseEntity<Flux<DataBuffer>>> buildResponse(HttpRange range, Path filePath) {
+		long contentLength = Files.size(filePath);
+        long rangeStart = range.getRangeStart(contentLength);
+        long rangeEnd = Math.min(range.getRangeEnd(contentLength), rangeStart + CHUNK_OF_AUDIO - 1);
+        
+        return Mono.just(ResponseEntity.status(HttpStatus.PARTIAL_CONTENT)
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .header(HttpHeaders.CONTENT_RANGE, String.format("bytes %d-%d/%d", rangeStart, rangeEnd, contentLength))
+                .body(getResourceForResponse(rangeStart, filePath)));
+	}
+	
+	private Flux<DataBuffer> getResourceForResponse(Long rangeStart, Path path){
+		return DataBufferUtils.read(
+                new FileSystemResource(path),
+                rangeStart,
+                new DefaultDataBufferFactory(),
+                CHUNK_OF_AUDIO
+            )
+            .take(1);
+	}
+	
 	public Mono<Void> saveAudio(SaveAudioDTO dto) {
 		return dto.getFile()
 		.transferTo(new File(audioDirName, dto.getName()).getAbsoluteFile());
