@@ -5,28 +5,23 @@ import java.time.temporal.ChronoUnit;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.kafka.test.EmbeddedKafkaBroker;
 import org.springframework.kafka.test.context.EmbeddedKafka;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
 
 import com.app.payload.response.AlbumPreviewResponse;
 import com.app.payload.response.ResponseAlbum;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.maciejwalkowiak.wiremock.spring.EnableWireMock;
 
 @SpringBootTest
 @EmbeddedKafka(partitions = 1, brokerProperties = { "listeners=PLAINTEXT://localhost:9092", "port=9092" })
-@TestPropertySource(locations = "classpath:/application.properties")
 @AutoConfigureWebTestClient
-@DirtiesContext
-@EnableWireMock
 class AlbumControllerTest {
 
 	@Autowired
