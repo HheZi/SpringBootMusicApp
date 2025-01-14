@@ -14,14 +14,14 @@ volumes:
 
 services:
   angular:
-    build: ./Frontend
+    image: hhezi/springbootmusicapp-angular
     container_name: angular
     restart: always
     ports: 
       - 4200:4200
 
   eureka-server: 
-    build: ./Backend/eureka-server/
+    image: hhezi/springbootmusicapp-eureka-server
     container_name: eureka-server
     ports:
       - 8761:8761
@@ -35,7 +35,7 @@ services:
       timeout: 10s
 
   config-server:
-    build: ./Backend/config-server/
+    image: hhezi/springbootmusicapp-config-server
     container_name: config-server
     ports:
       - 8888:8888
@@ -54,7 +54,7 @@ services:
       timeout: 10s
  
   api-gateway:
-    build: ./Backend/api-gateway/
+    image: hhezi/springbootmusicapp-api-gateway
     container_name: api-gateway
     restart: always
     ports:
@@ -89,7 +89,7 @@ services:
       timeout: 60s
 
   album-service:
-    build: ./Backend/album-service/
+    image: hhezi/springbootmusicapp-album-service
     container_name: album-service
     restart: always
     environment:
@@ -108,7 +108,7 @@ services:
         condition: service_healthy
   
   audio-service:
-    build: ./Backend/audio-service/
+    image: hhezi/springbootmusicapp-audio-service
     container_name: audio-service
     restart: always
     environment:
@@ -127,7 +127,7 @@ services:
         condition: service_started
   
   image-service:
-    build: ./Backend/image-service
+    image: hhezi/springbootmusicapp-image-service
     container_name: image-service
     restart: always
     environment:
@@ -164,7 +164,7 @@ services:
       timeout: 60s  
 
   user-service:
-    build: ./Backend/user-service
+    image: hhezi/springbootmusicapp-user-service
     container_name: user-service
     restart: always
     environment:
@@ -199,13 +199,12 @@ services:
       timeout: 60s
 
   auth-service:
-    build: ./Backend/auth-service
+    image: hhezi/springbootmusicapp-auth-service
     container_name: auth-service
     restart: always
     environment:
       - spring.profiles.active=container
       - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
-      
     depends_on:
       auth-db:
         condition: service_healthy
@@ -235,7 +234,7 @@ services:
       timeout: 60s
 
   author-service:
-    build: ./Backend/author-service
+    image: hhezi/springbootmusicapp-author-service
     container_name: author-service
     restart: always
     environment:
@@ -292,7 +291,7 @@ services:
       timeout: 60s
   
   track-service:
-    build: ./Backend/track-service
+    image: hhezi/springbootmusicapp-track-service
     container_name: track-service
     restart: always
     ports:
@@ -332,7 +331,7 @@ services:
       timeout: 60s
 
   playlist-service:
-    build: ./Backend/playlist-service
+    image: hhezi/springbootmusicapp-playlist-service
     container_name: playlist-service
     restart: always
     environment:
@@ -369,7 +368,7 @@ services:
       timeout: 60s
   
   favorite-service:
-    build: ./Backend/favorite-service
+    image: hhezi/springbootmusicapp-favorite-service
     container_name: favorite-service
     restart: always
     environment:
