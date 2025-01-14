@@ -19,22 +19,15 @@
       <input
         class="form-control me-2 search-input"
         type="search"
-        placeholder="Search"
+        placeholder="Search Tracks"
         aria-label="Search"
         name="search"
+        type="search"
         [(ngModel)]="textInput"
       />
-      <button
-        pButton
-        type="button"
-        icon="pi pi-search"
-        title="Find"
-        (click)="onSearch()"
-      ></button>
     </form>
 
-    <div class="d-flex align-items-center">
-      
+    <div class="d-flex align-items-end">
       <i class="pi pi-sign-out icon text-danger" (click)="logout()" title="Logout"></i>
     </div>
   </nav>
