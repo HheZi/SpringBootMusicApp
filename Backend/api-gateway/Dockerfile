@@ -1,8 +1,23 @@
-FROM openjdk:latest 
+FROM eclipse-temurin:18-jdk-jammy as build
+
+COPY src src
+
+COPY gradlew gradlew.bat settings.gradle build.gradle ./
+
+COPY gradle gradle
+
+RUN ./gradlew build
+
+
+
+FROM eclipse-temurin:18-jre-jammy
+
+WORKDIR /home/app
 
 ARG JAR_FILE=./build/libs/*.jar
 
-WORKDIR /home/app
-COPY $JAR_FILE app.jar
+COPY --from=build $JAR_FILE app.jar
+
+EXPOSE 8080
 
 ENTRYPOINT [ "java", "-jar", "app.jar"]
