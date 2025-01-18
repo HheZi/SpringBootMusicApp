@@ -1,23 +1,27 @@
 package com.app.controller;
 
+
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.kafka.test.EmbeddedKafkaBroker;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.util.ResourceUtils;
 import org.springframework.web.reactive.function.BodyInserters;
 
 import com.app.payload.response.AlbumPreviewResponse;
 import com.app.payload.response.ResponseAlbum;
-import com.fasterxml.jackson.databind.ObjectMapper;
+
+
+import lombok.SneakyThrows;
 
 @SpringBootTest
 @EmbeddedKafka(partitions = 1, brokerProperties = { "listeners=PLAINTEXT://localhost:9092", "port=9092" })
@@ -30,9 +34,7 @@ class AlbumControllerTest {
 	@Autowired
 	private WebTestClient testClient;
 	
-	@Autowired
-	private ObjectMapper mapper;
-
+	
 	@Test
 	public void get_albums_by_ids() {
 		testClient
@@ -216,6 +218,27 @@ class AlbumControllerTest {
 		.expectStatus().isBadRequest();
 	}
 	
+	@Test
+	@SneakyThrows
+	public void create_album_with_wrong_file() {
+		var bodyBuilder = new MultipartBodyBuilder();
+		
+		bodyBuilder.part("name", "test");
+		bodyBuilder.part("releaseDate", "1990-07-07");
+		bodyBuilder.part("authorId", "2");
+		bodyBuilder.part("cover", new FileSystemResource(ResourceUtils.getFile("classpath:testImage")));
+		
+		testClient
+		.post()
+		.uri(t -> t.path("/api/albums/").build())
+		.header("userId", "1")
+		.contentType(MediaType.MULTIPART_FORM_DATA)
+		.body(BodyInserters.fromMultipartData(bodyBuilder.build()))
+		.accept(MediaType.APPLICATION_JSON)
+		.exchange()
+		.expectStatus().isBadRequest()
+		.expectBody();
+	}
 	
 	@Test
 	public void update_album_without_cover() {
@@ -250,5 +273,16 @@ class AlbumControllerTest {
 		.expectStatus().is2xxSuccessful()
 		.expectBody(ResponseAlbum.class)
 		.isEqualTo(expected);
+	}
+	
+	@Test
+	public void delete_album() {
+		testClient
+		.delete()
+		.uri(t -> t.path("/api/albums/"+9).build())
+		.header("userId", "9")
+		.accept(MediaType.APPLICATION_JSON)
+		.exchange()
+		.expectStatus().isOk();
 	}
 }
