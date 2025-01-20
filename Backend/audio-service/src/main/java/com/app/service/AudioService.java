@@ -1,6 +1,5 @@
 package com.app.service;
 
-import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -65,14 +64,18 @@ public class AudioService {
 	
 	public Mono<Void> saveAudio(SaveAudioDTO dto) {
 		return dto.getFile()
-		.transferTo(new File(audioDirName, dto.getName()).getAbsoluteFile());
+		.transferTo(Paths.get(audioDirName, dto.getName()));
 	}
 
 	public Mono<Void> deleteAudio(String name) {
-		return Mono.just(new File(audioDirName, name).getAbsoluteFile())
-		.filter(t -> t.exists())
-		.doOnNext(File::delete)
+		return Mono.just(Paths.get(audioDirName, name))
+		.doOnNext(this::deleteAudio)
 		.then();
 	}
 
+	@SneakyThrows
+	public void deleteAudio(Path path) {
+		Files.deleteIfExists(path);
+	}
+	
 }

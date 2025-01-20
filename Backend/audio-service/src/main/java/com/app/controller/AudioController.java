@@ -44,9 +44,7 @@ public class AudioController {
 	}
 	
 	@PostMapping
-	public Mono<ResponseEntity<?>> saveAudio(@ModelAttribute SaveAudioDTO dto) {
-		return audioService.saveAudio(dto)
-				.map(t -> ResponseEntity.status(HttpStatus.CREATED).build());
-		 
+	public Mono<Void> saveAudio(@ModelAttribute SaveAudioDTO dto) {
+		return audioService.saveAudio(dto);
 	}
 }

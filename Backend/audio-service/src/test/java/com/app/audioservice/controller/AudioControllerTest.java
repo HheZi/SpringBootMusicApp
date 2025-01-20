@@ -1,90 +1,110 @@
 package com.app.audioservice.controller;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.assertj.core.api.Assertions.assertThat;
 
-import java.io.FileInputStream;
+import java.io.File;
+import java.nio.file.CopyOption;
 import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 
-import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.http.client.MultipartBodyBuilder;
+import org.springframework.kafka.test.context.EmbeddedKafka;
+import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.util.ResourceUtils;
+import org.springframework.web.reactive.function.BodyInserters;
 
-import com.app.payload.SaveAudioDTO;
-import com.app.service.AudioService;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
-@SpringBootTest(properties = "audio.path=/Programming/Java/StreamingService/Backend/AudioService/audio/test/")
-@AutoConfigureMockMvc
-@Disabled
+import lombok.SneakyThrows;
+
+@SpringBootTest
+@AutoConfigureWebTestClient
+@EmbeddedKafka(partitions = 1, brokerProperties = { "listeners=PLAINTEXT://localhost:9092", "port=9092" })
+@TestInstance(Lifecycle.PER_CLASS)
 class AudioControllerTest {
 
 	@Autowired
-	private MockMvc mockMvc;
+	private WebTestClient testClient;
 	
-	@Autowired
-	private AudioService audioService;
+	@Value("${chunk.max-size}")
+	public Integer CHUNK_OF_AUDIO;
 	
-	@Value("${audio.path}")
+	@Value("${audio.dir}")
 	private String testAudioPath;
 	
-	@Autowired
-	private ObjectMapper mapper;
+	@BeforeAll
+	@SneakyThrows
+	private void configeFile() {
+		File file = ResourceUtils.getFile("classpath:file");
+		
+		Files.move(file.toPath(), Paths.get(testAudioPath, "file"), StandardCopyOption.REPLACE_EXISTING);
+	}
 	
 	@Test
-	void test_get_audio_method_with_range_header() throws Exception {
-		
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/audio/file")
-				.header(HttpHeaders.RANGE, "bytes=0-").accept("audio/mpeg"))
-				.andExpect(status().isPartialContent())
-				.andExpect(header().exists(HttpHeaders.CONTENT_RANGE))
-				.andExpect(header().string(HttpHeaders.CONTENT_LENGTH, audioService.CHUNK_OF_AUDIO + ""));
+	void test_get_audio_method_with_range_header() {
+		testClient
+		.get()
+		.uri("/api/audio/file")
+		.header(HttpHeaders.RANGE, "bytes=0-")
+		.exchange()
+		.expectHeader()
+		.exists(HttpHeaders.CONTENT_RANGE)
+		.expectStatus()
+		.isEqualTo(HttpStatus.PARTIAL_CONTENT);
 		
 	}
 	
 	@Test
-	void test_get_audio_method_without_range_header() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/audio/test"))
-				.andExpect(status().isRequestedRangeNotSatisfiable());
+	void test_get_audio_method_without_range_header() {
+		testClient
+		.get()
+		.uri("/api/audio/file")
+		.exchange()
+		.expectStatus()
+		.isEqualTo(HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE);
 	}
 
 	
 	@Test
 	void test_save_audio_method() throws JsonProcessingException, Exception {
-		FileInputStream fileInputStream = new FileInputStream(testAudioPath + "file");
+		MultipartBodyBuilder bodyBuilder = new MultipartBodyBuilder();
 		
-		String filenameToSave = "saveFile";
-		byte[] contentToSave = fileInputStream.readNBytes(100);
+		String filename = "savedFile";
 		
-		fileInputStream.close();
+		bodyBuilder.part("name", filename);
+		bodyBuilder.part("file", new FileSystemResource(Paths.get(testAudioPath,"file")));
 		
-		Path path = Path.of(testAudioPath, filenameToSave);
+		testClient
+		.post()
+		.uri("/api/audio")
+		.contentType(MediaType.MULTIPART_FORM_DATA)
+		.body(BodyInserters.fromMultipartData(bodyBuilder.build()))
+		.exchange()
+		.expectStatus()
+		.isOk();	
 		
-		SaveAudioDTO dto = new SaveAudioDTO();
-		dto.setName(filenameToSave);
-//		dto.setContent(contentToSave);
-		
-		
-		mockMvc.perform(MockMvcRequestBuilders.post("/api/audio")
-				.content(mapper.writeValueAsBytes(dto))
-				.contentType(MediaType.APPLICATION_JSON))
-			.andExpect(status().isCreated());
-		
-		byte[] allBytes = Files.readAllBytes(path);
-		
-		Files.delete(path);
-		
-		assertArrayEquals(contentToSave, allBytes);
-		
+		assertThat(Paths.get(testAudioPath, filename)).exists();
+		Files.deleteIfExists(ResourceUtils.getFile("file:"+testAudioPath+filename).toPath());
+	}
+	
+	@AfterAll
+	@SneakyThrows
+	private void deleteFileAfterAll() {
+		Files.deleteIfExists(ResourceUtils.getFile("file:"+testAudioPath+"/file").toPath());
 	}
 }
