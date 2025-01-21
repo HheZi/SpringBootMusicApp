@@ -1,11 +1,14 @@
 package com.app.service;
 
 
-import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -16,6 +19,7 @@ import org.springframework.web.server.ResponseStatusException;
 import com.app.payload.RequestImage;
 
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import reactor.core.publisher.Mono;
 
 @Service
@@ -28,33 +32,36 @@ public class ImageService {
 	@Value("${image.default}")
 	private String defaultImageName;
 	
-	public Mono<ResponseEntity<FileSystemResource>> getImage(String name){
-		return Mono.just(new File(imageDirName, name).getAbsoluteFile())
-				.filter(t -> t.exists())
+	public Mono<ResponseEntity<Resource>> getImage(String name){
+		return Mono.just(Paths.get(imageDirName, name))
+				.filter(Files::exists)
 				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)))
 				.map(t -> ResponseEntity.ok()
 						.contentType(MediaType.IMAGE_JPEG)
 						.body(new FileSystemResource(t)));
 	}
 
-	public Mono<ResponseEntity<FileSystemResource>> getDefaultImage() {
+	public Mono<ResponseEntity<Resource>> getDefaultImage() {
 		return Mono.just(ResponseEntity.ok()
 				.contentType(MediaType.IMAGE_PNG)
 				.cacheControl(CacheControl.maxAge(1, TimeUnit.DAYS))
-				.body(new FileSystemResource(new File(imageDirName, defaultImageName).getAbsoluteFile())));
+				.body(new FileSystemResource(Paths.get(imageDirName, defaultImageName))));
 	}
 	
-	public Mono<ResponseEntity<?>> saveImage(RequestImage image) {
+	public Mono<Void> saveImage(RequestImage image) {
 		return image.getFile()
-				.transferTo(new File(imageDirName, image.getName()).getAbsoluteFile())
-				.map(t -> ResponseEntity.status(HttpStatus.CREATED).build());
+				.transferTo(Paths.get(imageDirName, image.getName()));
 	}
 	
-	public Mono<Void> deleteImage(String name) {
-		return Mono.just(new File(imageDirName, name).getAbsoluteFile())
-				.filter(t -> t.exists() || name.equals(defaultImageName))
-				.doOnNext(t -> t.delete())
-				.then();
+	public Mono<Path> deleteImage(String name) {
+		return Mono.just(Paths.get(imageDirName, name))
+				.filter(t -> !name.equals(defaultImageName))
+				.doOnNext(this::deleteImage);
+	}
+	
+	@SneakyThrows
+	private void deleteImage(Path path) {
+		Files.deleteIfExists(path);
 	}
 	
 }
