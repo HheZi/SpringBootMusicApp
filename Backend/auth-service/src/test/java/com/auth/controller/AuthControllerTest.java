@@ -28,7 +28,6 @@ import com.auth.payload.request.AuthRequest;
 import com.auth.util.JwtUtil;
 
 @SpringBootTest
-@Disabled
 class AuthControllerTest {
 
 	@Autowired
@@ -63,34 +62,6 @@ class AuthControllerTest {
 		assertThat(responseBody).isNotEmpty(); 
 		
 		assertFalse(jwtUtil.isExpired(responseBody));
-	}
-
-	@TestConfiguration
-	static class TestConfig {
-
-//		@Bean
-//		@Primary
-//		WebClient.Builder builder() {
-//			return WebClient.builder();
-//		}
-
-		@Bean
-		@Primary
-		SimpleDiscoveryClient discoveryClient() {
-			SimpleDiscoveryProperties properties = new SimpleDiscoveryProperties();
-
-			DefaultServiceInstance instance = new DefaultServiceInstance(
-					"user-service", 
-					"user-service", 
-					"localhost", 
-					8080, 
-					false 
-			);
-
-			properties.getInstances().put(instance.getInstanceId(), List.of(instance));
-			return new SimpleDiscoveryClient(properties);
-		}
-
 	}
 
 }
