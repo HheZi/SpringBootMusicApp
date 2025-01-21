@@ -29,11 +29,8 @@ public class UserService {
 	public Mono<ValidatedUser> validateUser(UserAuthRequest authRequest) {
 		return userRepository.findByUsername(authRequest.getUsername())
 				.switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND)))
-				.doOnNext(t -> {
-					if (!encoder.matches(authRequest.getPassword(), t.getPassword())) {
-						throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-					}
-				})
+				.filter(t -> encoder.matches(authRequest.getPassword(), t.getPassword()))
+				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST)))
 				.map(userMapper::fromUserToValidatedUser);
 
 	}
