@@ -15,6 +15,7 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.app.exception.ValidationException;
 import com.app.kafka.KafkaImageProducer;
 import com.app.kafka.message.ImageDeletionMessage;
 import com.app.model.Author;
@@ -67,6 +68,7 @@ public class AuthorService {
 			
 			return dto.getCover().transferTo(file)
 					.then(Mono.fromCallable(() -> authorMapper.fromAuthorRequestToAuthor(dto, userId, true)))
+					.flatMap(this::isAuthorNameUnique)
 					.flatMap(authorRepository::save)
 					.flatMap(t -> saveAuthorImage(t.getImageName(), file))
 					.doFinally(t -> file.delete())
@@ -74,40 +76,46 @@ public class AuthorService {
 		}
 		
 		return  Mono.just(authorMapper.fromAuthorRequestToAuthor(dto, userId, false))
+				.flatMap(this::isAuthorNameUnique)
 				.flatMap(authorRepository::save)
 				.map(t -> ResponseEntity.status(HttpStatus.CREATED).build());
 	}
 	
 	@Transactional
 	public Mono<Void> updateAuthor(AuthorCreateOrUpdateRequest dto, Integer id, Integer userId){
-		Function<Author, Mono<Author>> function = t -> {
-				t.setName(dto.getName());
-				t.setDescription(dto.getDescription());
-			if (t.getImageName() == null && dto.getCover() != null) {
-				t.setImageName(UUID.randomUUID());
-			}
-			return authorRepository.save(t);
-		};
-		
 		if(dto.getCover() != null) {
 			File file = new File(TEMP_FOLDER_NAME, dto.getCover().filename()).getAbsoluteFile();
 			
 			return dto.getCover().transferTo(file)
 					.then(authorRepository.findById(id))
-					.filter(t -> t.getCreatedBy() == userId)
-					.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.FORBIDDEN)))
-					.flatMap(function)
+					.flatMap(t -> this.mapAuthorForUpdate(t, dto, userId))
 					.flatMap(t -> saveAuthorImage(t.getImageName(), file))
 					.doFinally(t -> file.delete())
 					.then();
 		}
 		
 		return authorRepository.findById(id)
-				.filter(t -> t.getCreatedBy() == userId)
-				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.FORBIDDEN)))
-				.flatMap(function)
+				.flatMap(t -> this.mapAuthorForUpdate(t, dto, userId))
 				.then();
 		
+	}
+	
+	private Mono<Author> mapAuthorForUpdate(Author author, AuthorCreateOrUpdateRequest dto, Integer userId){
+		return Mono.just(author)
+				.filter(t -> t.getCreatedBy() == userId)
+				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.FORBIDDEN)))
+				.flatMap(t -> mapAuthorEntity(t, dto))
+				.flatMap(this::isAuthorNameUnique)
+				.flatMap(authorRepository::save);
+	}
+	
+	private Mono<Author> mapAuthorEntity(Author author, AuthorCreateOrUpdateRequest dto) {
+		author.setName(dto.getName());
+		author.setDescription(dto.getDescription());
+		if (author.getImageName() == null && dto.getCover() != null) {
+			author.setImageName(UUID.randomUUID());
+		}
+		return Mono.just(author);
 	}
 	
 	public Mono<Boolean> canUserModify(Integer id, Integer userId) {
@@ -142,5 +150,13 @@ public class AuthorService {
 			})
 			.flatMap(authorRepository::save)
 			.then();
+	}
+	
+	private Mono<Author> isAuthorNameUnique(Author author){
+		return Mono.zip(Mono.just(author), authorRepository.existsByName(author.getName()))
+				.filter(t -> !t.getT2())
+				.switchIfEmpty(Mono.error(() -> new ValidationException("Author with this name already exists")))
+				.map(t -> t.getT1());
+				
 	}
 }

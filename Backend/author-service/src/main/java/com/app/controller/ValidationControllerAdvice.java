@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.bind.support.WebExchangeBindException;
 
-import com.app.exception.FileValidationException;
+import com.app.exception.ValidationException;
 
 import reactor.core.publisher.Mono;
 
@@ -24,8 +24,8 @@ public class ValidationControllerAdvice {
 				));
 	}
 	
-	@ExceptionHandler(FileValidationException.class)
-	public Mono<ResponseEntity<?>> bindError(FileValidationException exception){
+	@ExceptionHandler(ValidationException.class)
+	public Mono<ResponseEntity<?>> bindError(ValidationException exception){
 		return Mono.just(ResponseEntity.badRequest().body(List.of(exception.getReason())));
 	}
 	

@@ -7,7 +7,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
 
-import com.app.exception.FileValidationException;
+import com.app.exception.ValidationException;
 
 import reactor.core.publisher.Mono;
 
@@ -27,7 +27,7 @@ public class ImageValidatorService {
 		MediaType contentType = value.headers().getContentType();
 
 		if (!ALLOWED_CONTENT_TYPES.contains(contentType)) {
-			return Mono.error(() -> new FileValidationException("Wrong format of file. Can be only JPEG and PNG"));
+			return Mono.error(() -> new ValidationException("Wrong format of file. Can be only JPEG and PNG"));
 		}
 
 		return value.content()
@@ -36,7 +36,7 @@ public class ImageValidatorService {
 				.map(t -> t <= MAX_IMAGE_SIZE)
 				.flatMap(t -> {
 					if (!t) {
-						return Mono.error(() -> new FileValidationException(
+						return Mono.error(() -> new ValidationException(
 								"File too large. Max size of file " + (MAX_IMAGE_SIZE / 1024 / 1024) + "MB"));
 					}
 					return Mono.just(true);
