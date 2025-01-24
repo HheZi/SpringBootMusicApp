@@ -13,6 +13,7 @@ import { SeeAuthorComponent } from './main/see-author/see-author.component';
 import { CreatePlaylistComponent } from './main/create-playlist/create-playlist.component';
 import { SeePlaylistComponent } from './main/see-playlist/see-playlist.component';
 import { SeeFavoriteTracksComponent } from './main/see-favorite-tracks/see-favorite-tracks.component';
+import { authGuard } from './auth-guard.guard';
 
 const routes: Routes = [
 {
@@ -28,12 +29,12 @@ const routes: Routes = [
   component: MainComponent,
   children: [
   {path: 'home', component: HomeComponent}, 
-  {path: 'album/create', component: CreateAlbumComponent},
-  {path: 'track/create', component: CreateTrackComponent},
-  {path: 'author/create', component: CreateAuthorComponent},
+  {path: 'album/create', component: CreateAlbumComponent, canActivate: [authGuard]},
+  {path: 'track/create', component: CreateTrackComponent, canActivate: [authGuard]},
+  {path: 'author/create', component: CreateAuthorComponent, canActivate: [authGuard]},
+  {path: 'playlist/create', component: CreatePlaylistComponent, canActivate: [authGuard]},
   {path: 'album/:id', component: SeeAlbumComponent},
   {path: 'author/:id', component: SeeAuthorComponent},
-  {path: 'playlist/create', component: CreatePlaylistComponent},
   {path: 'playlist/:id', component: SeePlaylistComponent},
   {path: 'favorite/tracks', component: SeeFavoriteTracksComponent}
 ]

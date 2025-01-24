@@ -23,6 +23,10 @@ export class AuthService {
     localStorage.setItem(this.TOKEN_KEY_NAME, tokenToSave.token);
   }
   
+  public isUserAuthenticated(): boolean {
+    return localStorage.getItem(this.TOKEN_KEY_NAME) == null && localStorage.getItem(this.REFRESH_TOKEN_KEY_NAME) == null
+  }
+
   public updateToken(): Observable<Object>{
     return this.httpClient.post(AppConts.BASE_URL + "/api/auth/refresh", {refreshToken: this.getRefreshToken()});
   }

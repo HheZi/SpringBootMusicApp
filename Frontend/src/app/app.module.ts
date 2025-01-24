@@ -43,6 +43,7 @@ import { SeePlaylistComponent } from './main/see-playlist/see-playlist.component
 import { PaginatorModule } from 'primeng/paginator';
 import { PanelModule } from 'primeng/panel';
 import { SeeFavoriteTracksComponent } from './main/see-favorite-tracks/see-favorite-tracks.component';
+import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 
 
 @NgModule({
@@ -63,7 +64,8 @@ import { SeeFavoriteTracksComponent } from './main/see-favorite-tracks/see-favor
     PlaylistListComponent,
     TrackListComponent,
     SeePlaylistComponent,
-    SeeFavoriteTracksComponent
+    SeeFavoriteTracksComponent,
+    PageNotFoundComponent
   ],
   imports: [
     BrowserModule,
