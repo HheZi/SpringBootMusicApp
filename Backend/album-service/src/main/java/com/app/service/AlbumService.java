@@ -103,13 +103,13 @@ public class AlbumService {
 	}
 
 
-	public Mono<Boolean> userIsOwnerOfAlbum(Integer playlistId, Integer userId){
-		return albumRepository.findById(playlistId)
+	public Mono<Boolean> userIsOwnerOfAlbum(Integer albumId, Integer userId){
+		return albumRepository.findById(albumId)
 				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)))
-				.flatMap(t -> t.getCreatedBy() == userId ? Mono.just(true) : Mono.just(false));
+				.map(t -> t.getCreatedBy() == userId );
 	}
 
-	public Mono<Void> updateAlbum(RequestToUpdateAlbum dto, Integer playlistId, Integer userId){
+	public Mono<Void> updateAlbum(RequestToUpdateAlbum dto, Integer albumId, Integer userId){
 		Function<Album, Mono<Album>> function = t -> {
 			t.setName(dto.getName());
 			t.setReleaseDate(dto.getReleaseDate());
@@ -124,7 +124,7 @@ public class AlbumService {
 			File file = new File(TEMP_FOLDER_NAME, dto.getCover().filename()).getAbsoluteFile();
 			
 			return dto.getCover().transferTo(file)
-					.then(albumRepository.findById(playlistId))
+					.then(albumRepository.findById(albumId))
 					.filter(t -> t.getCreatedBy() == userId)
 					.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.FORBIDDEN)))
 					.flatMap(function)
@@ -133,7 +133,7 @@ public class AlbumService {
 					.then();
 		}
 		
-		return albumRepository.findById(playlistId)
+		return albumRepository.findById(albumId)
 				.filter(t -> t.getCreatedBy() == userId)
 				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.FORBIDDEN)))
 				.flatMap(function)

@@ -66,7 +66,9 @@ public class AlbumController {
 	@GetMapping("/owner/{id}")
 	public Mono<Boolean> getIsOwner(
 			@PathVariable("id") Integer id, 
-			@RequestHeader("userId") Integer userId
+			@RequestHeader(value = "userId", 
+			required = false, 
+			defaultValue = "0") Integer userId
 		){
 		return albumService.userIsOwnerOfAlbum(id, userId);
 	}

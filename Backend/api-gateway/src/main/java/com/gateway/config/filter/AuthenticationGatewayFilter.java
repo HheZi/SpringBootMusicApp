@@ -35,12 +35,11 @@ public class AuthenticationGatewayFilter implements GatewayFilter {
 			new OpenEndpoint("/api/audio/*", new HttpMethod[] { GET }),
 			new OpenEndpoint("/api/images/*", new HttpMethod[] { GET }),
 			new OpenEndpoint("/api/tracks/**", new HttpMethod[] { GET }),
-			new OpenEndpoint("/api/albums/*", new HttpMethod[] { GET }),
-			new OpenEndpoint("/api/albums/symbol/*", new HttpMethod[] { GET }),
-			new OpenEndpoint("/api/authors/*", new HttpMethod[] { GET }),
-			new OpenEndpoint("/api/authors/symbol/*", new HttpMethod[] { GET }),
-			new OpenEndpoint("/api/playlists/symbol/*", new HttpMethod[] { GET }),
-			new OpenEndpoint("/albums/*", new HttpMethod[] { GET })
+			new OpenEndpoint("/api/albums/**", new HttpMethod[] { GET }),
+			new OpenEndpoint("/api/authors/**", new HttpMethod[] { GET }),
+			new OpenEndpoint("/api/playlists/**", new HttpMethod[] { GET }),
+			new OpenEndpoint("/albums/*", new HttpMethod[] { GET }),
+			new OpenEndpoint("/tracks/*", new HttpMethod[] { GET })
 		);
 
 	@Autowired
@@ -52,22 +51,31 @@ public class AuthenticationGatewayFilter implements GatewayFilter {
 
 		String token = getTokenFromHeader(request);
 
+		boolean jwtExpired = isJwtExpired(token);
+
 		if (isEndpointNotSecured(request)) {
+			if (!jwtExpired) {
+				setUserIdHeader(exchange, jwtUtil.getValue("id", token));
+			}
 			return chain.filter(exchange);
 		}
 		
-		if (isJwtExpired(token)) {
+		if (jwtExpired) {
 			return Mono.error(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
 		}
 
-		exchange.getRequest()
-		.mutate()
-		.header("userId", jwtUtil.getValue("id", token))
-		.build();
-
+		setUserIdHeader(exchange, jwtUtil.getValue("id", token));
+		
 		return chain.filter(exchange);
 	}
 
+	private void setUserIdHeader(ServerWebExchange exchange, String value) {
+		exchange.getRequest()
+		.mutate()
+		.header("userId", value)
+		.build();
+	}
+	
 	private boolean isJwtExpired(String token) {
 		return token == null || jwtUtil.isExpired(token);
 	}

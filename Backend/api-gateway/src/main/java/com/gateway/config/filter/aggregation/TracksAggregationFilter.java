@@ -39,7 +39,7 @@ public class TracksAggregationFilter implements GatewayFilter {
 		int indexOf = path.indexOf('?');
 		String substring = indexOf == -1 ?  "" : path.substring(indexOf);
 		
-		String userId = exchange.getRequest().getHeaders().getOrEmpty("userId").get(0);
+		String userId = getUserIdFromHeader(exchange);
 		
 		Mono<DataBuffer> dataBuffer = getTracks(substring, userId).map(t -> {
 				try {
@@ -54,6 +54,12 @@ public class TracksAggregationFilter implements GatewayFilter {
 		exchange.getResponse().getHeaders().setContentType(MediaType.APPLICATION_JSON);
 		
 		return exchange.getResponse().writeWith(dataBuffer);
+	}
+	
+	private String getUserIdFromHeader(ServerWebExchange exchange) {
+		List<String> list = exchange.getRequest().getHeaders().getOrEmpty("userId");
+		
+		return list.isEmpty() ? null : list.get(0);
 	}
 	
 	protected Mono<PageResponseTrack>  getTracks(String param, String userId) { 
@@ -147,6 +153,7 @@ public class TracksAggregationFilter implements GatewayFilter {
 	
 	private Flux<Long> fetchTracksInFavorites(Mono<PageResponseTrackFromAPI> tracks, String userId){
 		return tracks
+				.filter(t -> userId != null)
 				.map(t -> t.getContent().stream().map(r -> r.getId()).toList())
 				.flatMapMany(t -> 
 						builder
@@ -154,7 +161,7 @@ public class TracksAggregationFilter implements GatewayFilter {
 						.build()
 						.get()
 						.uri(u -> u.queryParam("trackId", t).build())
-						.header("userId", userId + "")
+						.header("userId", userId)
 						.accept(MediaType.APPLICATION_JSON)
 						.exchangeToFlux(e -> e.bodyToFlux(Long.class)));
 	}

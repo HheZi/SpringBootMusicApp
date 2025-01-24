@@ -50,7 +50,9 @@ public class PlaylistController {
 	@GetMapping("owner/{id}")
 	public Mono<Boolean> getIsCreatorOfPlaylist(
 			@PathVariable("id") Integer id, 
-			@RequestHeader("userId") Integer userId
+			@RequestHeader(value = "userId",
+			required = false, 
+			defaultValue = "0") Integer userId
 		){
 		return playlistService.isCreatorOfPlaylist(id, userId);
 	}

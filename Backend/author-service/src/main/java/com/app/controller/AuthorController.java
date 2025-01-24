@@ -54,7 +54,9 @@ public class AuthorController {
 	@GetMapping("owner/{id}")
 	public Mono<Boolean> canModify(
 			@PathVariable("id")Integer id, 
-			@RequestHeader("userId") Integer userId
+			@RequestHeader(value = "userId", 
+			required = false, 
+			defaultValue = "0") Integer userId
 		){
 		return authorService.canUserModify(id, userId);
 	}
