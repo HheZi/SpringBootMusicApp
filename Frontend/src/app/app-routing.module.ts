@@ -14,6 +14,7 @@ import { CreatePlaylistComponent } from './main/create-playlist/create-playlist.
 import { SeePlaylistComponent } from './main/see-playlist/see-playlist.component';
 import { SeeFavoriteTracksComponent } from './main/see-favorite-tracks/see-favorite-tracks.component';
 import { authGuard } from './auth-guard.guard';
+import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 
 const routes: Routes = [
 {
@@ -37,7 +38,11 @@ const routes: Routes = [
   {path: 'author/:id', component: SeeAuthorComponent},
   {path: 'playlist/:id', component: SeePlaylistComponent},
   {path: 'favorite/tracks', component: SeeFavoriteTracksComponent}
-]
+  ],
+},
+{
+  path: '**',
+  component: PageNotFoundComponent
 }];
 
 @NgModule({
