@@ -4,6 +4,7 @@ import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,17 +30,17 @@ public class AuthenticationGatewayFilter implements GatewayFilter {
 
 	private final AntPathMatcher pathMatcher = new AntPathMatcher();
 	
-	private final List<OpenEndpoint> openEndpoints = List.of(
-			new OpenEndpoint("/api/auth/*", new HttpMethod[] { POST }),
-			new OpenEndpoint("/api/users/", new HttpMethod[] { POST }),
-			new OpenEndpoint("/api/audio/*", new HttpMethod[] { GET }),
-			new OpenEndpoint("/api/images/*", new HttpMethod[] { GET }),
-			new OpenEndpoint("/api/tracks/**", new HttpMethod[] { GET }),
-			new OpenEndpoint("/api/albums/**", new HttpMethod[] { GET }),
-			new OpenEndpoint("/api/authors/**", new HttpMethod[] { GET }),
-			new OpenEndpoint("/api/playlists/**", new HttpMethod[] { GET }),
-			new OpenEndpoint("/albums/*", new HttpMethod[] { GET }),
-			new OpenEndpoint("/tracks/*", new HttpMethod[] { GET })
+	private final List<Endpoint> openEndpoints = List.of(
+			new Endpoint("/api/auth/*", new HttpMethod[] { POST }),
+			new Endpoint("/api/users/", new HttpMethod[] { POST }),
+			new Endpoint("/api/audio/*", new HttpMethod[] { GET }),
+			new Endpoint("/api/images/*", new HttpMethod[] { GET }),
+			new Endpoint("/api/tracks/**", new HttpMethod[] { GET }),
+			new Endpoint("/api/albums/**", new HttpMethod[] { GET }),
+			new Endpoint("/api/authors/**", new HttpMethod[] { GET }),
+			new Endpoint("/api/playlists/{[\\d+|\\bsymbol\\b|\\bowner\\b\\btracks\\b]}/**", 
+					new HttpMethod[] { GET }),
+			new Endpoint("/albums/*", new HttpMethod[] { GET })
 		);
 
 	@Autowired
@@ -50,17 +51,14 @@ public class AuthenticationGatewayFilter implements GatewayFilter {
 		ServerHttpRequest request = exchange.getRequest();
 
 		String token = getTokenFromHeader(request);
-
-		boolean jwtExpired = isJwtExpired(token);
-
-		if (isEndpointNotSecured(request)) {
-			if (!jwtExpired) {
-				setUserIdHeader(exchange, jwtUtil.getValue("id", token));
-			}
-			return chain.filter(exchange);
+		
+		boolean isJwtTokenNotPresent = isJwtTokenNotPresent(token);
+		
+		if ( (isPathOfTracks(request) && isJwtTokenNotPresent) || isEndpointNotSecured(request)) {
+			return chain.filter(exchange);	
 		}
 		
-		if (jwtExpired) {
+		if (isJwtTokenNotPresent || isJwtExpired(token)) {
 			return Mono.error(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
 		}
 
@@ -77,7 +75,15 @@ public class AuthenticationGatewayFilter implements GatewayFilter {
 	}
 	
 	private boolean isJwtExpired(String token) {
-		return token == null || jwtUtil.isExpired(token);
+		return jwtUtil.isExpired(token);
+	}
+	
+	private boolean isPathOfTracks(ServerHttpRequest request) {
+		return isPathTheSame(request, "/tracks/*");
+	}
+	
+	private boolean isJwtTokenNotPresent(String token) {
+		return Objects.isNull(token);
 	}
 
 	private String getTokenFromHeader(ServerHttpRequest request) {

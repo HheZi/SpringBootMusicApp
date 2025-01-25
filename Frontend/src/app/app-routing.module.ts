@@ -37,7 +37,7 @@ const routes: Routes = [
   {path: 'album/:id', component: SeeAlbumComponent},
   {path: 'author/:id', component: SeeAuthorComponent},
   {path: 'playlist/:id', component: SeePlaylistComponent},
-  {path: 'favorite/tracks', component: SeeFavoriteTracksComponent}
+  {path: 'favorite/tracks', component: SeeFavoriteTracksComponent, canActivate: [authGuard]}
   ],
 },
 {
