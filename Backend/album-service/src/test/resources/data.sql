@@ -11,7 +11,7 @@ INSERT INTO albums (name, image_name, created_by, author_id, release_date)
 VALUES
     ('The Classic Vibes', RANDOM_UUID(), 1, 201, '2023-10-10'),
     ('Echoes of Eternity', null, 2, 202, '2024-01-20'),
-    ('Melody Haven', RANDOM_UUID(), 3, 203, '2024-05-05'),
+    ('Melody Haven', null, 3, 203, '2024-05-05'),
     ('Rhythms of Time', RANDOM_UUID(), 4, 204, '2023-12-15'),
     ('Chords of Serenity', null, 5, 205, '2024-07-18'),
     ('Harmonic Horizon', RANDOM_UUID(), 6, 206, '2024-09-25'),

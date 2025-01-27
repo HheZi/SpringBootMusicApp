@@ -3,15 +3,10 @@ package com.app.service;
 import java.io.File;
 import java.util.List;
 import java.util.UUID;
-import java.util.function.Function;
 
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.BodyInserters;
-import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.app.kafka.KafkaAlbumProducer;
@@ -38,11 +33,11 @@ public class AlbumService {
 
 	private final AlbumMapper albumMapper;
 
-	private final WebClient.Builder builder;
-	
 	private final KafkaAlbumProducer kafkaAlbumProducer;
 	
 	private final KafkaImageProducer kafkaImageProducer;
+	
+	private final WebService webService;
 	
 	private final String TEMP_FOLDER_NAME = "temp";
 
@@ -68,38 +63,21 @@ public class AlbumService {
 				.map(albumMapper::fromAlbumToAlbumPreviewResponse);
 	}
 
-	public Mono<ResponseEntity<Integer>> createAlbum(RequestAlbum dto, Integer userId) {
+	public Mono<ResponseEntity<?>> createAlbum(RequestAlbum dto, Integer userId) {
 		if (dto.getCover() != null) {
 			File file = new File(TEMP_FOLDER_NAME, dto.getCover().filename()).getAbsoluteFile();
-			
-			
 			
 			return dto.getCover().transferTo(file)
 					.then(Mono.fromCallable(() -> albumMapper.fromRequestAlbumToAlbum(dto, userId, true)))
 					.flatMap(albumRepository::save)
-					.flatMap(t -> saveAlbumCover(t.getImageName(), file))
+					.flatMap(t -> webService.saveAlbumCover(t.getImageName(), file))
 					.doFinally(t -> file.delete())
 					.map(t -> ResponseEntity.status(HttpStatus.CREATED).build());
 		}
 		
 		return  Mono.just(albumMapper.fromRequestAlbumToAlbum(dto, userId, false))
 				.flatMap(albumRepository::save)
-				.map(t -> ResponseEntity.status(HttpStatus.CREATED).body(t.getId()));
-	}
-
-	private Mono<Void> saveAlbumCover(UUID name, File pathToFile) {
-		if (name == null) return Mono.empty();
-
-		MultipartBodyBuilder multipartbuilder = new MultipartBodyBuilder();
-		
-		multipartbuilder.part("file", new FileSystemResource(pathToFile));
-		multipartbuilder.part("name", name.toString());
-		
-		return builder.build().post().uri("http://image-service/api/images/")
-				.body(BodyInserters.fromMultipartData(multipartbuilder.build()))
-				.retrieve()
-				.bodyToMono(Void.class);
-
+				.map(t -> ResponseEntity.status(HttpStatus.CREATED).build());
 	}
 
 
@@ -110,34 +88,39 @@ public class AlbumService {
 	}
 
 	public Mono<Void> updateAlbum(RequestToUpdateAlbum dto, Integer albumId, Integer userId){
-		Function<Album, Mono<Album>> function = t -> {
-			t.setName(dto.getName());
-			t.setReleaseDate(dto.getReleaseDate());
-			
-			if (dto.getCover() != null && t.getImageName() == null) {
-				t.setImageName(UUID.randomUUID());
-			}
-			return albumRepository.save(t);
-		};
-		
 		if(dto.getCover() != null) {
 			File file = new File(TEMP_FOLDER_NAME, dto.getCover().filename()).getAbsoluteFile();
 			
 			return dto.getCover().transferTo(file)
 					.then(albumRepository.findById(albumId))
-					.filter(t -> t.getCreatedBy() == userId)
-					.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.FORBIDDEN)))
-					.flatMap(function)
-					.flatMap(t -> saveAlbumCover(t.getImageName(), file))
+					.flatMap(t -> mapAlbumForUpdate(dto, t, userId))
+					.flatMap(t ->  webService.saveAlbumCover(t.getImageName(), file))
 					.doFinally(t -> file.delete())
 					.then();
 		}
 		
 		return albumRepository.findById(albumId)
+				.flatMap(t -> mapAlbumForUpdate(dto, t, userId))
+				.then();
+	}
+	
+	private Mono<Album> mapAlbumForUpdate(RequestToUpdateAlbum dto, Album album, Integer userId){
+		return Mono.just(album)
 				.filter(t -> t.getCreatedBy() == userId)
 				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.FORBIDDEN)))
-				.flatMap(function)
-				.then();
+				.flatMap(t -> this.mapAlbumEntity(album, dto))
+				.flatMap(albumRepository::save);
+	}
+	
+	
+	private Mono<Album> mapAlbumEntity(Album album, RequestToUpdateAlbum dto){
+		album.setName(dto.getName());
+		album.setReleaseDate(dto.getReleaseDate());
+		
+		if (dto.getCover() != null && album.getImageName() == null) {
+			album.setImageName(UUID.randomUUID());
+		}
+		return Mono.just(album);
 	}
 	
 	public Mono<Void> deleteAlbum(Integer id, Integer userId){

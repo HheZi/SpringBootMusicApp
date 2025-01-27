@@ -74,7 +74,7 @@ public class AlbumController {
 	}
 	
 	@PostMapping
-	public Mono<ResponseEntity<Integer>> createAlbum(
+	public Mono<ResponseEntity<?>> createAlbum(
 			@Valid @ModelAttribute RequestAlbum dto,
 			@RequestHeader("userId") Integer userId
 		) {

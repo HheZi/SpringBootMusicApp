@@ -1,17 +1,25 @@
 package com.app.controller;
 
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
+
+import java.io.File;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.MultipartBodyBuilder;
-import org.springframework.kafka.test.EmbeddedKafkaBroker;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.util.ResourceUtils;
@@ -19,21 +27,22 @@ import org.springframework.web.reactive.function.BodyInserters;
 
 import com.app.payload.response.AlbumPreviewResponse;
 import com.app.payload.response.ResponseAlbum;
-
+import com.app.service.WebService;
 
 import lombok.SneakyThrows;
+import reactor.core.publisher.Mono;
 
 @SpringBootTest
 @EmbeddedKafka(partitions = 1, brokerProperties = { "listeners=PLAINTEXT://localhost:9092", "port=9092" })
 @AutoConfigureWebTestClient
+@TestInstance(Lifecycle.PER_CLASS)
 class AlbumControllerTest {
 
 	@Autowired
-	private EmbeddedKafkaBroker broker;
-	
-	@Autowired
 	private WebTestClient testClient;
 	
+	@MockBean
+	private WebService service;
 	
 	@Test
 	public void get_albums_by_ids() {
@@ -195,9 +204,32 @@ class AlbumControllerTest {
 		.body(BodyInserters.fromMultipartData(bodyBuilder.build()))
 		.accept(MediaType.APPLICATION_JSON)
 		.exchange()
-		.expectStatus().isCreated()
-		.expectBody(Integer.class)
-		.isEqualTo(11);
+		.expectStatus().isCreated();
+	}
+	
+	@Test
+	@SneakyThrows
+	public void create_album() {
+		doReturn(Mono.just(ResponseEntity.ok().build()))
+		.when(service).saveAlbumCover(any(UUID.class), any(File.class));
+		
+		var bodyBuilder = new MultipartBodyBuilder();
+		
+		bodyBuilder.part("name", "newAlbum");
+		bodyBuilder.part("releaseDate", "1992-07-07");
+		bodyBuilder.part("authorId", "4");
+		bodyBuilder.part("cover", new FileSystemResource(ResourceUtils.getFile("classpath:testImage.jpeg")));
+		
+		testClient
+		.post()
+		.uri(t -> t.path("/api/albums/").build())
+		.contentType(MediaType.MULTIPART_FORM_DATA)
+		.header("userId", "1")
+		.body(BodyInserters.fromMultipartData(bodyBuilder.build()))
+		.accept(MediaType.APPLICATION_JSON)
+		.exchange()
+		.expectStatus().isCreated();
+		
 	}
 	
 	@Test
@@ -238,6 +270,8 @@ class AlbumControllerTest {
 		.exchange()
 		.expectStatus().isBadRequest()
 		.expectBody();
+		
+		
 	}
 	
 	@Test
@@ -273,6 +307,40 @@ class AlbumControllerTest {
 		.expectStatus().is2xxSuccessful()
 		.expectBody(ResponseAlbum.class)
 		.isEqualTo(expected);
+	}
+	
+	@Test
+	@SneakyThrows
+	public void update_album() {
+		doReturn(Mono.just(ResponseEntity.ok().build()))
+		.when(service).saveAlbumCover(any(UUID.class), any(File.class));
+		
+		var bodyBuilder = new MultipartBodyBuilder();
+		
+		bodyBuilder.part("name", "test");
+		bodyBuilder.part("releaseDate", "1990-07-07");
+		bodyBuilder.part("cover", new FileSystemResource(ResourceUtils.getFile("classpath:testImage.jpeg")));
+		
+		testClient
+		.put()
+		.uri(t -> t.path("/api/albums/"+11).build())
+		.header("userId", "11")
+		.contentType(MediaType.MULTIPART_FORM_DATA)
+		.body(BodyInserters.fromMultipartData(bodyBuilder.build()))
+		.accept(MediaType.APPLICATION_JSON)
+		.exchange()
+		.expectStatus().isOk();
+	}
+	
+	@Test
+	public void delete_cover_of_album() {
+		testClient
+		.delete()
+		.uri(t -> t.path("/api/albums/cover/"+3).build())
+		.header("userId", "3")
+		.accept(MediaType.APPLICATION_JSON)
+		.exchange()
+		.expectStatus().isOk();
 	}
 	
 	@Test
