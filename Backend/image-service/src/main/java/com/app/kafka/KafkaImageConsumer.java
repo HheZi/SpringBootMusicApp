@@ -16,8 +16,6 @@ public class KafkaImageConsumer {
 	
 	@KafkaListener(topics = "image-deletion-topic", groupId = "image-group")
 	public void deleteImage(ImageDeletionMessage deletionMessage) {
-		if (deletionMessage.imageName() != null) {
-			imageService.deleteImage(deletionMessage.imageName().toString()).subscribe();
-		}
+		imageService.deleteImage(deletionMessage.imageName()).subscribe();			
 	}
 }

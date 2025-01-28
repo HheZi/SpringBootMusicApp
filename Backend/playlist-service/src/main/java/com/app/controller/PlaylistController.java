@@ -57,7 +57,7 @@ public class PlaylistController {
 		return playlistService.isCreatorOfPlaylist(id, userId);
 	}
 	
-	@GetMapping
+	@GetMapping("/users/mine/")
 	public Flux<ResponsePlaylistPreview> getPlaylistsByOwner(@RequestHeader("userId") Integer userId){
 		return playlistService.getPlaylistsByCreatorId(userId);
 	}

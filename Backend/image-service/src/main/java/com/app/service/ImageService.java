@@ -53,15 +53,15 @@ public class ImageService {
 				.transferTo(Paths.get(imageDirName, image.getName()));
 	}
 	
-	public Mono<Path> deleteImage(String name) {
+	public Mono<Boolean> deleteImage(String name) {
 		return Mono.just(Paths.get(imageDirName, name))
 				.filter(t -> !name.equals(defaultImageName))
-				.doOnNext(this::deleteImage);
+				.flatMap(this::deleteImage);
 	}
 	
 	@SneakyThrows
-	private void deleteImage(Path path) {
-		Files.deleteIfExists(path);
+	private Mono<Boolean> deleteImage(Path path) {
+		return Mono.just(Files.deleteIfExists(path));
 	}
 	
 }

@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -218,7 +219,7 @@ class AlbumControllerTest {
 		bodyBuilder.part("name", "newAlbum");
 		bodyBuilder.part("releaseDate", "1992-07-07");
 		bodyBuilder.part("authorId", "4");
-		bodyBuilder.part("cover", new FileSystemResource(ResourceUtils.getFile("classpath:testImage.jpeg")));
+		bodyBuilder.part("cover", new ClassPathResource("testImage.jpeg"));
 		
 		testClient
 		.post()
@@ -258,7 +259,7 @@ class AlbumControllerTest {
 		bodyBuilder.part("name", "test");
 		bodyBuilder.part("releaseDate", "1990-07-07");
 		bodyBuilder.part("authorId", "2");
-		bodyBuilder.part("cover", new FileSystemResource(ResourceUtils.getFile("classpath:testImage")));
+		bodyBuilder.part("cover", new ClassPathResource("testImage"));
 		
 		testClient
 		.post()
@@ -319,7 +320,7 @@ class AlbumControllerTest {
 		
 		bodyBuilder.part("name", "test");
 		bodyBuilder.part("releaseDate", "1990-07-07");
-		bodyBuilder.part("cover", new FileSystemResource(ResourceUtils.getFile("classpath:testImage.jpeg")));
+		bodyBuilder.part("cover", new ClassPathResource("testImage.jpeg"));
 		
 		testClient
 		.put()

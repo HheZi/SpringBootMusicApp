@@ -1,30 +1,35 @@
 package com.app.controller;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.http.client.MultipartBodyBuilder;
+import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.web.reactive.function.BodyInserters;
 
+import com.app.payload.request.AuthorCreateOrUpdateRequest;
+import com.app.payload.response.AuthorResponse;
+import com.app.service.WebService;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @SpringBootTest
-@TestPropertySource(locations = "classpath:/application-test.properties")
+@EmbeddedKafka(partitions = 1, brokerProperties = { "listeners=PLAINTEXT://localhost:9092", "port=9092" })
 @AutoConfigureWebTestClient
-@Disabled
 class AuthorControllerTest {
 
 	@Autowired
 	private WebTestClient testClient;
 	
-	@Autowired
-	private ObjectMapper mapper;
+	@MockBean
+	private WebService service;
 	
 	@Test
-	void test_get_author_method() {
+	void test_get_author() {
 		String nameOfAuthor = "First";
 		
 		testClient.get()
@@ -35,32 +40,47 @@ class AuthorControllerTest {
 		.jsonPath("$.id").isEqualTo(1)
 		.jsonPath("$.name").isEqualTo(nameOfAuthor);
 	}
+	
+	@Test
+	void test_get_authors() {
+		testClient.get()
+		.uri(t -> t.path("/api/authors/").queryParam("ids", 1,2).build())
+		.exchange()
+		.expectStatus().isOk()
+		.expectBodyList(AuthorResponse.class)
+		.hasSize(2);
+	} 
 
 	@Test
 	void test_find_author_by_start_symbol() {
-		String nameOfAuthor = "Second";
+		String nameOfAuthor = "sec";
 		
 		testClient.get()
-		.uri("/api/authors/symbol/" + nameOfAuthor.toLowerCase().substring(0, 3))
+		.uri("/api/authors/symbol/" + nameOfAuthor)
 		.exchange()
 		.expectStatus().isOk()
 		.expectBody()
 		.jsonPath("$[0].id").isEqualTo(2)
-		.jsonPath("$[0].name").isEqualTo(nameOfAuthor);
+		.jsonPath("$[0].name").isEqualTo("Second");
 		
 	}
 	
 	@Test
-	void test_create_author_method() throws JsonProcessingException {
+	void test_create_author_without_cover() {
 		
-//		AuthorCreateOrUpdateRequest request = new AuthorCreateOrUpdateRequest("New", null);
-//		
-//		testClient.post()
-//		.uri("/api/authors/")
-//		.contentType(MediaType.APPLICATION_JSON)
-//		.bodyValue(mapper.writeValueAsBytes(request))
-//		.exchange()
-//		.expectStatus().isCreated();
+		var builder = new MultipartBodyBuilder();
+		
+		builder.part("name", "test");
+		builder.part("description", "test desc");
+		
+		testClient.post()
+		.uri(t -> t.path("/api/authors/").build())
+		.header("userId", "2")
+		.contentType(MediaType.MULTIPART_FORM_DATA)
+		.bodyValue(BodyInserters.fromMultipartData(builder.build()))
+		.accept(MediaType.APPLICATION_JSON)
+		.exchange()
+		.expectStatus().isCreated();
 		
 	}
 }

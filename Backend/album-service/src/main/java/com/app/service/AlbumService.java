@@ -130,7 +130,7 @@ public class AlbumService {
 				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)))
 				.doOnNext(t -> {
 					kafkaAlbumProducer.sendDeleteAlbumMessage(new AlbumDeletionMessage(t.getId()));
-					kafkaImageProducer.sendMessageToDeleteImage(new ImageDeletionMessage(t.getImageName()));
+					kafkaImageProducer.sendMessageToDeleteImage(new ImageDeletionMessage(t.getImageName().toString()));
 				})
 				.flatMap(albumRepository::delete);
 	}
@@ -140,7 +140,7 @@ public class AlbumService {
 				.filter(t -> t.getCreatedBy() == userId)
 				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.FORBIDDEN)))
 				.doOnNext(t -> {
-					kafkaImageProducer.sendMessageToDeleteImage(new ImageDeletionMessage(t.getImageName()));
+					kafkaImageProducer.sendMessageToDeleteImage(new ImageDeletionMessage(t.getImageName().toString()));
 					t.setImageName(null);
 				})
 				.flatMap(albumRepository::save)

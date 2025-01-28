@@ -36,11 +36,21 @@ public class AuthenticationGatewayFilter implements GatewayFilter {
 			new Endpoint("/api/audio/*", new HttpMethod[] { GET }),
 			new Endpoint("/api/images/*", new HttpMethod[] { GET }),
 			new Endpoint("/api/tracks/**", new HttpMethod[] { GET }),
-			new Endpoint("/api/albums/**", new HttpMethod[] { GET }),
-			new Endpoint("/api/authors/**", new HttpMethod[] { GET }),
-			new Endpoint("/api/playlists/{[\\d+|\\bsymbol\\b|\\bowner\\b\\btracks\\b]}/**", 
-					new HttpMethod[] { GET }),
+			new Endpoint("/api/albums/*", new HttpMethod[] { GET }),
+			new Endpoint("/api/albums/symbol/*", new HttpMethod[] { GET }),
+			new Endpoint("/api/authors/*", new HttpMethod[] { GET }),
+			new Endpoint("/api/authors/symbol/*", new HttpMethod[] { GET }),
+			new Endpoint("/api/playlists/*", new HttpMethod[] { GET }),
+			new Endpoint("/api/playlists/symbol/*", new HttpMethod[] { GET }),
+			new Endpoint("/api/playlists/tracks/*", new HttpMethod[] { GET }),
 			new Endpoint("/albums/*", new HttpMethod[] { GET })
+		);
+	
+	private final List<Endpoint> openClosedEndpoints = List.of(
+			new Endpoint("/tracks/*", new HttpMethod[] { GET }),
+			new Endpoint("/api/albums/owner/*", new HttpMethod[] { GET }),
+			new Endpoint("/api/authors/owner/*", new HttpMethod[] { GET }),
+			new Endpoint("/api/playlists/owner/*", new HttpMethod[] { GET })
 		);
 
 	@Autowired
@@ -54,7 +64,10 @@ public class AuthenticationGatewayFilter implements GatewayFilter {
 		
 		boolean isJwtTokenNotPresent = isJwtTokenNotPresent(token);
 		
-		if ( (isPathOfTracks(request) && isJwtTokenNotPresent) || isEndpointNotSecured(request)) {
+		boolean isOpenClosedEndpoint = isEndpointTheSame(request, openClosedEndpoints);
+		boolean isOpenEndpoint = isEndpointTheSame(request, openEndpoints);
+		
+		if ( (isOpenClosedEndpoint && isJwtTokenNotPresent) || isOpenEndpoint) {
 			return chain.filter(exchange);	
 		}
 		
@@ -78,10 +91,6 @@ public class AuthenticationGatewayFilter implements GatewayFilter {
 		return jwtUtil.isExpired(token);
 	}
 	
-	private boolean isPathOfTracks(ServerHttpRequest request) {
-		return isPathTheSame(request, "/tracks/*");
-	}
-	
 	private boolean isJwtTokenNotPresent(String token) {
 		return Objects.isNull(token);
 	}
@@ -95,8 +104,8 @@ public class AuthenticationGatewayFilter implements GatewayFilter {
 		}
 	}
 
-	private boolean isEndpointNotSecured(ServerHttpRequest request) {
-	    return openEndpoints.stream()
+	private boolean isEndpointTheSame(ServerHttpRequest request, List<Endpoint> endpoints) {
+	    return endpoints.stream()
 	            .anyMatch(endpoint -> isPathTheSame(request, endpoint.uri()) && isHttpMethodTheSame(request, endpoint.httpMethods()));
 	}
 

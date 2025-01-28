@@ -36,7 +36,7 @@ public class AuthorService {
 
 	private final AuthorMapper authorMapper;
 	
-	private final WebClient.Builder builder;
+	private final WebService service;
 	
 	private final KafkaImageProducer kafkaImageProducer;
 	
@@ -70,7 +70,7 @@ public class AuthorService {
 					.then(Mono.fromCallable(() -> authorMapper.fromAuthorRequestToAuthor(dto, userId, true)))
 					.flatMap(this::isAuthorNameUnique)
 					.flatMap(authorRepository::save)
-					.flatMap(t -> saveAuthorImage(t.getImageName(), file))
+					.flatMap(t -> service.saveAuthorImage(t.getImageName(), file))
 					.doFinally(t -> file.delete())
 					.map(t -> ResponseEntity.status(HttpStatus.CREATED).build());
 		}
@@ -89,7 +89,7 @@ public class AuthorService {
 			return dto.getCover().transferTo(file)
 					.then(authorRepository.findById(id))
 					.flatMap(t -> this.mapAuthorForUpdate(t, dto, userId))
-					.flatMap(t -> saveAuthorImage(t.getImageName(), file))
+					.flatMap(t -> service.saveAuthorImage(t.getImageName(), file))
 					.doFinally(t -> file.delete())
 					.then();
 		}
@@ -105,16 +105,17 @@ public class AuthorService {
 				.filter(t -> t.getCreatedBy() == userId)
 				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.FORBIDDEN)))
 				.flatMap(t -> mapAuthorEntity(t, dto))
-				.flatMap(this::isAuthorNameUnique)
 				.flatMap(authorRepository::save);
 	}
 	
 	private Mono<Author> mapAuthorEntity(Author author, AuthorCreateOrUpdateRequest dto) {
-		author.setName(dto.getName());
+			author.setName(dto.getName());			
 		author.setDescription(dto.getDescription());
 		if (author.getImageName() == null && dto.getCover() != null) {
 			author.setImageName(UUID.randomUUID());
 		}
+		if(!author.getName().equals(dto.getName())) return this.isAuthorNameUnique(author);
+		
 		return Mono.just(author);
 	}
 	
@@ -122,21 +123,6 @@ public class AuthorService {
 		return authorRepository.findById(id)
 				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)))
 		.map(t -> t.getCreatedBy() == userId);
-	}
-	
-	private Mono<Void> saveAuthorImage(UUID name, File pathToFile) {
-		if (name == null) return Mono.empty();
-
-		MultipartBodyBuilder multipartbuilder = new MultipartBodyBuilder();
-		
-		multipartbuilder.part("file", new FileSystemResource(pathToFile));
-		multipartbuilder.part("name", name.toString());
-		
-		return builder.build().post().uri("http://image-service/api/images/")
-				.body(BodyInserters.fromMultipartData(multipartbuilder.build()))
-				.retrieve()
-				.bodyToMono(Void.class);
-		
 	}
 	
 	public Mono<Void> deleteAuthorImage(Integer id, Integer userId) {
@@ -152,8 +138,8 @@ public class AuthorService {
 			.then();
 	}
 	
-	private Mono<Author> isAuthorNameUnique(Author author){
-		return Mono.zip(Mono.just(author), authorRepository.existsByName(author.getName()))
+	private Mono<Author> isAuthorNameUnique(Author author) {
+		return Mono.zip(Mono.just(author), authorRepository.existsByNameIgnoreCase(author.getName()))
 				.filter(t -> !t.getT2())
 				.switchIfEmpty(Mono.error(() -> new ValidationException("Author with this name already exists")))
 				.map(t -> t.getT1());

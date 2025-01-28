@@ -23,7 +23,7 @@ export class PlaylistService {
   }
 
   public getPlaylistsByOwner(): Observable<Object>{
-    return this.httpClient.get(this.PLAYLIST_URL);
+    return this.httpClient.get(this.PLAYLIST_URL + '/users/mine/');
   }
 
   public getPlaylist(id: number): Observable<Object>{

@@ -12,5 +12,5 @@ import reactor.core.publisher.Mono;
 public interface AuthorRepository extends ReactiveCrudRepository<Author, Integer>{
 	Flux<Author> findByNameStartingWithIgnoreCase(String name);
 	
-	Mono<Boolean> existsByName(String name);
+	Mono<Boolean> existsByNameIgnoreCase(String name);
 }
