@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.UUID;
 
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -18,7 +19,7 @@ public class WebService {
 	
 	private final WebClient.Builder builder;
 	
-	public Mono<Void> saveAuthorImage(UUID name, File pathToFile) {
+	public Mono<ResponseEntity<Void>> saveAuthorImage(UUID name, File pathToFile) {
 		if (name == null) return Mono.empty();
 
 		MultipartBodyBuilder multipartbuilder = new MultipartBodyBuilder();
@@ -29,7 +30,7 @@ public class WebService {
 		return builder.build().post().uri("http://image-service/api/images/")
 				.body(BodyInserters.fromMultipartData(multipartbuilder.build()))
 				.retrieve()
-				.bodyToMono(Void.class);
+				.toBodilessEntity();
 		
 	}
 	

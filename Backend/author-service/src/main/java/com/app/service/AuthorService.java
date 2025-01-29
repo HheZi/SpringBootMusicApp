@@ -2,17 +2,13 @@ package com.app.service;
 
 import java.io.File;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
-import java.util.function.Function;
 
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.reactive.function.BodyInserters;
-import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.app.exception.ValidationException;
@@ -109,12 +105,14 @@ public class AuthorService {
 	}
 	
 	private Mono<Author> mapAuthorEntity(Author author, AuthorCreateOrUpdateRequest dto) {
-			author.setName(dto.getName());			
 		author.setDescription(dto.getDescription());
 		if (author.getImageName() == null && dto.getCover() != null) {
 			author.setImageName(UUID.randomUUID());
 		}
-		if(!author.getName().equals(dto.getName())) return this.isAuthorNameUnique(author);
+		if(!author.getName().equals(dto.getName())) {
+			author.setName(dto.getName());
+			return this.isAuthorNameUnique(author);
+		}
 		
 		return Mono.just(author);
 	}
@@ -126,10 +124,11 @@ public class AuthorService {
 	}
 	
 	public Mono<Void> deleteAuthorImage(Integer id, Integer userId) {
-		return authorRepository
-			.findById(id)
+		return authorRepository.findById(id)
+			.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)))
 			.filter(t -> t.getCreatedBy() == userId)
 			.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.FORBIDDEN)))
+			.filter(t -> Objects.nonNull(t.getImageName()))
 			.doOnNext(t -> {
 				kafkaImageProducer.sendMessageToDeleteImage(new ImageDeletionMessage(t.getImageName()));
 				t.setImageName(null);
