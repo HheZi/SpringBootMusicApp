@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 
@@ -34,11 +35,15 @@ public class JwtUtil {
 	
 	
 	public Claims getClaims(String token) {
-		return (Claims) Jwts.parser().decryptWith(getSingingKey()).build().parse(token).getPayload();
+		return (Claims) Jwts.parser().verifyWith(getSingingKey()).build().parseSignedClaims(token).getPayload();
 	}
 	
 	public boolean isExpired(String token) {
-		return getClaims(token).getExpiration().before(new Date());
+		try {
+			return getClaims(token).getExpiration().before(new Date());
+		} catch (ExpiredJwtException e) {
+			return true;
+		}
 	}
 	
 	private SecretKey getSingingKey() {

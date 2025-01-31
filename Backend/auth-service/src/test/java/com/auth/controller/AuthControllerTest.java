@@ -1,33 +1,31 @@
 package com.auth.controller;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.post;
-import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
 
-import java.util.List;
+import java.util.UUID;
 
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.cloud.client.DefaultServiceInstance;
-import org.springframework.cloud.client.discovery.simple.SimpleDiscoveryClient;
-import org.springframework.cloud.client.discovery.simple.SimpleDiscoveryProperties;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Primary;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import com.auth.payload.request.AuthRequest;
+import com.auth.payload.request.RefreshTokenRequest;
+import com.auth.payload.response.AuthResponse;
+import com.auth.payload.response.JwtTokenResponse;
+import com.auth.payload.response.UserDetails;
+import com.auth.service.UserWebService;
 import com.auth.util.JwtUtil;
 
+import reactor.core.publisher.Mono;
+
 @SpringBootTest
+@AutoConfigureWebTestClient
 class AuthControllerTest {
 
 	@Autowired
@@ -36,32 +34,50 @@ class AuthControllerTest {
 	@Autowired
 	private JwtUtil jwtUtil;
 	
-	@BeforeAll
-	private static void configureWireMock() {
-		stubFor(post(urlEqualTo("/api/users/validate"))
-				.willReturn(aResponse()
-						.withStatus(200)
-						.withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-						.withBody("{\"username\": \"test\", \"id\": \"1\"}")
-						));
+	@MockBean
+	private UserWebService service;
+	
+	@Test
+	@Order(1)
+	void test_login() {
+		AuthRequest authRequest = configBeforeBeforeRequest();
 		
+		testClient.post()
+		.uri("/api/auth/login")
+		.bodyValue(authRequest)
+		.exchange()
+		.expectStatus().isOk()
+		.expectBody(AuthResponse.class)
+		.value(t -> assertFalse(jwtUtil.isExpired(t.getToken())));
 	}
 
 	@Test
-	void test_login_method() {
-		AuthRequest authRequest = new AuthRequest("test", "test");
+	void test_refresh_token() {
+		AuthRequest authRequest = configBeforeBeforeRequest();
 		
-		String responseBody = testClient.post()
+		AuthResponse responseBody = testClient.post()
+		.uri("/api/auth/login")
 		.bodyValue(authRequest)
-		.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+		.exchange()
+		.expectBody(AuthResponse.class)
+		.returnResult().getResponseBody();
+		
+		RefreshTokenRequest refreshTokenRequest = new RefreshTokenRequest(UUID.fromString(responseBody.getRefreshToken()));
+		
+		testClient.post()
+		.uri("/api/auth/refresh")
+		.bodyValue(refreshTokenRequest)
 		.exchange()
 		.expectStatus().isOk()
-		.expectBody(String.class)
-		.returnResult().getResponseBody();
-	
-		assertThat(responseBody).isNotEmpty(); 
-		
-		assertFalse(jwtUtil.isExpired(responseBody));
+		.expectBody(JwtTokenResponse.class)
+		.value(t -> assertFalse(jwtUtil.isExpired(t.getToken())));
 	}
 
+	private AuthRequest configBeforeBeforeRequest() {
+		doReturn(Mono.just(new UserDetails(2, "test"))).when(service).getUserDetails(any());
+		
+		AuthRequest authRequest = new AuthRequest("test", "12345");
+		return authRequest;
+	}
+	
 }

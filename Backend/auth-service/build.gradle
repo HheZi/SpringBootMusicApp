@@ -13,6 +13,8 @@ java {
 	}
 }
 
+
+
 configurations {
 	compileOnly {
 		extendsFrom annotationProcessor
@@ -44,9 +46,8 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'io.projectreactor:reactor-test'
+	testImplementation 'io.r2dbc:r2dbc-h2'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-	testImplementation 'com.github.tomakehurst:wiremock:2.27.2'
-	
 }
 
 dependencyManagement {

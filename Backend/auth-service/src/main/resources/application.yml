@@ -5,7 +5,7 @@ spring:
       discovery:
         enabled: true
   config:
-    import: "configserver:"
+    import: "optional:configserver:"
   application:
     name: auth-service
   profiles:
