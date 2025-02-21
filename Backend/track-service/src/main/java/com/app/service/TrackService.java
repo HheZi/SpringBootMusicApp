@@ -42,7 +42,7 @@ public class TrackService {
 
 	private final TrackMapper mapper;
 
-	private final WebClient.Builder webClient;
+	private final WebService webService;
 
 	private final R2dbcEntityTemplate template;
 	
@@ -115,26 +115,9 @@ public class TrackService {
 		return dto.getAudio().transferTo(file)
 				.then(Mono.fromCallable(() -> new Mp3File(file)))
 				.flatMap(t -> repository.save(mapper.fromCreateTrackDtoToTrack(dto, userId, t)))
-				.flatMap(t -> saveAudio(t.getAudioName().toString(), file))
+				.flatMap(t -> webService.saveAudio(t.getAudioName().toString(), file))
 				.doFinally(t -> file.delete())
 				.map(t -> ResponseEntity.status(HttpStatus.CREATED).build());
-	}
-
-	private Mono<Void> saveAudio(String name, File pathToTempAudio) {
-		if(name  == null || pathToTempAudio == null) return Mono.empty();
-		
-		MultipartBodyBuilder builder = new MultipartBodyBuilder();
-		
-		builder.part("file", new FileSystemResource(pathToTempAudio));
-		builder.part("name", name);
-		
-		return webClient.build()
-    	.post().uri("http://audio-service/api/audio")
-        .body(BodyInserters.fromMultipartData(builder.build()))
-        .retrieve()
-        .bodyToMono(Void.class);
-		
-		
 	}
 	
 	@Transactional
