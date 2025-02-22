@@ -40,7 +40,7 @@ public class PlaylistService {
 	
 	private final PlaylistMapper playlistMapper;
 	
-	private final WebClient.Builder builder;
+	private final WebService webService;
 	
 	private final KafkaImageProducer kafkaImageProducer;
 
@@ -83,7 +83,7 @@ public class PlaylistService {
 			return dto.getCover().transferTo(file)
 					.then(Mono.fromCallable(() -> playlistMapper.fromCreatePlaylistToPlaylist(dto, userId, true)))
 					.flatMap(playlistRepository::save)
-					.flatMap(t -> saveAuthorImage(t.getImageName(), file))
+					.flatMap(t -> webService.savePlaylistImage(t.getImageName(), file))
 					.doFinally(t -> file.delete())
 					.map(t -> ResponseEntity.status(HttpStatus.CREATED).build());
 		}
@@ -136,7 +136,7 @@ public class PlaylistService {
 					.filter(t -> t.getCreatedBy() == userId)
 					.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.FORBIDDEN)))
 					.flatMap(func)
-					.flatMap(t -> saveAuthorImage(t.getImageName(), file))
+					.flatMap(t -> webService.savePlaylistImage(t.getImageName(), file))
 					.doFinally(t -> file.delete())
 					.then();
 					
@@ -176,23 +176,6 @@ public class PlaylistService {
 		playlistTrackRepository
 		.deleteByTrackId(trackDeletionMessage.trackId())
 		.subscribe();
-	}
- 	
-	private Mono<Void> saveAuthorImage(UUID name, File pathToFile) {
-		if (name == null) Mono.empty();			
-
-		MultipartBodyBuilder multipartbuilder = new MultipartBodyBuilder();
-		
-		multipartbuilder.part("file", new FileSystemResource(pathToFile));
-		multipartbuilder.part("name", name.toString());
-		
-		return builder.build()
-    			.post()
-    			.uri("http://image-service/api/images/")
-    			.body(BodyInserters.fromMultipartData(multipartbuilder.build()))
-    			.retrieve()
-    			.bodyToMono(Void.class);
-		
 	}
 	
 }
