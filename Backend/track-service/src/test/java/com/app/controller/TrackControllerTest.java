@@ -130,6 +130,27 @@ public class TrackControllerTest {
     }
 
     @Test
+    public void test_create_track_with_wrong_file(){
+        var builder = new MultipartBodyBuilder();
+
+        builder.part("title", "test4");
+        builder.part("albumId", "2");
+        builder.part("audio", new ClassPathResource("file"));
+
+        Mockito.when(service.saveAudio(Mockito.any(String.class), Mockito.any(File.class)))
+                .thenReturn(Mono.just(ResponseEntity.noContent().build()));
+
+        testClient.post()
+                .uri(t -> t.path("/api/tracks/").build())
+                .header("userId", "2")
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .body(BodyInserters.fromMultipartData(builder.build()))
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isBadRequest();
+    }
+
+    @Test
     public void test_update_track_title(){
         UpdateTrackRequest testNew = new UpdateTrackRequest("testNew");
 
