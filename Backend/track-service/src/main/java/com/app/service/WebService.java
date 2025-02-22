@@ -2,6 +2,7 @@ package com.app.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -16,7 +17,7 @@ public class WebService {
 
     private final WebClient.Builder webClient;
 
-    public Mono<Void> saveAudio(String name, File pathToTempAudio) {
+    public Mono<ResponseEntity<Void>> saveAudio(String name, File pathToTempAudio) {
         if(name  == null || pathToTempAudio == null) return Mono.empty();
 
         MultipartBodyBuilder builder = new MultipartBodyBuilder();
@@ -28,7 +29,7 @@ public class WebService {
                 .post().uri("http://audio-service/api/audio")
                 .body(BodyInserters.fromMultipartData(builder.build()))
                 .retrieve()
-                .bodyToMono(Void.class);
+                .toBodilessEntity();
 
     }
 

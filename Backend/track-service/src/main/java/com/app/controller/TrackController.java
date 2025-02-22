@@ -88,7 +88,7 @@ public class TrackController {
 	}
 	
 	@DeleteMapping("/{id}")
-	public Mono<Void> deleteTrackByAlbum(
+	public Mono<Void> deleteTrack(
 			@PathVariable("id") Long id,
 			@RequestHeader("userId") Integer userId
 		){
