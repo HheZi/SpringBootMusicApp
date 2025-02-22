@@ -15,6 +15,8 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.FileSystemResource;
@@ -31,8 +33,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.SneakyThrows;
 
 @SpringBootTest
+@EnableAutoConfiguration(exclude = KafkaAutoConfiguration.class)
 @AutoConfigureWebTestClient
-@EmbeddedKafka(partitions = 1, brokerProperties = { "listeners=PLAINTEXT://localhost:9092", "port=9092" })
 @DirtiesContext
 @TestInstance(Lifecycle.PER_CLASS)
 class ImageControllerTest {
@@ -51,7 +53,7 @@ class ImageControllerTest {
 	private void configeFile() {
 		File file = ResourceUtils.getFile("classpath:testImage");
 		
-		Files.move(file.toPath(), Paths.get(imageDir, "testImage"), StandardCopyOption.REPLACE_EXISTING);
+		Files.copy(file.toPath(), Paths.get(imageDir, "testImage"), StandardCopyOption.REPLACE_EXISTING);
 	}
 	
 	@Test

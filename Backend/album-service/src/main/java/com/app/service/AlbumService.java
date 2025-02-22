@@ -2,6 +2,7 @@ package com.app.service;
 
 import java.io.File;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
@@ -24,6 +25,8 @@ import com.app.util.AlbumMapper;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import static java.util.Objects.nonNull;
 
 @Service
 @RequiredArgsConstructor
@@ -130,7 +133,9 @@ public class AlbumService {
 				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)))
 				.doOnNext(t -> {
 					kafkaAlbumProducer.sendDeleteAlbumMessage(new AlbumDeletionMessage(t.getId()));
-					kafkaImageProducer.sendMessageToDeleteImage(new ImageDeletionMessage(t.getImageName().toString()));
+					if (nonNull(t.getImageName())){
+						kafkaImageProducer.sendMessageToDeleteImage(new ImageDeletionMessage(t.getImageName().toString()));
+					}
 				})
 				.flatMap(albumRepository::delete);
 	}
@@ -140,7 +145,9 @@ public class AlbumService {
 				.filter(t -> t.getCreatedBy() == userId)
 				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.FORBIDDEN)))
 				.doOnNext(t -> {
-					kafkaImageProducer.sendMessageToDeleteImage(new ImageDeletionMessage(t.getImageName().toString()));
+					if (nonNull(t.getImageName())){
+						kafkaImageProducer.sendMessageToDeleteImage(new ImageDeletionMessage(t.getImageName().toString()));
+					}
 					t.setImageName(null);
 				})
 				.flatMap(albumRepository::save)

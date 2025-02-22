@@ -42,7 +42,7 @@ class KafkaTrackConsumerTest {
 	void configFile() {
 			File file = ResourceUtils.getFile("classpath:file");
 			
-			Files.move(file.toPath(), Paths.get(testAudioPath, "file"), StandardCopyOption.REPLACE_EXISTING);
+			Files.copy(file.toPath(), Paths.get(testAudioPath, "file"), StandardCopyOption.REPLACE_EXISTING);
 	}
 	
 	@Test
