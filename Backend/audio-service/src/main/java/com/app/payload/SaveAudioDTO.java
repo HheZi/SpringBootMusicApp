@@ -1,9 +1,8 @@
 package com.app.payload;
 
-import org.springframework.http.codec.multipart.FilePart;
-
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.http.codec.multipart.FilePart;
 
 @Data
 @NoArgsConstructor

@@ -1,19 +1,5 @@
 package com.app.service;
 
-import java.io.File;
-import java.util.UUID;
-import java.util.function.Function;
-
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.MultipartBodyBuilder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.reactive.function.BodyInserters;
-import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.server.ResponseStatusException;
-
 import com.app.kafka.message.ImageDeletionMessage;
 import com.app.kafka.message.TrackDeletionMessage;
 import com.app.kafka.producer.KafkaImageProducer;
@@ -25,10 +11,18 @@ import com.app.payload.response.ResponsePlaylistPreview;
 import com.app.repository.PlaylistRepository;
 import com.app.repository.PlaylistTrackRepository;
 import com.app.util.PlaylistMapper;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.io.File;
+import java.util.UUID;
+import java.util.function.Function;
 
 @Service
 @RequiredArgsConstructor

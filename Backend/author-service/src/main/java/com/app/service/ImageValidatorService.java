@@ -1,15 +1,13 @@
 package com.app.service;
 
-import java.util.List;
-
+import com.app.exception.ValidationException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
-
-import com.app.exception.ValidationException;
-
 import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 @Service
 public class ImageValidatorService {

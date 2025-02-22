@@ -1,5 +1,8 @@
 package com.gateway.config;
 
+import com.gateway.config.filter.AuthenticationGatewayFilter;
+import com.gateway.config.filter.aggregation.AlbumAggregationFilter;
+import com.gateway.config.filter.aggregation.TracksAggregationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.cloud.gateway.route.RouteLocator;
@@ -7,10 +10,6 @@ import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.client.WebClient;
-
-import com.gateway.config.filter.AuthenticationGatewayFilter;
-import com.gateway.config.filter.aggregation.AlbumAggregationFilter;
-import com.gateway.config.filter.aggregation.TracksAggregationFilter;
 
 @Configuration
 public class WebConfig {

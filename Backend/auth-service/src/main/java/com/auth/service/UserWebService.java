@@ -1,15 +1,13 @@
 package com.auth.service;
 
+import com.auth.payload.request.AuthRequest;
+import com.auth.payload.response.UserDetails;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ResponseStatusException;
-
-import com.auth.payload.request.AuthRequest;
-import com.auth.payload.response.UserDetails;
-
-import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
 
 @Service

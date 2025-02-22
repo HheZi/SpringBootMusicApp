@@ -1,15 +1,13 @@
 package com.app.repository;
 
-import java.util.List;
-import java.util.UUID;
-
+import com.app.model.FavoriteTrack;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.stereotype.Repository;
-
-import com.app.model.FavoriteTrack;
-
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
+import java.util.UUID;
 
 @Repository
 public interface FavoriteTrackRepository extends ReactiveCrudRepository<FavoriteTrack, UUID>{

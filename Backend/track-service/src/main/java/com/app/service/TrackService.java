@@ -1,24 +1,5 @@
 package com.app.service;
 
-import java.io.File;
-import java.util.List;
-
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
-import org.springframework.data.relational.core.query.Criteria;
-import org.springframework.data.relational.core.query.Query;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.MultipartBodyBuilder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.reactive.function.BodyInserters;
-import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.server.ResponseStatusException;
-
 import com.app.kafka.message.TrackDeletionMessage;
 import com.app.kafka.producer.KafkaTrackProducer;
 import com.app.model.Track;
@@ -29,10 +10,23 @@ import com.app.payload.response.ResponseTrack;
 import com.app.repository.TrackRepository;
 import com.app.util.TrackMapper;
 import com.mpatric.mp3agic.Mp3File;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
+import org.springframework.data.relational.core.query.Criteria;
+import org.springframework.data.relational.core.query.Query;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.io.File;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor

@@ -1,12 +1,11 @@
 package com.app.util;
 
-import java.util.UUID;
-
-import org.springframework.stereotype.Component;
-
 import com.app.model.Author;
 import com.app.payload.request.AuthorCreateOrUpdateRequest;
 import com.app.payload.response.AuthorResponse;
+import org.springframework.stereotype.Component;
+
+import java.util.UUID;
 
 @Component
 public class AuthorMapper {

@@ -1,11 +1,9 @@
 package com.app.repository;
 
+import com.app.model.PlaylistTrack;
 import org.springframework.data.r2dbc.repository.Modifying;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.stereotype.Repository;
-
-import com.app.model.PlaylistTrack;
-
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 

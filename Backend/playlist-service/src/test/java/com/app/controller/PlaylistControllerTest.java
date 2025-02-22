@@ -1,16 +1,18 @@
 package com.app.controller;
 
+import com.app.kafka.producer.KafkaImageProducer;
 import com.app.service.WebService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.MultipartBodyBuilder;
-import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -18,11 +20,9 @@ import reactor.core.publisher.Mono;
 
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
 
 @SpringBootTest
-@EmbeddedKafka(partitions = 1, brokerProperties = {"listeners=PLAINTEXT://localhost:9092", "port=9092"})
+@EnableAutoConfiguration(exclude = KafkaAutoConfiguration.class)
 @AutoConfigureWebTestClient
 class PlaylistControllerTest {
 
@@ -31,6 +31,9 @@ class PlaylistControllerTest {
 
     @MockitoBean
     private WebService service;
+
+    @MockitoBean
+    private KafkaImageProducer kafkaImageProducer;
 
     @Test
     public void test_get_playlist() {

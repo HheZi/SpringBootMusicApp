@@ -1,13 +1,12 @@
 package com.app.util;
 
-import java.util.UUID;
-
-import org.springframework.stereotype.Component;
-
 import com.app.model.Album;
 import com.app.payload.request.RequestAlbum;
 import com.app.payload.response.AlbumPreviewResponse;
 import com.app.payload.response.ResponseAlbum;
+import org.springframework.stereotype.Component;
+
+import java.util.UUID;
 
 @Component
 public class AlbumMapper {

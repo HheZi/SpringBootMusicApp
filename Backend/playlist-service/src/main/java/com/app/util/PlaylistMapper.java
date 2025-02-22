@@ -1,14 +1,13 @@
 package com.app.util;
 
-import java.util.List;
-import java.util.UUID;
-
-import org.springframework.stereotype.Component;
-
 import com.app.model.Playlist;
 import com.app.payload.request.CreateOrUpdatePlaylist;
 import com.app.payload.response.ResponsePlaylist;
 import com.app.payload.response.ResponsePlaylistPreview;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.UUID;
 
 @Component
 public class PlaylistMapper {

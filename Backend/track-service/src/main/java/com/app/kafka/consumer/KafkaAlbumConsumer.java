@@ -1,12 +1,10 @@
 package com.app.kafka.consumer;
 
-import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.stereotype.Component;
-
 import com.app.kafka.message.AlbumDeletionMessage;
 import com.app.service.TrackService;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor

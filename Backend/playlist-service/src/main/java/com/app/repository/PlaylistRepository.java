@@ -1,10 +1,8 @@
 package com.app.repository;
 
+import com.app.model.Playlist;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.stereotype.Repository;
-
-import com.app.model.Playlist;
-
 import reactor.core.publisher.Flux;
 
 @Repository

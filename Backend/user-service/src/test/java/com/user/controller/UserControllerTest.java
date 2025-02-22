@@ -1,20 +1,16 @@
 package com.user.controller;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import org.junit.jupiter.api.Disabled;
+import com.user.payload.request.UserAuthRequest;
+import com.user.payload.request.UserFormRequest;
+import com.user.payload.response.ValidatedUser;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
-import com.user.payload.request.UserAuthRequest;
-import com.user.payload.request.UserFormRequest;
-import com.user.payload.response.ValidatedUser;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 @AutoConfigureMockMvc

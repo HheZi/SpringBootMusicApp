@@ -1,13 +1,7 @@
 package kafka;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
-
-import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-
+import com.app.kafka.message.ImageDeletionMessage;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -21,9 +15,12 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.util.ResourceUtils;
 
-import com.app.kafka.message.ImageDeletionMessage;
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 
-import lombok.SneakyThrows;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(classes = KafkaAutoConfiguration.class)
 @EmbeddedKafka(partitions = 1, brokerProperties = { "listeners=PLAINTEXT://localhost:9092", "port=9092" })

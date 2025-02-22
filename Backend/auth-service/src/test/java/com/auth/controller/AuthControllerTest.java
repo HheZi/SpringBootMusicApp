@@ -1,19 +1,5 @@
 package com.auth.controller;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
-
-import java.util.UUID;
-
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.web.reactive.server.WebTestClient;
-
 import com.auth.payload.request.AuthRequest;
 import com.auth.payload.request.RefreshTokenRequest;
 import com.auth.payload.response.AuthResponse;
@@ -21,8 +7,20 @@ import com.auth.payload.response.JwtTokenResponse;
 import com.auth.payload.response.UserDetails;
 import com.auth.service.UserWebService;
 import com.auth.util.JwtUtil;
-
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
+
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
 
 @SpringBootTest
 @AutoConfigureWebTestClient

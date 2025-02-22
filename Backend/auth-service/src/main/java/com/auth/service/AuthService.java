@@ -1,16 +1,6 @@
 package com.auth.service;
 
 
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.UUID;
-
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
-
 import com.auth.model.RefreshToken;
 import com.auth.payload.request.AuthRequest;
 import com.auth.payload.request.RefreshTokenRequest;
@@ -19,9 +9,17 @@ import com.auth.payload.response.JwtTokenResponse;
 import com.auth.payload.response.UserDetails;
 import com.auth.repository.RefreshTokenRepository;
 import com.auth.util.JwtUtil;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Mono;
+
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor

@@ -1,5 +1,11 @@
 package com.gateway.config.filter.aggregation;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gateway.payload.response.ResponseAlbum;
+import com.gateway.payload.response.ResponseAlbumDuration;
+import com.gateway.payload.response.ResponseAlbumFromService;
+import com.gateway.payload.response.ResponseAuthorFromService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
@@ -11,14 +17,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.server.ServerWebExchange;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gateway.payload.response.ResponseAlbum;
-import com.gateway.payload.response.ResponseAlbumDuration;
-import com.gateway.payload.response.ResponseAlbumFromService;
-import com.gateway.payload.response.ResponseAuthorFromService;
-
 import reactor.core.publisher.Mono;
 
 @Component

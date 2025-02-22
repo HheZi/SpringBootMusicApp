@@ -1,11 +1,14 @@
 package com.app.controller;
 
+import com.app.kafka.consumer.KafkaAlbumConsumer;
+import com.app.kafka.producer.KafkaTrackProducer;
 import com.app.payload.request.UpdateTrackRequest;
 import com.app.service.WebService;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -13,17 +16,17 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.MultipartBodyBuilder;
-import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
 import reactor.core.publisher.Mono;
 
 import java.io.File;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.is;
 
 @SpringBootTest
-@EmbeddedKafka(partitions = 1, brokerProperties = { "listeners=PLAINTEXT://localhost:9092", "port=9092" })
+@EnableAutoConfiguration(exclude = KafkaAutoConfiguration.class)
 @AutoConfigureWebTestClient
 public class TrackControllerTest {
 
@@ -32,6 +35,12 @@ public class TrackControllerTest {
 
     @MockBean
     private WebService service;
+
+    @MockBean
+    private KafkaTrackProducer kafkaTrackProducer;
+
+    @MockBean
+    private KafkaAlbumConsumer kafkaAlbumConsumer;
 
     @Test
     public void test_pagination_when_correct_body(){

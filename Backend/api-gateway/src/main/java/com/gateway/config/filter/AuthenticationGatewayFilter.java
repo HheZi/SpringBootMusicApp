@@ -1,12 +1,6 @@
 package com.gateway.config.filter;
 
-import static org.springframework.http.HttpMethod.GET;
-import static org.springframework.http.HttpMethod.POST;
-
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Stream;
-
+import com.gateway.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
@@ -19,10 +13,14 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.server.ServerWebExchange;
-
-import com.gateway.utils.JwtUtil;
-
 import reactor.core.publisher.Mono;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Stream;
+
+import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpMethod.POST;
 
 @RefreshScope
 @Component

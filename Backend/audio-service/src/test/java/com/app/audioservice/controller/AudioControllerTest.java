@@ -1,13 +1,7 @@
 package com.app.audioservice.controller;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.io.File;
-import java.nio.file.CopyOption;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -15,27 +9,30 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.MultipartBodyBuilder;
-import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.reactive.function.BodyInserters;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 
-import lombok.SneakyThrows;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
+@EnableAutoConfiguration(exclude = KafkaAutoConfiguration.class)
 @AutoConfigureWebTestClient
-@EmbeddedKafka(partitions = 1, brokerProperties = { "listeners=PLAINTEXT://localhost:9092", "port=9092" })
 @DirtiesContext
 @TestInstance(Lifecycle.PER_CLASS)
 class AudioControllerTest {

@@ -1,10 +1,9 @@
 package com.user.util;
 
-import org.springframework.stereotype.Component;
-
 import com.user.model.User;
 import com.user.payload.request.UserFormRequest;
 import com.user.payload.response.ValidatedUser;
+import org.springframework.stereotype.Component;
 
 @Component
 public class UserMapper {

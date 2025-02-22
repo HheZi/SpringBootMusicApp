@@ -1,14 +1,13 @@
 package com.app.util;
 
-import java.util.UUID;
-
-import org.springframework.stereotype.Component;
-
 import com.app.model.Track;
 import com.app.payload.request.CreateTrackDto;
 import com.app.payload.response.ResponseTotalDuration;
 import com.app.payload.response.ResponseTrack;
 import com.mpatric.mp3agic.Mp3File;
+import org.springframework.stereotype.Component;
+
+import java.util.UUID;
 
 @Component
 public class TrackMapper {

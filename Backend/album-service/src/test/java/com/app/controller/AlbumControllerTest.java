@@ -1,40 +1,39 @@
 package com.app.controller;
 
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
+import com.app.kafka.KafkaAlbumProducer;
+import com.app.kafka.KafkaImageProducer;
+import com.app.payload.response.AlbumPreviewResponse;
+import com.app.payload.response.ResponseAlbum;
+import com.app.service.WebService;
+import lombok.SneakyThrows;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration;
+import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.MultipartBodyBuilder;
+import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.web.reactive.function.BodyInserters;
+import reactor.core.publisher.Mono;
 
 import java.io.File;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.TestInstance.Lifecycle;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.MultipartBodyBuilder;
-import org.springframework.kafka.test.context.EmbeddedKafka;
-import org.springframework.test.web.reactive.server.WebTestClient;
-import org.springframework.util.ResourceUtils;
-import org.springframework.web.reactive.function.BodyInserters;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
 
-import com.app.payload.response.AlbumPreviewResponse;
-import com.app.payload.response.ResponseAlbum;
-import com.app.service.WebService;
-
-import lombok.SneakyThrows;
-import reactor.core.publisher.Mono;
-
+@EnableAutoConfiguration(exclude = KafkaAutoConfiguration.class)
 @SpringBootTest
-@EmbeddedKafka(partitions = 1, brokerProperties = { "listeners=PLAINTEXT://localhost:9092", "port=9092" })
 @AutoConfigureWebTestClient
 @TestInstance(Lifecycle.PER_CLASS)
 class AlbumControllerTest {
@@ -44,6 +43,12 @@ class AlbumControllerTest {
 	
 	@MockBean
 	private WebService service;
+
+	@MockBean
+	private KafkaAlbumProducer kafkaAlbumProducer;
+
+	@MockBean
+	private KafkaImageProducer kafkaImageProducer;
 	
 	@Test
 	public void get_albums_by_ids() {

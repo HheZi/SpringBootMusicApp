@@ -1,12 +1,10 @@
 package com.app.kafka.producer;
 
+import com.app.kafka.message.ImageDeletionMessage;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
-
-import com.app.kafka.message.ImageDeletionMessage;
-
-import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor

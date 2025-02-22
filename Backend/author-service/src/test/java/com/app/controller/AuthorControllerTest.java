@@ -1,10 +1,12 @@
 package com.app.controller;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
-
+import com.app.kafka.KafkaImageProducer;
+import com.app.payload.response.AuthorResponse;
+import com.app.service.WebService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -12,20 +14,15 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.MultipartBodyBuilder;
-import org.springframework.kafka.test.context.EmbeddedKafka;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
-
-import com.app.payload.request.AuthorCreateOrUpdateRequest;
-import com.app.payload.response.AuthorResponse;
-import com.app.service.WebService;
-import com.fasterxml.jackson.core.JsonProcessingException;
-
 import reactor.core.publisher.Mono;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
+
 @SpringBootTest
-@EmbeddedKafka(partitions = 1, brokerProperties = { "listeners=PLAINTEXT://localhost:9092", "port=9092" })
+@EnableAutoConfiguration(exclude = KafkaAutoConfiguration.class)
 @AutoConfigureWebTestClient
 class AuthorControllerTest {
 
@@ -34,6 +31,9 @@ class AuthorControllerTest {
 	
 	@MockBean
 	private WebService service;
+
+	@MockBean
+	private KafkaImageProducer kafkaImageProducer;
 	
 	@Test
 	void test_get_author() {

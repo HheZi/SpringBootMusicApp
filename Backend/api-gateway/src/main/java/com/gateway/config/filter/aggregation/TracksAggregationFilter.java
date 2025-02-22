@@ -1,7 +1,8 @@
 package com.gateway.config.filter.aggregation;
 
-import java.util.List;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gateway.payload.response.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
@@ -11,17 +12,10 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ServerWebExchange;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gateway.payload.response.PageResponseTrack;
-import com.gateway.payload.response.PageResponseTrackFromAPI;
-import com.gateway.payload.response.ResponsePreviewAlbumFromAPI;
-import com.gateway.payload.response.ResponsePreviewAuthorFromAPI;
-import com.gateway.payload.response.ResponseTrack;
-
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 @Component
 @RefreshScope

@@ -1,19 +1,17 @@
 package com.user.service;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
-
 import com.user.model.User;
 import com.user.payload.request.UserAuthRequest;
 import com.user.payload.request.UserFormRequest;
 import com.user.payload.response.ValidatedUser;
 import com.user.repository.UserRepository;
 import com.user.util.UserMapper;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Mono;
 
 @Service
