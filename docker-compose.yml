@@ -16,7 +16,7 @@ services:
   angular:
     image: hhezi/springbootmusicapp-angular
     container_name: angular
-    restart: always
+    restart: on-failure
     ports: 
       - 4200:4200
 
@@ -56,7 +56,7 @@ services:
   api-gateway:
     image: hhezi/springbootmusicapp-api-gateway
     container_name: api-gateway
-    restart: always
+    restart: on-failure
     ports:
       - 8080:8080
     depends_on:
@@ -91,7 +91,7 @@ services:
   album-service:
     image: hhezi/springbootmusicapp-album-service
     container_name: album-service
-    restart: always
+    restart: on-failure
     environment:
       - spring.profiles.active=container
       - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
@@ -110,7 +110,7 @@ services:
   audio-service:
     image: hhezi/springbootmusicapp-audio-service
     container_name: audio-service
-    restart: always
+    restart: on-failure
     environment:
       - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
       - spring.profiles.active=container
@@ -129,7 +129,7 @@ services:
   image-service:
     image: hhezi/springbootmusicapp-image-service
     container_name: image-service
-    restart: always
+    restart: on-failure
     environment:
       - spring.profiles.active=container
       - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
@@ -166,7 +166,7 @@ services:
   user-service:
     image: hhezi/springbootmusicapp-user-service
     container_name: user-service
-    restart: always
+    restart: on-failure
     environment:
       - spring.profiles.active=container
       - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
@@ -201,7 +201,7 @@ services:
   auth-service:
     image: hhezi/springbootmusicapp-auth-service
     container_name: auth-service
-    restart: always
+    restart: on-failure
     environment:
       - spring.profiles.active=container
       - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
@@ -236,7 +236,7 @@ services:
   author-service:
     image: hhezi/springbootmusicapp-author-service
     container_name: author-service
-    restart: always
+    restart: on-failure
     environment:
       - spring.profiles.active=container
       - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
@@ -293,7 +293,7 @@ services:
   track-service:
     image: hhezi/springbootmusicapp-track-service
     container_name: track-service
-    restart: always
+    restart: on-failure
     ports:
       - 8081:8081
     environment:
@@ -333,7 +333,7 @@ services:
   playlist-service:
     image: hhezi/springbootmusicapp-playlist-service
     container_name: playlist-service
-    restart: always
+    restart: on-failure
     environment:
       - spring.profiles.active=container
       - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
@@ -370,7 +370,7 @@ services:
   favorite-service:
     image: hhezi/springbootmusicapp-favorite-service
     container_name: favorite-service
-    restart: always
+    restart: on-failure
     environment:
       - spring.profiles.active=container
       - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
