@@ -1,0 +1,12 @@
+spring:
+  cloud:
+    config:
+      fail-fast: true
+      discovery:
+        enabled: true
+  config:
+    import: "optional:configserver:"
+  application:
+    name: file-service
+  profiles:
+    active: local
