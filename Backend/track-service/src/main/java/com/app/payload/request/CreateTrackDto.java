@@ -1,6 +1,5 @@
 package com.app.payload.request;
 
-import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -17,6 +16,6 @@ public class CreateTrackDto {
 	@NotNull(message = "Album is required")
 	private Integer albumId;
 	
-	@Nullable
+	@NotNull(message = "Audio file is not specified")
 	private FilePart audio;
 }

@@ -1,9 +1,11 @@
 package com.app.controller;
 
+import com.app.exception.FileValidationException;
 import com.app.kafka.consumer.KafkaAlbumConsumer;
 import com.app.kafka.producer.KafkaTrackProducer;
+import com.app.model.Track;
 import com.app.payload.request.UpdateTrackRequest;
-import com.app.service.WebService;
+import com.app.service.AudioClient;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,13 +16,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
 import reactor.core.publisher.Mono;
 
 import java.io.File;
+import java.util.UUID;
 
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
@@ -34,7 +36,7 @@ public class TrackControllerTest {
     private WebTestClient testClient;
 
     @MockBean
-    private WebService service;
+    private AudioClient service;
 
     @MockBean
     private KafkaTrackProducer kafkaTrackProducer;
@@ -53,7 +55,7 @@ public class TrackControllerTest {
                 .expectBody()
                 .jsonPath("$.content")
                 .isArray()
-                .jsonPath("$.size", 3);
+                .jsonPath("$.size", 4);
     }
 
     @Test
@@ -125,8 +127,11 @@ public class TrackControllerTest {
         builder.part("albumId", "2");
         builder.part("audio", new ClassPathResource("file.mp3"));
 
-        Mockito.when(service.saveAudio(Mockito.any(String.class), Mockito.any(File.class)))
-                .thenReturn(Mono.just(ResponseEntity.noContent().build()));
+        Track track = new Track();
+        track.setAudioName(UUID.randomUUID());
+
+        Mockito.when(service.saveAudio(Mockito.any(Track.class), Mockito.any(File.class)))
+                .thenReturn(Mono.just(track));
 
         testClient.post()
                 .uri(t -> t.path("/api/tracks/").build())
@@ -146,8 +151,11 @@ public class TrackControllerTest {
         builder.part("albumId", "2");
         builder.part("audio", new ClassPathResource("file"));
 
-        Mockito.when(service.saveAudio(Mockito.any(String.class), Mockito.any(File.class)))
-                .thenReturn(Mono.just(ResponseEntity.noContent().build()));
+        Track track = new Track();
+        track.setAudioName(UUID.randomUUID());
+
+        Mockito.when(service.saveAudio(Mockito.any(Track.class), Mockito.any(File.class)))
+                .thenReturn(Mono.error(() -> new FileValidationException("Wrong format of file. Can be only MP3")));
 
         testClient.post()
                 .uri(t -> t.path("/api/tracks/").build())
@@ -156,7 +164,60 @@ public class TrackControllerTest {
                 .body(BodyInserters.fromMultipartData(builder.build()))
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
-                .expectStatus().isBadRequest();
+                .expectStatus().isBadRequest()
+                .expectBody()
+                .jsonPath("$.[0]").value(is("Wrong format of file. Can be only MP3"));
+    }
+
+    @Test
+    public void test_create_track_with_without_file(){
+        var builder = new MultipartBodyBuilder();
+
+        builder.part("title", "test4");
+        builder.part("albumId", "2");
+
+        Track track = new Track();
+        track.setAudioName(UUID.randomUUID());
+
+        Mockito.when(service.saveAudio(Mockito.any(Track.class), Mockito.any(File.class)))
+                .thenReturn(Mono.error(() -> new FileValidationException("Wrong format of file. Can be only MP3")));
+
+        testClient.post()
+                .uri(t -> t.path("/api/tracks/").build())
+                .header("userId", "2")
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .body(BodyInserters.fromMultipartData(builder.build()))
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isBadRequest()
+                .expectBody()
+                .jsonPath("$.[0]").value(is("Audio file is not specified"));
+    }
+
+    @Test
+    public void test_create_track_with_wit_incorrect_body(){
+        var builder = new MultipartBodyBuilder();
+
+        builder.part("title", " ");
+        builder.part("albumId", "2");
+        builder.part("audio", new ClassPathResource("file"));
+
+        Track track = new Track();
+        track.setAudioName(UUID.randomUUID());
+
+        Mockito.when(service.saveAudio(Mockito.any(Track.class), Mockito.any(File.class)))
+                .thenReturn(Mono.error(() -> new FileValidationException("Wrong format of file. Can be only MP3")));
+
+        testClient.post()
+                .uri(t -> t.path("/api/tracks/").build())
+                .header("userId", "2")
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .body(BodyInserters.fromMultipartData(builder.build()))
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isBadRequest()
+                .expectBody()
+                .jsonPath("$.[0]").value(is("Title can't be blank"));
     }
 
     @Test

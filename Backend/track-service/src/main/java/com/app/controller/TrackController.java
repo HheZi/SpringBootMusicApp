@@ -4,7 +4,6 @@ import com.app.payload.request.CreateTrackDto;
 import com.app.payload.request.UpdateTrackRequest;
 import com.app.payload.response.ResponseTotalDuration;
 import com.app.payload.response.ResponseTrack;
-import com.app.service.AudioValidatorService;
 import com.app.service.TrackService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,8 +23,6 @@ import java.util.List;
 public class TrackController {
 
 	private final TrackService trackService;
-	
-	private final AudioValidatorService audioValidatorService;
 
 	@GetMapping
 	public Mono<Page<ResponseTrack>> getTracks(
@@ -62,8 +59,7 @@ public class TrackController {
 			@Valid @ModelAttribute CreateTrackDto dto, 
 			@RequestHeader("userId") Integer userId
 		) {
-		return audioValidatorService.validateAudioFile(dto.getAudio())
-				.flatMap(t -> trackService.createTrack(dto, userId));
+		return trackService.createTrack(dto, userId);
 	}
 	
 	@PatchMapping("/{id}")

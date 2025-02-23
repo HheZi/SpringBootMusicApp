@@ -36,7 +36,7 @@ public class TrackService {
 
 	private final TrackMapper mapper;
 
-	private final WebService webService;
+	private final AudioClient audioClient;
 
 	private final R2dbcEntityTemplate template;
 	
@@ -97,7 +97,7 @@ public class TrackService {
 		
 		return tracks
 				.switchIfEmpty(Flux.just(new Track()))
-				.map(t -> t.getDuration())
+				.map(Track::getDuration)
 				.reduce(Long::sum)
 				.map(mapper::getDurationOfTrack);
 	}
@@ -105,13 +105,14 @@ public class TrackService {
 	@Transactional
 	public Mono<ResponseEntity<?>> createTrack(CreateTrackDto dto, Integer userId) {
 		File file = new File(TEMP_FOLDER_NAME, dto.getAudio().filename()).getAbsoluteFile();
-		
+
 		return dto.getAudio().transferTo(file)
 				.then(Mono.fromCallable(() -> new Mp3File(file)))
-				.flatMap(t -> repository.save(mapper.fromCreateTrackDtoToTrack(dto, userId, t)))
-				.flatMap(t -> webService.saveAudio(t.getAudioName().toString(), file))
+				.map(mp3File -> mapper.fromCreateTrackDtoToTrack(dto, userId, mp3File))
+				.flatMap(track -> audioClient.saveAudio(track, file))
+				.flatMap(repository::save)
 				.doFinally(t -> file.delete())
-				.map(t -> ResponseEntity.status(HttpStatus.CREATED).build());
+				.map(track -> ResponseEntity.status(HttpStatus.CREATED).build());
 	}
 	
 	@Transactional

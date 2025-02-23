@@ -1,7 +1,9 @@
 package com.app.service;
 
 import com.app.payload.SaveAudioDTO;
+import com.app.validation.AudioValidatorService;
 import lombok.SneakyThrows;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.buffer.DataBuffer;
@@ -25,6 +27,9 @@ public class AudioService {
 
 	@Value("${audio.dir}")
 	private String audioDirName;
+
+	@Autowired
+	private AudioValidatorService audioValidatorService;
 	
 	public Mono<ResponseEntity<Flux<DataBuffer>>> getResource(String filename, String rangeHeader) {
 	    Path filePath = Paths.get(audioDirName, filename);
@@ -57,8 +62,8 @@ public class AudioService {
 	}
 	
 	public Mono<Void> saveAudio(SaveAudioDTO dto) {
-		return dto.getFile()
-		.transferTo(Paths.get(audioDirName, dto.getName()));
+		return audioValidatorService.validateAudioFile(dto.getFile())
+				.flatMap(filePart -> filePart.transferTo(Paths.get(audioDirName, dto.getName())));
 	}
 
 	public Mono<Void> deleteAudio(String name) {
