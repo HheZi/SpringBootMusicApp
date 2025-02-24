@@ -40,7 +40,7 @@ class KafkaImageConsumerTest {
 	void configFile() {
 			File file = ResourceUtils.getFile("classpath:" + NAME_OF_TEST_FILE);
 			
-			Files.copy(file.toPath(), Paths.get(testImagePath, "validFile.jpeg"), StandardCopyOption.REPLACE_EXISTING);
+			Files.copy(file.toPath(), Paths.get(testImagePath, NAME_OF_TEST_FILE), StandardCopyOption.REPLACE_EXISTING);
 	}
 	
 	@Test

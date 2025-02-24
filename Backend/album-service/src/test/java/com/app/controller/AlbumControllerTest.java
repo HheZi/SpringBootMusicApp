@@ -1,15 +1,18 @@
 package com.app.controller;
 
 
+import com.app.exception.FileValidationException;
 import com.app.kafka.KafkaAlbumProducer;
 import com.app.kafka.KafkaImageProducer;
+import com.app.model.Album;
 import com.app.payload.response.AlbumPreviewResponse;
 import com.app.payload.response.ResponseAlbum;
-import com.app.service.WebService;
+import com.app.service.ImageClient;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration;
@@ -29,8 +32,10 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
+import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.when;
 
 @EnableAutoConfiguration(exclude = KafkaAutoConfiguration.class)
 @SpringBootTest
@@ -42,7 +47,7 @@ class AlbumControllerTest {
 	private WebTestClient testClient;
 	
 	@MockBean
-	private WebService service;
+	private ImageClient service;
 
 	@MockBean
 	private KafkaAlbumProducer kafkaAlbumProducer;
@@ -90,7 +95,7 @@ class AlbumControllerTest {
 		.name("Echoes of Eternity")
 		.authorId(202)
 		.id(2)
-		.imageUrl("http://localhost:8080/api/images/default")
+		.imageUrl("http://localhost:8080/api/files/images/default")
 		.releaseDate(LocalDate.parse("2024-01-20"))
 		.build();
 		
@@ -216,8 +221,15 @@ class AlbumControllerTest {
 	@Test
 	@SneakyThrows
 	public void create_album() {
-		doReturn(Mono.just(ResponseEntity.ok().build()))
-		.when(service).saveAlbumCover(any(UUID.class), any(File.class));
+		Album album = new Album();
+		album.setReleaseDate(LocalDate.parse("1992-07-07"));
+		album.setAuthorId(4);
+		album.setName("newAlbum");
+		album.setCreatedBy(1);
+		album.setImageName(UUID.randomUUID());
+
+		doReturn(Mono.just(album))
+		.when(service).saveAlbumCover(any(Album.class), any(File.class));
 		
 		var bodyBuilder = new MultipartBodyBuilder();
 		
@@ -244,6 +256,7 @@ class AlbumControllerTest {
 		
 		bodyBuilder.part("name", " ");
 		bodyBuilder.part("releaseDate", LocalDate.now().plus(1, ChronoUnit.YEARS).toString());
+		bodyBuilder.part("authorId", "14");
 		
 		testClient
 		.post()
@@ -259,6 +272,10 @@ class AlbumControllerTest {
 	@Test
 	@SneakyThrows
 	public void create_album_with_wrong_file() {
+
+		when(service.saveAlbumCover(Mockito.any(), Mockito.any()))
+				.thenReturn(Mono.error(() -> new FileValidationException("Wrong format of file. Can be only JPEG and PNG")));
+
 		var bodyBuilder = new MultipartBodyBuilder();
 		
 		bodyBuilder.part("name", "test");
@@ -275,8 +292,8 @@ class AlbumControllerTest {
 		.accept(MediaType.APPLICATION_JSON)
 		.exchange()
 		.expectStatus().isBadRequest()
-		.expectBody();
-		
+		.expectBody()
+		.jsonPath("$.[0]").value(is("Wrong format of file. Can be only JPEG and PNG"));
 		
 	}
 	
@@ -301,7 +318,7 @@ class AlbumControllerTest {
 				.name("test")
 				.authorId(210)
 				.id(10)
-				.imageUrl("http://localhost:8080/api/images/default")
+				.imageUrl("http://localhost:8080/api/files/images/default")
 				.releaseDate(LocalDate.parse("1990-07-07"))
 				.build();
 				
@@ -319,7 +336,7 @@ class AlbumControllerTest {
 	@SneakyThrows
 	public void update_album() {
 		doReturn(Mono.just(ResponseEntity.ok().build()))
-		.when(service).saveAlbumCover(any(UUID.class), any(File.class));
+		.when(service).saveAlbumCover(any(Album.class), any(File.class));
 		
 		var bodyBuilder = new MultipartBodyBuilder();
 		
@@ -336,6 +353,25 @@ class AlbumControllerTest {
 		.accept(MediaType.APPLICATION_JSON)
 		.exchange()
 		.expectStatus().isOk();
+	}
+
+	@Test
+	@SneakyThrows
+	public void update_album_when_incorrect_user_id() {
+		var bodyBuilder = new MultipartBodyBuilder();
+
+		bodyBuilder.part("name", "test");
+		bodyBuilder.part("releaseDate", "1990-07-07");
+
+		testClient
+				.put()
+				.uri(t -> t.path("/api/albums/"+5).build())
+				.header("userId", "11")
+				.contentType(MediaType.MULTIPART_FORM_DATA)
+				.body(BodyInserters.fromMultipartData(bodyBuilder.build()))
+		   		.accept(MediaType.APPLICATION_JSON)
+				.exchange()
+				.expectStatus().isForbidden();
 	}
 	
 	@Test

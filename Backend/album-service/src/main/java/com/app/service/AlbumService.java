@@ -37,7 +37,7 @@ public class AlbumService {
 	
 	private final KafkaImageProducer kafkaImageProducer;
 	
-	private final WebService webService;
+	private final ImageClient imageClient;
 	
 	private final String TEMP_FOLDER_NAME = "temp";
 
@@ -69,8 +69,8 @@ public class AlbumService {
 			
 			return dto.getCover().transferTo(file)
 					.then(Mono.fromCallable(() -> albumMapper.fromRequestAlbumToAlbum(dto, userId, true)))
+					.flatMap(t -> imageClient.saveAlbumCover(t, file))
 					.flatMap(albumRepository::save)
-					.flatMap(t -> webService.saveAlbumCover(t.getImageName(), file))
 					.doFinally(t -> file.delete())
 					.map(t -> ResponseEntity.status(HttpStatus.CREATED).build());
 		}
@@ -84,7 +84,7 @@ public class AlbumService {
 	public Mono<Boolean> userIsOwnerOfAlbum(Integer albumId, Integer userId){
 		return albumRepository.findById(albumId)
 				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)))
-				.map(t -> t.getCreatedBy() == userId );
+				.map(t -> t.getCreatedBy() == userId);
 	}
 
 	public Mono<Void> updateAlbum(RequestToUpdateAlbum dto, Integer albumId, Integer userId){
@@ -93,14 +93,18 @@ public class AlbumService {
 			
 			return dto.getCover().transferTo(file)
 					.then(albumRepository.findById(albumId))
+					.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)))
 					.flatMap(t -> mapAlbumForUpdate(dto, t, userId))
-					.flatMap(t ->  webService.saveAlbumCover(t.getImageName(), file))
+					.flatMap(t ->  imageClient.saveAlbumCover(t, file))
+					.flatMap(albumRepository::save)
 					.doFinally(t -> file.delete())
 					.then();
 		}
 		
 		return albumRepository.findById(albumId)
+				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)))
 				.flatMap(t -> mapAlbumForUpdate(dto, t, userId))
+				.flatMap(albumRepository::save)
 				.then();
 	}
 	
@@ -108,8 +112,7 @@ public class AlbumService {
 		return Mono.just(album)
 				.filter(t -> t.getCreatedBy() == userId)
 				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.FORBIDDEN)))
-				.flatMap(t -> this.mapAlbumEntity(album, dto))
-				.flatMap(albumRepository::save);
+				.flatMap(t -> this.mapAlbumEntity(album, dto));
 	}
 	
 	

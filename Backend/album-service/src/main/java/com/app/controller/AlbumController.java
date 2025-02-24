@@ -5,7 +5,6 @@ import com.app.payload.request.RequestToUpdateAlbum;
 import com.app.payload.response.AlbumPreviewResponse;
 import com.app.payload.response.ResponseAlbum;
 import com.app.service.AlbumService;
-import com.app.service.ImageValidatorService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -26,9 +25,6 @@ public class AlbumController {
 
 	private final AlbumService albumService;
 	
-	
-	private final ImageValidatorService imageValidatorService;
-
 	@GetMapping
 	public Flux<AlbumPreviewResponse> getAlbums(
 			@RequestParam(value = "ids", required = false) List<Integer> ids,
@@ -67,9 +63,7 @@ public class AlbumController {
 			@Valid @ModelAttribute RequestAlbum dto,
 			@RequestHeader("userId") Integer userId
 		) {
-		return imageValidatorService
-				.validateImageFile(dto.getCover())
-				.flatMap(t -> albumService.createAlbum(dto, userId));
+		return albumService.createAlbum(dto, userId);
 	}
 	
 	@PutMapping("/{id}")
@@ -78,9 +72,7 @@ public class AlbumController {
 			@PathVariable("id") Integer id,
 			@RequestHeader("userId") Integer userId
 		){
-		return imageValidatorService
-				.validateImageFile(dto.getCover())
-				.flatMap(t -> albumService.updateAlbum(dto, id, userId));
+		return albumService.updateAlbum(dto, id, userId);
 	}
 	
 	@DeleteMapping("cover/{id}")

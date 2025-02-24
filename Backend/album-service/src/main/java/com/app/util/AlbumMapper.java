@@ -11,9 +11,9 @@ import java.util.UUID;
 @Component
 public class AlbumMapper {
 
-	private final String IMAGE_URL = "http://localhost:8080/api/images/";
+	private final String IMAGE_URL = "http://localhost:8080/api/files/images/";
 	
-	private final String DEFAULT_IMAGE_URL = "http://localhost:8080/api/images/default";
+	private final String DEFAULT_IMAGE_URL = "http://localhost:8080/api/files/images/default";
 	
 	public Album fromRequestAlbumToAlbum(RequestAlbum dto, Integer userId, boolean coverIsPresent) {
 		return Album.builder()
