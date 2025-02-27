@@ -15,13 +15,13 @@ import org.springframework.http.codec.multipart.FilePart;
 @Builder
 public class CreateOrUpdatePlaylist {
 
-	@NotBlank(message = "Name can't be blank")
-	private String name;
-	
-	@Length(min = 0, max = 70, message = "Description max 70 symbols")
-	private String description;
-	
-	@Nullable
-	private FilePart cover;
-	
+    @NotBlank(message = "Name can't be blank")
+    private String name;
+
+    @Length(min = 0, max = 70, message = "Description max 70 symbols")
+    private String description;
+
+    @Nullable
+    private FilePart cover;
+
 }

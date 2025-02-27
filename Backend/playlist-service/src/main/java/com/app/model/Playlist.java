@@ -17,18 +17,18 @@ import java.util.UUID;
 @Builder
 public class Playlist {
 
-	@Id
-	private Integer id;
-	
-	private String name;
-	
-	@Column("created_by")
-	private Integer createdBy;
-	
-	@Column("image_name")
-	private UUID imageName;
-	
-	private String description;
-	
-	
+    @Id
+    private Integer id;
+
+    private String name;
+
+    @Column("created_by")
+    private Integer createdBy;
+
+    @Column("image_name")
+    private UUID imageName;
+
+    private String description;
+
+
 }

@@ -15,17 +15,17 @@ import java.util.List;
 @Builder
 public class ResponsePlaylist {
 
-	private Integer id;
-	
-	private String name;
-	
-	private String description;
-	
-	private String imageUrl;
-	
-	@JsonInclude(value = Include.NON_NULL)
-	private List<Long> trackIds;
-	
-	@JsonInclude(value = Include.NON_NULL)
-	private Integer numberOfTracks;
+    private Integer id;
+
+    private String name;
+
+    private String description;
+
+    private String imageUrl;
+
+    @JsonInclude(value = Include.NON_NULL)
+    private List<Long> trackIds;
+
+    @JsonInclude(value = Include.NON_NULL)
+    private Integer numberOfTracks;
 }

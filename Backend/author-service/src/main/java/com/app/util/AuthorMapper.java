@@ -10,7 +10,7 @@ import java.util.UUID;
 @Component
 public class AuthorMapper {
 
-    private final String IMAGE_URL_FORMAT = "http://localhost:8080/api/images/";
+    private final String IMAGE_URL_FORMAT = "http://localhost:8080/api/files/images/";
 
     private final String IMAGE_URL_DEFAULT = IMAGE_URL_FORMAT + "default";
 

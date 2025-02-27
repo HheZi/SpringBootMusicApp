@@ -2,16 +2,19 @@ package com.app.exception;
 
 import lombok.Getter;
 
+import java.io.Serial;
+
 @Getter
-public class FileValidationException extends Throwable{
+public class FileValidationException extends RuntimeException {
 
-	private static final long serialVersionUID = -5431192981872254120L;
+    @Serial
+    private static final long serialVersionUID = -5431192981872254120L;
 
-	private String reason;
+    private final String reason;
 
-	public FileValidationException(String reason) {
-		super(reason);
-		this.reason = reason;
-	}
-	
+    public FileValidationException(String reason) {
+        super(reason);
+        this.reason = reason;
+    }
+
 }

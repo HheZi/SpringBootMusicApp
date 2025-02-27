@@ -10,13 +10,12 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class KafkaImageProducer {
 
-	@Value("${kafka.topic.name}")
-	private String topicName;
-	
-	private final KafkaTemplate<String, ImageDeletionMessage> kafkaTemplate;
-	
-	public void sendMessageToDeleteImage(ImageDeletionMessage deletionMessage) {
-		kafkaTemplate.send(topicName, deletionMessage);
-	}
-	
+    private final KafkaTemplate<String, ImageDeletionMessage> kafkaTemplate;
+    @Value("${kafka.topic.name}")
+    private String topicName;
+
+    public void sendMessageToDeleteImage(ImageDeletionMessage deletionMessage) {
+        kafkaTemplate.send(topicName, deletionMessage);
+    }
+
 }

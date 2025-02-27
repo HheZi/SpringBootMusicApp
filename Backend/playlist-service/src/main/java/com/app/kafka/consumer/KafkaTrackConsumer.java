@@ -9,12 +9,12 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class KafkaTrackConsumer {
-	
-	private final PlaylistService playlistService;
-	
-	@KafkaListener(topics = "track-deletion-topic", groupId = "playlist-group")
-	public void consumeTrackDeletionMessage(TrackDeletionMessage deletionMessage) { 
-		playlistService.deleteTrackFromAllPlaylists(deletionMessage);
-	}
-	
+
+    private final PlaylistService playlistService;
+
+    @KafkaListener(topics = "track-deletion-topic", groupId = "playlist-group")
+    public void consumeTrackDeletionMessage(TrackDeletionMessage deletionMessage) {
+        playlistService.deleteTrackFromAllPlaylists(deletionMessage);
+    }
+
 }

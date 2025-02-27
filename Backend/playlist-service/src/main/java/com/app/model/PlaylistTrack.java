@@ -14,13 +14,13 @@ import org.springframework.data.relational.core.mapping.Table;
 @NoArgsConstructor
 @Builder
 public class PlaylistTrack {
-	
-	@Id
-	private Integer id;
 
-	@Column("playlist_id")
-	private Integer playlistId;
+    @Id
+    private Integer id;
 
-	@Column("track_id")
-	private Long trackId;
+    @Column("playlist_id")
+    private Integer playlistId;
+
+    @Column("track_id")
+    private Long trackId;
 }

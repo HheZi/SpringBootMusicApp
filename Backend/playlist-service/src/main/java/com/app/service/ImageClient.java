@@ -2,7 +2,7 @@ package com.app.service;
 
 import com.app.exception.FileValidationException;
 import com.app.exception.model.BadFileValidation;
-import com.app.model.Author;
+import com.app.model.Playlist;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpStatusCode;
@@ -15,26 +15,27 @@ import reactor.core.publisher.Mono;
 
 import java.io.File;
 
+
 @Service
 @RequiredArgsConstructor
 public class ImageClient {
 
     private final WebClient.Builder builder;
 
-    public Mono<Author> saveAuthorImage(Author author, File pathToFile) {
-        if (author.getImageName() == null) return Mono.just(author);
+    public Mono<Playlist> savePlaylistCover(Playlist playlist, File pathToFile) {
+        if (playlist.getImageName() == null) return Mono.just(playlist);
 
         MultipartBodyBuilder multipartbuilder = new MultipartBodyBuilder();
 
         multipartbuilder.part("file", new FileSystemResource(pathToFile));
-        multipartbuilder.part("name", author.getImageName().toString());
+        multipartbuilder.part("name", playlist.getImageName().toString());
 
         return builder.build().post().uri("http://file-service/api/files/images/")
                 .body(BodyInserters.fromMultipartData(multipartbuilder.build()))
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, this::handleBadRequestError)
                 .toBodilessEntity()
-                .map(voidResponseEntity -> author);
+                .map(voidResponseEntity -> playlist);
 
     }
 

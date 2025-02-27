@@ -6,8 +6,8 @@ import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 
 @Repository
-public interface PlaylistRepository extends ReactiveCrudRepository<Playlist, Integer>{
-	Flux<Playlist> findByNameStartsWithAllIgnoreCase(String name);
-	
-	Flux<Playlist> findByCreatedBy(Integer createdBy);
+public interface PlaylistRepository extends ReactiveCrudRepository<Playlist, Integer> {
+    Flux<Playlist> findByNameStartsWithAllIgnoreCase(String name);
+
+    Flux<Playlist> findByCreatedBy(Integer createdBy);
 }
