@@ -16,18 +16,18 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 public class Author {
-	
-	@Id
-	private Integer id;
-	
-	private String name;
-	
-	@Column("image_name")
-	private UUID imageName;
-	
-	@Column("created_by")
-	private Integer createdBy;
-	
-	private String description;
-	
+
+    @Id
+    private Integer id;
+
+    private String name;
+
+    @Column("image_name")
+    private UUID imageName;
+
+    @Column("created_by")
+    private Integer createdBy;
+
+    private String description;
+
 }

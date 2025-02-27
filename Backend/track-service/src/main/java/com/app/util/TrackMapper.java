@@ -12,7 +12,7 @@ import java.util.UUID;
 @Component
 public class TrackMapper {
 
-	private final String AUDIO_URL = "http://localhost:8080/api/audio/%s";
+	private final String AUDIO_URL = "http://localhost:8080/api/files/audio/%s";
 	
 	public Track fromCreateTrackDtoToTrack(CreateTrackDto dto, Integer userId, Mp3File mp3File) {
 		return Track.builder()

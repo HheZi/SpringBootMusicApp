@@ -13,14 +13,14 @@ import org.springframework.http.codec.multipart.FilePart;
 @Data
 public class AuthorCreateOrUpdateRequest {
 
-	@NotBlank(message = "Name can't be blank")
-	@Length(max = 75, message = "Name allows only 75 symbols")
-	private String name;
-	
-	@Length(max = 360, message = "Description allows only 360 symbols")
-	private String description;
-	
-	@Nullable
-	private FilePart cover;
-	
+    @NotBlank(message = "Name can't be blank")
+    @Length(max = 75, message = "Name allows only 75 symbols")
+    private String name;
+
+    @Length(max = 360, message = "Description allows only 360 symbols")
+    private String description;
+
+    @Nullable
+    private FilePart cover;
+
 }

@@ -13,12 +13,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class AuthorResponse {
 
-	private Integer id;
-	
-	private String name;
-	
-	private String imageUrl;
-	
-	@JsonInclude(value = Include.NON_NULL)
-	private String description;
+    private Integer id;
+
+    private String name;
+
+    private String imageUrl;
+
+    @JsonInclude(value = Include.NON_NULL)
+    private String description;
 }

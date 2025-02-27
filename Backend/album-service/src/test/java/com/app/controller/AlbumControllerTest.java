@@ -335,7 +335,14 @@ class AlbumControllerTest {
 	@Test
 	@SneakyThrows
 	public void update_album() {
-		doReturn(Mono.just(ResponseEntity.ok().build()))
+		Album album = new Album();
+		album.setReleaseDate(LocalDate.parse("1992-07-07"));
+		album.setAuthorId(4);
+		album.setName("newAlbum");
+		album.setCreatedBy(1);
+		album.setImageName(UUID.randomUUID());
+
+		doReturn(Mono.just(album))
 		.when(service).saveAlbumCover(any(Album.class), any(File.class));
 		
 		var bodyBuilder = new MultipartBodyBuilder();
@@ -346,8 +353,8 @@ class AlbumControllerTest {
 		
 		testClient
 		.put()
-		.uri(t -> t.path("/api/albums/"+11).build())
-		.header("userId", "11")
+		.uri(t -> t.path("/api/albums/"+10).build())
+		.header("userId", "10")
 		.contentType(MediaType.MULTIPART_FORM_DATA)
 		.body(BodyInserters.fromMultipartData(bodyBuilder.build()))
 		.accept(MediaType.APPLICATION_JSON)
