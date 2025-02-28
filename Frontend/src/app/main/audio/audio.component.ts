@@ -20,7 +20,7 @@ export class AudioComponent implements OnInit, OnDestroy {
   public author: string = 'Author';
   public title: string = 'Title';
   public currTrack?: Track;
-  public coverUrl: string = 'http://localhost:8080/api/images/default';
+  public coverUrl: string = 'http://localhost:8080/api/files/images/default';
   public isStopped: boolean = true;
   public isRepeated: boolean = false;
   public isRandom: boolean = false;

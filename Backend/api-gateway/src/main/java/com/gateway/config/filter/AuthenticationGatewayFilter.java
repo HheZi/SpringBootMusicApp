@@ -31,8 +31,7 @@ public class AuthenticationGatewayFilter implements GatewayFilter {
 	private final List<Endpoint> openEndpoints = List.of(
 			new Endpoint("/api/auth/*", new HttpMethod[] { POST }),
 			new Endpoint("/api/users/", new HttpMethod[] { POST }),
-			new Endpoint("/api/audio/*", new HttpMethod[] { GET }),
-			new Endpoint("/api/images/*", new HttpMethod[] { GET }),
+			new Endpoint("/api/files/**", new HttpMethod[] { GET }),
 			new Endpoint("/api/tracks/**", new HttpMethod[] { GET }),
 			new Endpoint("/api/albums/*", new HttpMethod[] { GET }),
 			new Endpoint("/api/albums/symbol/*", new HttpMethod[] { GET }),
@@ -65,7 +64,7 @@ public class AuthenticationGatewayFilter implements GatewayFilter {
 		boolean isOpenClosedEndpoint = isEndpointTheSame(request, openClosedEndpoints);
 		boolean isOpenEndpoint = isEndpointTheSame(request, openEndpoints);
 		
-		if ( (isOpenClosedEndpoint && isJwtTokenNotPresent) || isOpenEndpoint) {
+		if ( isOpenEndpoint || (isOpenClosedEndpoint && isJwtTokenNotPresent) ) {
 			return chain.filter(exchange);	
 		}
 		

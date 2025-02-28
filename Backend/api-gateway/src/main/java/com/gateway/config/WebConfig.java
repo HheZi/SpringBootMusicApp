@@ -27,7 +27,7 @@ public class WebConfig {
 	RouteLocator routeLocator(RouteLocatorBuilder builder) {
 		return builder.routes()
 				.route("audio-service",
-						t -> t.path("/api/audio/**").filters(f -> f.filter(authenticationGatewayFilter)).uri("lb://audio-service"))
+						t -> t.path("/api/files/**").filters(f -> f.filter(authenticationGatewayFilter)).uri("lb://file-service"))
 				
 				.route("auth-service",
 						t -> t.path("/api/auth/**").filters(f -> f.filter(authenticationGatewayFilter)).uri("lb://auth-service"))
@@ -43,10 +43,7 @@ public class WebConfig {
 				
 				.route("album-service", 
 						t -> t.path("/api/albums/**").filters(f -> f.filter(authenticationGatewayFilter)).uri("lb://album-service"))
-				
-				.route("image-service", 
-						t -> t.path("/api/images/**").filters(f -> f.filter(authenticationGatewayFilter)).uri("lb://image-service"))
-				
+
 				.route("favorite-service", 
 						t -> t.path("/api/favorites/**").filters(f -> f.filter(authenticationGatewayFilter)).uri("lb://favorite-service"))
 

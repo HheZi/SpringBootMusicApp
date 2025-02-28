@@ -30,7 +30,7 @@ public class AudioClient {
         builder.part("name", track.getAudioName().toString());
 
         return webClient.build()
-                .post().uri("http://audio-service/api/audio")
+                .post().uri("http://file-service/api/files/audio")
                 .body(BodyInserters.fromMultipartData(builder.build()))
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, this::handleBadRequestError)
