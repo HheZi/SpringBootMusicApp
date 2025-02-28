@@ -1,0 +1,391 @@
+networks:
+  backend-network:
+    name: backend-network
+volumes:
+  album-db-volume:
+  user-db-volume:
+  auth-db-volume:
+  author-db-volume:
+  track-db-volume:
+  playlist-db-volume:
+  favorite-db-volume:
+  image-volume:
+  audio-volume:
+
+services:
+  angular:
+    build: ./Frontend
+    container_name: angular
+    restart: on-failure
+    ports: 
+      - 4200:4200
+
+  eureka-server: 
+    build: 
+      context: ./Backend/eureka-server
+      dockerfile: local.Dockerfile
+    container_name: eureka-server
+    ports:
+      - 8761:8761
+    networks:
+      - backend-network
+    healthcheck:
+      test: "curl http://localhost:8761/actuator/health | grep UP || exit 1"
+      interval: 20s
+      retries: 5
+      start_period: 25s
+      timeout: 10s
+
+  config-server:
+    build: 
+      context: ./Backend/config-server
+      dockerfile: local.Dockerfile
+    container_name: config-server
+    ports:
+      - 8888:8888
+    networks: 
+      - backend-network 
+    environment:
+      - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
+    depends_on: 
+      eureka-server:
+        condition: service_healthy
+    healthcheck:
+      test: "curl http://localhost:8888/actuator/health | grep UP || exit 1"
+      interval: 20s
+      retries: 5
+      start_period: 25s
+      timeout: 10s
+ 
+  api-gateway:
+    build: 
+      context: ./Backend/api-gateway
+      dockerfile: local.Dockerfile
+    container_name: api-gateway
+    restart: on-failure
+    ports:
+      - 8080:8080
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+    environment:
+      - spring.profiles.active=container
+      - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
+    networks:
+      - backend-network
+
+  album-db:
+    image: postgres
+    container_name: album-db
+    volumes: 
+    - album-db-volume:/var/lib/postgresql/data
+    - ./Backend/album-service/init_script.sql:/docker-entrypoint-initdb.d/init_script.sql
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=AlbumDB 
+      - PGUSER=postgres
+    networks:
+      - backend-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready", "-U", "postgres", "-d", "AlbumDB"]
+      interval: 30s
+      timeout: 60s
+
+  album-service:
+    build: 
+      context: ./Backend/album-service
+      dockerfile: local.Dockerfile
+    container_name: album-service
+    restart: on-failure
+    environment:
+      - spring.profiles.active=container
+      - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
+    networks:
+      - backend-network
+    depends_on:
+      eureka-server:
+        condition: service_healthy 
+      album-db:
+        condition: service_healthy
+      kafka:
+        condition: service_started  
+      config-server:
+        condition: service_healthy
+  
+  file-service:
+    build: 
+      context: ./Backend/file-service
+      dockerfile: local.Dockerfile
+    container_name: file-service
+    restart: on-failure
+    environment:
+      - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
+      - spring.profiles.active=container
+    volumes:
+      - audio-volume:/home/app/audio
+      - image-volume:/home/app/images
+    networks:
+      - backend-network
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+
+  user-db:
+    image: postgres
+    container_name: user-db
+    volumes: 
+    - user-db-volume:/var/lib/postgresql/data
+    - ./Backend/user-service/init_script.sql:/docker-entrypoint-initdb.d/init_script.sql
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=UserDB
+      - PGUSER=postgres
+    networks:
+      - backend-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready", "-U", "postgres", "-d", "UserDB"]
+      interval: 30s
+      timeout: 60s  
+
+  user-service:
+    build: 
+      context: ./Backend/user-service
+      dockerfile: local.Dockerfile
+    container_name: user-service
+    restart: on-failure
+    environment:
+      - spring.profiles.active=container
+      - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+      user-db:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+    networks:
+      - backend-network
+      
+  auth-db:
+    image: postgres
+    container_name: auth-db
+    volumes: 
+    - auth-db-volume:/var/lib/postgresql/data
+    - ./Backend/auth-service/init_script.sql:/docker-entrypoint-initdb.d/init_script.sql
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=AuthDB
+      - PGUSER=postgres
+    networks:
+      - backend-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready", "-U", "postgres", "-d", "AuthDB"]
+      interval: 30s
+      timeout: 60s
+
+  auth-service:
+    build: 
+      context: ./Backend/auth-service
+      dockerfile: local.Dockerfile
+    container_name: auth-service
+    restart: on-failure
+    environment:
+      - spring.profiles.active=container
+      - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
+    depends_on:
+      auth-db:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy  
+    networks:
+      - backend-network
+
+  author-db:
+    image: postgres
+    container_name: author-db
+    volumes: 
+    - author-db-volume:/var/lib/postgresql/data
+    - ./Backend/author-service/init_script.sql:/docker-entrypoint-initdb.d/init_script.sql
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=AuthorDB
+      - PGUSER=postgres
+    networks:
+      - backend-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready", "-U", "postgres", "-d", "AuthorDB"]
+      interval: 30s
+      timeout: 60s
+
+  author-service:
+    build: 
+      context: ./Backend/author-service
+      dockerfile: local.Dockerfile
+    container_name: author-service
+    restart: on-failure
+    environment:
+      - spring.profiles.active=container
+      - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
+    networks:
+      - backend-network
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+      author-db:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+      config-server:
+        condition: service_healthy
+    
+  kafka:
+    image: bitnami/kafka
+    container_name: kafka
+    ports:
+      - "9093:9093"
+    environment:
+      - KAFKA_ENABLE_KRAFT=yes
+      - KAFKA_CFG_PROCESS_ROLES=broker,controller
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9091
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092 
+      - KAFKA_BROKER_ID=1  
+      - KAFKA_CFG_NODE_ID=1
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@kafka:9091
+      - ALLOW_PLAINTEXT_LISTENER=yes
+    networks:
+      - backend-network
+ 
+  
+  track-db:
+    image: postgres
+    container_name: track-db
+    volumes: 
+    - track-db-volume:/var/lib/postgresql/data
+    - ./Backend/track-service/init_script.sql:/docker-entrypoint-initdb.d/init_script.sql
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=TrackDB
+      - PGUSER=postgres
+    networks:
+      - backend-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready", "-U", "postgres", "-d", "TrackDB"]
+      interval: 30s
+      timeout: 60s
+  
+  track-service:
+    build: 
+      context: ./Backend/track-service
+      dockerfile: local.Dockerfile
+    container_name: track-service
+    restart: on-failure
+    ports:
+      - 8081:8081
+    environment:
+      - spring.profiles.active=container
+      - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
+      
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+      track-db:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+    networks:
+      - backend-network
+
+  playlist-db:
+    image: postgres
+    container_name: playlist_db
+    volumes: 
+    - playlist-db-volume:/var/lib/postgresql/data
+    - ./Backend/playlist-service/init_script.sql:/docker-entrypoint-initdb.d/init_script.sql
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=PlaylistDB
+      - PGUSER=postgres
+    networks:
+      - backend-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready", "-U", "postgres", "-d", "PlaylistDB"]
+      interval: 30s
+      timeout: 60s
+
+  playlist-service:
+    build: 
+      context: ./Backend/playlist-service
+      dockerfile: local.Dockerfile
+    container_name: playlist-service
+    restart: on-failure
+    environment:
+      - spring.profiles.active=container
+      - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+      playlist-db:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+    networks:
+      - backend-network
+
+  favorite-db:
+    image: postgres
+    container_name: favorite_db
+    volumes: 
+    - favorite-db-volume:/var/lib/postgresql/data
+    - ./Backend/favorite-service/init_script.sql:/docker-entrypoint-initdb.d/init_script.sql
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=FavoriteDB
+      - PGUSER=postgres
+    networks:
+      - backend-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready", "-U", "postgres", "-d", "FavoriteDB"]
+      interval: 30s
+      timeout: 60s
+  
+  favorite-service:
+    build:
+      context: ./Backend/favorite-service
+      dockerfile: local.Dockerfile
+    container_name: favorite-service
+    restart: on-failure
+    environment:
+      - spring.profiles.active=container
+      - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+      favorite-db:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+    networks:
+      - backend-network 
