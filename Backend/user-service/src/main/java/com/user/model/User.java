@@ -1,10 +1,12 @@
 package com.user.model;
 
+import com.user.enums.UserRole;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 @Table("users")
@@ -22,5 +24,7 @@ public class User {
 	private String email;
 
 	private String password;
+
+	private UserRole userRole;
 
 }

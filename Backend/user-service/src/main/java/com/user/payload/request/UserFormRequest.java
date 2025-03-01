@@ -1,5 +1,7 @@
 package com.user.payload.request;
 
+import com.user.enums.UserRole;
+import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -24,5 +26,8 @@ public class UserFormRequest {
 
 	@NotBlank(message = "The password can't be blank")
 	private String password;
+
+	@Nullable
+	private UserRole userRole = UserRole.USER;
 
 }

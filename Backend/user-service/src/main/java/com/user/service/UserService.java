@@ -1,6 +1,7 @@
 package com.user.service;
 
-import com.user.model.User;
+import com.user.enums.UserRole;
+import com.user.exceptions.UserRuntimeException;
 import com.user.payload.request.UserAuthRequest;
 import com.user.payload.request.UserFormRequest;
 import com.user.payload.response.ValidatedUser;
@@ -33,9 +34,19 @@ public class UserService {
 
 	}
 
-	public Mono<ResponseEntity<?>> createNewUser(UserFormRequest formRequest) {
-		User user = userMapper.fromUserFormRequestToUser(formRequest, encoder.encode(formRequest.getPassword()));
+	public Mono<ResponseEntity<?>> createNewUser(UserFormRequest formRequest, UserRole role) {
+		return Mono.just(formRequest)
+				.filter(t -> this.checkIfUserWithRoleCanBeCreated(t.getUserRole(), role))
+				.switchIfEmpty(Mono.error(() -> new UserRuntimeException("Only admins allows to create admin user")))
+				.map(request -> userMapper.fromUserFormRequestToUser(request, encoder.encode(formRequest.getPassword())))
+				.flatMap(userRepository::save)
+				.map(t -> ResponseEntity.status(HttpStatus.CREATED).build());
+	}
 
-		return userRepository.save(user).map(t -> ResponseEntity.status(HttpStatus.CREATED).build());
+	private boolean checkIfUserWithRoleCanBeCreated(UserRole userRoleOfRequest, UserRole role){
+		boolean canBeAdminUserCreated = userRoleOfRequest == UserRole.ADMIN && role == UserRole.ADMIN;
+		boolean canBeUserCreated = userRoleOfRequest == UserRole.USER;
+
+		return canBeUserCreated || canBeAdminUserCreated;
 	}
 }

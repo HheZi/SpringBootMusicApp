@@ -1,5 +1,6 @@
 package com.user.payload.response;
 
+import com.user.enums.UserRole;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,5 +15,7 @@ public class ValidatedUser {
 	private Integer id;
 
 	private String username;
+
+	private UserRole userRole;
 
 }

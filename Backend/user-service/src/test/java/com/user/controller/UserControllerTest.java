@@ -1,5 +1,6 @@
 package com.user.controller;
 
+import com.user.enums.UserRole;
 import com.user.payload.request.UserAuthRequest;
 import com.user.payload.request.UserFormRequest;
 import com.user.payload.response.ValidatedUser;
@@ -10,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
@@ -27,7 +29,11 @@ class UserControllerTest {
 		formRequest.setEmail("email@gmail.com");
 		formRequest.setPassword("12345");
 
-		testClient.post().uri("/api/users/").contentType(MediaType.APPLICATION_JSON).bodyValue(formRequest).exchange()
+		testClient.post().uri("/api/users/")
+				.contentType(MediaType.APPLICATION_JSON)
+				.header("userRole", UserRole.USER.name())
+				.bodyValue(formRequest)
+				.exchange()
 				.expectStatus().isCreated();
 	}
 
@@ -43,11 +49,52 @@ class UserControllerTest {
 		.post()
 		.uri("/api/users/")
 		.contentType(MediaType.APPLICATION_JSON)
+		.header("userRole", UserRole.USER.name())
 		.bodyValue(formRequest)
 		.exchange()
 		.expectStatus().is4xxClientError()
 		.expectBody();
 
+	}
+
+	@Test
+	public void test_create_admin_user(){
+		UserFormRequest formRequest = new UserFormRequest();
+
+		formRequest.setUsername("Test45");
+		formRequest.setEmail("email@gmail.com");
+		formRequest.setPassword("12345");
+		formRequest.setUserRole(UserRole.ADMIN);
+
+		testClient
+				.post()
+				.uri("/api/users/")
+				.contentType(MediaType.APPLICATION_JSON)
+				.header("userRole", UserRole.ADMIN.name())
+				.bodyValue(formRequest)
+				.exchange()
+				.expectStatus().isCreated();
+	}
+
+	@Test
+	public void test_create_admin_user_when_not_admin(){
+		UserFormRequest formRequest = new UserFormRequest();
+
+		formRequest.setUsername("Test45");
+		formRequest.setEmail("email@gmail.com");
+		formRequest.setPassword("12345");
+		formRequest.setUserRole(UserRole.ADMIN);
+
+		testClient
+				.post()
+				.uri("/api/users/")
+				.contentType(MediaType.APPLICATION_JSON)
+				.header("userRole", UserRole.USER.name())
+				.bodyValue(formRequest)
+				.exchange()
+				.expectStatus().isBadRequest()
+				.expectBody()
+				.jsonPath("[0]").value(is("Only admins allows to create admin user"));
 	}
 
 	@Test
@@ -58,7 +105,7 @@ class UserControllerTest {
 		userAuthRequest.setPassword("12345");
 		userAuthRequest.setUsername("test");
 
-		ValidatedUser expected = new ValidatedUser(1, "test");
+		ValidatedUser expected = new ValidatedUser(1, "test", UserRole.ADMIN);
 		
 		ValidatedUser responseBody = testClient.post().uri("/api/users/validate")
 				.contentType(MediaType.APPLICATION_JSON).bodyValue(userAuthRequest).exchange().expectStatus()
