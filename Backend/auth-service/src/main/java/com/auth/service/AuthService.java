@@ -39,13 +39,13 @@ public class AuthService {
 		Mono<UserDetails> userCredential = service.getUserDetails(authRequest);
 		return userCredential
 				.flatMap(t -> refreshTokenRepository.findByUserId(t.getId()))
-				.switchIfEmpty(userCredential.map(t -> new RefreshToken(t.getId())))
+				.switchIfEmpty(userCredential.map(t -> new RefreshToken(t.getId(), t.getUserRole())))
 				.doOnNext(t -> {
 					t.setToken(UUID.randomUUID());
 					t.setExpirationDate(Instant.now().plus(EXPIRATION_DATE_OF_REFRESH_TOKEN_IN_DAYS, ChronoUnit.DAYS));
 				})
 				.flatMap(refreshTokenRepository::save)
-				.map(t -> new AuthResponse(jwtUtil.createJwtToken(t.getUserId()), t.getToken().toString()));
+				.map(t -> new AuthResponse(jwtUtil.createJwtToken(t.getUserId(), t.getUserRole()), t.getToken().toString()));
 	}
 
 	public Mono<JwtTokenResponse> refreshJWTToken(RefreshTokenRequest refreshToken) {
@@ -56,7 +56,7 @@ public class AuthService {
 				.findByToken(refreshToken.getRefreshToken())
 				.filter(t -> t.getExpirationDate().isAfter(Instant.now()))
 				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.FORBIDDEN)))
-				.map(t -> new JwtTokenResponse(jwtUtil.createJwtToken(t.getUserId())));
+				.map(t -> new JwtTokenResponse(jwtUtil.createJwtToken(t.getUserId(), t.getUserRole())));
 	}
 	
 }

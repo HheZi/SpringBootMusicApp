@@ -1,5 +1,6 @@
 package com.auth.controller;
 
+import com.auth.enums.UserRole;
 import com.auth.payload.request.AuthRequest;
 import com.auth.payload.request.RefreshTokenRequest;
 import com.auth.payload.response.AuthResponse;
@@ -9,6 +10,7 @@ import com.auth.service.UserWebService;
 import com.auth.util.JwtUtil;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -38,7 +40,7 @@ class AuthControllerTest {
 	@Test
 	@Order(1)
 	void test_login() {
-		AuthRequest authRequest = configBeforeBeforeRequest();
+		AuthRequest authRequest = configBeforRequest();
 		
 		testClient.post()
 		.uri("/api/auth/login")
@@ -51,7 +53,7 @@ class AuthControllerTest {
 
 	@Test
 	void test_refresh_token() {
-		AuthRequest authRequest = configBeforeBeforeRequest();
+		AuthRequest authRequest = configBeforRequest();
 		
 		AuthResponse responseBody = testClient.post()
 		.uri("/api/auth/login")
@@ -71,8 +73,8 @@ class AuthControllerTest {
 		.value(t -> assertFalse(jwtUtil.isExpired(t.getToken())));
 	}
 
-	private AuthRequest configBeforeBeforeRequest() {
-		doReturn(Mono.just(new UserDetails(2, "test"))).when(service).getUserDetails(any());
+	private AuthRequest configBeforRequest() {
+		Mockito.when(service.getUserDetails(any())).thenReturn(Mono.just(new UserDetails(2, "test", UserRole.USER)));
 		
 		AuthRequest authRequest = new AuthRequest("test", "12345");
 		return authRequest;

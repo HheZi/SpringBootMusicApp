@@ -30,7 +30,6 @@ public class AuthenticationGatewayFilter implements GatewayFilter {
 	
 	private final List<Endpoint> openEndpoints = List.of(
 			new Endpoint("/api/auth/*", new HttpMethod[] { POST }),
-			new Endpoint("/api/users/", new HttpMethod[] { POST }),
 			new Endpoint("/api/files/**", new HttpMethod[] { GET }),
 			new Endpoint("/api/tracks/**", new HttpMethod[] { GET }),
 			new Endpoint("/api/albums/*", new HttpMethod[] { GET }),
@@ -45,6 +44,7 @@ public class AuthenticationGatewayFilter implements GatewayFilter {
 	
 	private final List<Endpoint> openClosedEndpoints = List.of(
 			new Endpoint("/tracks/*", new HttpMethod[] { GET }),
+			new Endpoint("/api/users/", new HttpMethod[] { POST }),
 			new Endpoint("/api/albums/owner/*", new HttpMethod[] { GET }),
 			new Endpoint("/api/authors/owner/*", new HttpMethod[] { GET }),
 			new Endpoint("/api/playlists/owner/*", new HttpMethod[] { GET })

@@ -1,5 +1,7 @@
 package com.auth.util;
 
+import com.auth.enums.UserRole;
+import com.auth.payload.response.UserDetails;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -21,9 +23,10 @@ public class JwtUtil {
 	@Value("${jwt.expirationInMinutes}")
 	private Long EXPIRATION_TIME_IN_MINUTES;
 	
-	public String createJwtToken(Integer userId) {
+	public String createJwtToken(Integer userId, UserRole userRole) {
 		return Jwts.builder()
 				.claim("id", userId)
+				.claim("userRole", userRole.name())
 				.issuedAt(new Date())
 				.expiration(Date.from(Instant.now().plus(EXPIRATION_TIME_IN_MINUTES, ChronoUnit.MINUTES)))
 				.signWith(getSingingKey())

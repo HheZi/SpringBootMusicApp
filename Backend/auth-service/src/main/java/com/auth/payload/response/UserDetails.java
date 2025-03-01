@@ -1,5 +1,6 @@
 package com.auth.payload.response;
 
+import com.auth.enums.UserRole;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,5 +12,6 @@ public class UserDetails {
 	private Integer id;
 	
 	private String username;
-	
+
+	private UserRole userRole;
 }

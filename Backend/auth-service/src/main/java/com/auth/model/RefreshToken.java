@@ -1,5 +1,6 @@
 package com.auth.model;
 
+import com.auth.enums.UserRole;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -29,8 +30,11 @@ public class RefreshToken {
 	@Column("user_id")
 	private Integer userId;
 
-	public RefreshToken(Integer userId) {
+	private UserRole userRole;
+
+	public RefreshToken(Integer userId, UserRole userRole) {
 		this.userId = userId;
+		this.userRole = userRole;
 	}
 	
 }
