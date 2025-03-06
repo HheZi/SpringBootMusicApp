@@ -15,11 +15,10 @@ public class AlbumMapper {
 	
 	private final String DEFAULT_IMAGE_URL = "http://localhost:8080/api/files/images/default";
 	
-	public Album fromRequestAlbumToAlbum(RequestAlbum dto, Integer userId, boolean coverIsPresent) {
+	public Album fromRequestAlbumToAlbum(RequestAlbum dto, boolean coverIsPresent) {
 		return Album.builder()
 				.name(dto.getName())
 				.imageName(coverIsPresent ?  UUID.randomUUID() : null)
-				.createdBy(userId)
 				.authorId(dto.getAuthorId())
 				.releaseDate(dto.getReleaseDate())
 				.build();

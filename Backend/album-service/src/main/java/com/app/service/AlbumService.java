@@ -1,5 +1,6 @@
 package com.app.service;
 
+import com.app.enums.UserRole;
 import com.app.kafka.KafkaAlbumProducer;
 import com.app.kafka.KafkaImageProducer;
 import com.app.kafka.message.AlbumDeletionMessage;
@@ -63,38 +64,39 @@ public class AlbumService {
 				.map(albumMapper::fromAlbumToAlbumPreviewResponse);
 	}
 
-	public Mono<ResponseEntity<?>> createAlbum(RequestAlbum dto, Integer userId) {
+	public Mono<ResponseEntity<?>> createAlbum(RequestAlbum dto, UserRole userRole) {
+		if (userRole != UserRole.ADMIN) {
+			return Mono.error(() -> new ResponseStatusException(HttpStatus.FORBIDDEN));
+		}
+
 		if (dto.getCover() != null) {
 			File file = new File(TEMP_FOLDER_NAME, dto.getCover().filename()).getAbsoluteFile();
 			
 			return dto.getCover().transferTo(file)
-					.then(Mono.fromCallable(() -> albumMapper.fromRequestAlbumToAlbum(dto, userId, true)))
+					.then(Mono.fromCallable(() -> albumMapper.fromRequestAlbumToAlbum(dto, true)))
 					.flatMap(t -> imageClient.saveAlbumCover(t, file))
 					.flatMap(albumRepository::save)
 					.doFinally(t -> file.delete())
 					.map(t -> ResponseEntity.status(HttpStatus.CREATED).build());
 		}
 		
-		return  Mono.just(albumMapper.fromRequestAlbumToAlbum(dto, userId, false))
+		return  Mono.just(albumMapper.fromRequestAlbumToAlbum(dto, false))
 				.flatMap(albumRepository::save)
 				.map(t -> ResponseEntity.status(HttpStatus.CREATED).build());
 	}
 
+	public Mono<Void> updateAlbum(RequestToUpdateAlbum dto, Integer albumId, UserRole userRole) {
+		if (userRole != UserRole.ADMIN) {
+			return Mono.error(() -> new ResponseStatusException(HttpStatus.FORBIDDEN));
+		}
 
-	public Mono<Boolean> userIsOwnerOfAlbum(Integer albumId, Integer userId){
-		return albumRepository.findById(albumId)
-				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)))
-				.map(t -> t.getCreatedBy() == userId);
-	}
-
-	public Mono<Void> updateAlbum(RequestToUpdateAlbum dto, Integer albumId, Integer userId){
 		if(dto.getCover() != null) {
 			File file = new File(TEMP_FOLDER_NAME, dto.getCover().filename()).getAbsoluteFile();
 			
 			return dto.getCover().transferTo(file)
 					.then(albumRepository.findById(albumId))
 					.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)))
-					.flatMap(t -> mapAlbumForUpdate(dto, t, userId))
+					.flatMap(t -> mapAlbumForUpdate(dto, t))
 					.flatMap(t ->  imageClient.saveAlbumCover(t, file))
 					.flatMap(albumRepository::save)
 					.doFinally(t -> file.delete())
@@ -103,33 +105,28 @@ public class AlbumService {
 		
 		return albumRepository.findById(albumId)
 				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)))
-				.flatMap(t -> mapAlbumForUpdate(dto, t, userId))
+				.flatMap(t -> mapAlbumForUpdate(dto, t))
 				.flatMap(albumRepository::save)
 				.then();
 	}
 	
-	private Mono<Album> mapAlbumForUpdate(RequestToUpdateAlbum dto, Album album, Integer userId){
-		return Mono.just(album)
-				.filter(t -> t.getCreatedBy() == userId)
-				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.FORBIDDEN)))
-				.flatMap(t -> this.mapAlbumEntity(album, dto));
-	}
-	
-	
-	private Mono<Album> mapAlbumEntity(Album album, RequestToUpdateAlbum dto){
+	private Mono<Album> mapAlbumForUpdate(RequestToUpdateAlbum dto, Album album){
 		album.setName(dto.getName());
 		album.setReleaseDate(dto.getReleaseDate());
-		
+
 		if (dto.getCover() != null && album.getImageName() == null) {
 			album.setImageName(UUID.randomUUID());
 		}
 		return Mono.just(album);
 	}
 	
-	public Mono<Void> deleteAlbum(Integer id, Integer userId){
+	public Mono<Void> deleteAlbum(Integer id, UserRole userRole){
+		if (userRole != UserRole.ADMIN) {
+			return Mono.error(() -> new ResponseStatusException(HttpStatus.FORBIDDEN));
+		}
+
 		return albumRepository
 				.findById(id)
-				.filter(t -> t.getCreatedBy() == userId)
 				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)))
 				.doOnNext(t -> {
 					kafkaAlbumProducer.sendDeleteAlbumMessage(new AlbumDeletionMessage(t.getId()));
@@ -140,10 +137,13 @@ public class AlbumService {
 				.flatMap(albumRepository::delete);
 	}
 	
-	public Mono<Void> deleteCoverById(Integer id, Integer userId) {
+	public Mono<Void> deleteCoverById(Integer id, UserRole userRole) {
+		if (userRole != UserRole.ADMIN) {
+			return Mono.error(() -> new ResponseStatusException(HttpStatus.FORBIDDEN));
+		}
+
 		return albumRepository.findById(id)
-				.filter(t -> t.getCreatedBy() == userId)
-				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.FORBIDDEN)))
+				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)))
 				.doOnNext(t -> {
 					if (nonNull(t.getImageName())){
 						kafkaImageProducer.sendMessageToDeleteImage(new ImageDeletionMessage(t.getImageName().toString()));

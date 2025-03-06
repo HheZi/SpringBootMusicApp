@@ -26,9 +26,6 @@ public class Album {
 	@Column("image_name")
 	private UUID imageName;
 	
-	@Column("created_by")
-	private Integer createdBy;
-	
 	@Column("author_id")
 	private Integer authorId;
 	

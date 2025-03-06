@@ -163,32 +163,6 @@ class AlbumControllerTest {
 	}
 	
 	@Test
-	public void get_album_by_owner() {
-		testClient
-		.get()
-		.uri(t -> t.path("/api/albums/owner/"+"1").build())
-		.header("userId", "1")
-		.accept(MediaType.APPLICATION_JSON)
-		.exchange()
-		.expectStatus().is2xxSuccessful()
-		.expectBody(Boolean.class)
-		.isEqualTo(Boolean.TRUE);
-	}
-	
-	@Test
-	public void get_album_by_owner_but_expected_not_an_owner() {
-		testClient
-		.get()
-		.uri(t -> t.path("/api/albums/owner/"+"2").build())
-		.header("userId", "1")
-		.accept(MediaType.APPLICATION_JSON)
-		.exchange()
-		.expectStatus().is2xxSuccessful()
-		.expectBody(Boolean.class)
-		.isEqualTo(Boolean.FALSE);
-	}
-	
-	@Test
 	public void get_album_by_owner_but_it_not_found() {
 		testClient
 		.get()
@@ -210,7 +184,7 @@ class AlbumControllerTest {
 		testClient
 		.post()
 		.uri(t -> t.path("/api/albums/").build())
-		.header("userId", "1")
+		.header("userRole", "ADMIN")
 		.contentType(MediaType.MULTIPART_FORM_DATA)
 		.body(BodyInserters.fromMultipartData(bodyBuilder.build()))
 		.accept(MediaType.APPLICATION_JSON)
@@ -225,7 +199,6 @@ class AlbumControllerTest {
 		album.setReleaseDate(LocalDate.parse("1992-07-07"));
 		album.setAuthorId(4);
 		album.setName("newAlbum");
-		album.setCreatedBy(1);
 		album.setImageName(UUID.randomUUID());
 
 		doReturn(Mono.just(album))
@@ -242,7 +215,7 @@ class AlbumControllerTest {
 		.post()
 		.uri(t -> t.path("/api/albums/").build())
 		.contentType(MediaType.MULTIPART_FORM_DATA)
-		.header("userId", "1")
+		.header("userRole", "ADMIN")
 		.body(BodyInserters.fromMultipartData(bodyBuilder.build()))
 		.accept(MediaType.APPLICATION_JSON)
 		.exchange()
@@ -261,7 +234,7 @@ class AlbumControllerTest {
 		testClient
 		.post()
 		.uri(t -> t.path("/api/albums/").build())
-		.header("userId", "1")
+		.header("userRole", "ADMIN")
 		.contentType(MediaType.MULTIPART_FORM_DATA)
 		.body(BodyInserters.fromMultipartData(bodyBuilder.build()))
 		.accept(MediaType.APPLICATION_JSON)
@@ -286,7 +259,7 @@ class AlbumControllerTest {
 		testClient
 		.post()
 		.uri(t -> t.path("/api/albums/").build())
-		.header("userId", "1")
+		.header("userRole", "ADMIN")
 		.contentType(MediaType.MULTIPART_FORM_DATA)
 		.body(BodyInserters.fromMultipartData(bodyBuilder.build()))
 		.accept(MediaType.APPLICATION_JSON)
@@ -295,6 +268,25 @@ class AlbumControllerTest {
 		.expectBody()
 		.jsonPath("$.[0]").value(is("Wrong format of file. Can be only JPEG and PNG"));
 		
+	}
+
+	@Test
+	public void create_album_when_not_admin() {
+		var bodyBuilder = new MultipartBodyBuilder();
+
+		bodyBuilder.part("name", "test");
+		bodyBuilder.part("releaseDate", "1990-07-07");
+		bodyBuilder.part("authorId", "2");
+
+		testClient
+				.post()
+				.uri(t -> t.path("/api/albums/").build())
+				.header("userRole", "USER")
+				.contentType(MediaType.MULTIPART_FORM_DATA)
+				.body(BodyInserters.fromMultipartData(bodyBuilder.build()))
+				.accept(MediaType.APPLICATION_JSON)
+				.exchange()
+				.expectStatus().isForbidden();
 	}
 	
 	@Test
@@ -307,7 +299,7 @@ class AlbumControllerTest {
 		testClient
 		.put()
 		.uri(t -> t.path("/api/albums/"+10).build())
-		.header("userId", "10")
+		.header("userRole", "ADMIN")
 		.contentType(MediaType.MULTIPART_FORM_DATA)
 		.body(BodyInserters.fromMultipartData(bodyBuilder.build()))
 		.accept(MediaType.APPLICATION_JSON)
@@ -339,7 +331,6 @@ class AlbumControllerTest {
 		album.setReleaseDate(LocalDate.parse("1992-07-07"));
 		album.setAuthorId(4);
 		album.setName("newAlbum");
-		album.setCreatedBy(1);
 		album.setImageName(UUID.randomUUID());
 
 		doReturn(Mono.just(album))
@@ -354,7 +345,7 @@ class AlbumControllerTest {
 		testClient
 		.put()
 		.uri(t -> t.path("/api/albums/"+10).build())
-		.header("userId", "10")
+		.header("userRole", "ADMIN")
 		.contentType(MediaType.MULTIPART_FORM_DATA)
 		.body(BodyInserters.fromMultipartData(bodyBuilder.build()))
 		.accept(MediaType.APPLICATION_JSON)
@@ -364,7 +355,7 @@ class AlbumControllerTest {
 
 	@Test
 	@SneakyThrows
-	public void update_album_when_incorrect_user_id() {
+	public void update_album_when_not_admin() {
 		var bodyBuilder = new MultipartBodyBuilder();
 
 		bodyBuilder.part("name", "test");
@@ -373,7 +364,7 @@ class AlbumControllerTest {
 		testClient
 				.put()
 				.uri(t -> t.path("/api/albums/"+5).build())
-				.header("userId", "11")
+				.header("userRole", "USER")
 				.contentType(MediaType.MULTIPART_FORM_DATA)
 				.body(BodyInserters.fromMultipartData(bodyBuilder.build()))
 		   		.accept(MediaType.APPLICATION_JSON)
@@ -386,10 +377,21 @@ class AlbumControllerTest {
 		testClient
 		.delete()
 		.uri(t -> t.path("/api/albums/cover/"+3).build())
-		.header("userId", "3")
+		.header("userRole", "ADMIN")
 		.accept(MediaType.APPLICATION_JSON)
 		.exchange()
 		.expectStatus().isOk();
+	}
+
+	@Test
+	public void delete_cover_of_album_when_not_admin() {
+		testClient
+				.delete()
+				.uri(t -> t.path("/api/albums/cover/"+3).build())
+				.header("userRole", "USER")
+				.accept(MediaType.APPLICATION_JSON)
+				.exchange()
+				.expectStatus().isForbidden();
 	}
 	
 	@Test
@@ -397,9 +399,20 @@ class AlbumControllerTest {
 		testClient
 		.delete()
 		.uri(t -> t.path("/api/albums/"+9).build())
-		.header("userId", "9")
+		.header("userRole", "ADMIN")
 		.accept(MediaType.APPLICATION_JSON)
 		.exchange()
 		.expectStatus().isOk();
+	}
+
+	@Test
+	public void delete_album_when_not_admin() {
+		testClient
+				.delete()
+				.uri(t -> t.path("/api/albums/"+9).build())
+				.header("userRole", "USER")
+				.accept(MediaType.APPLICATION_JSON)
+				.exchange()
+				.expectStatus().isForbidden();
 	}
 }

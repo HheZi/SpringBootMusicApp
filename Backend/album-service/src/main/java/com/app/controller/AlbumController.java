@@ -1,5 +1,6 @@
 package com.app.controller;
 
+import com.app.enums.UserRole;
 import com.app.payload.request.RequestAlbum;
 import com.app.payload.request.RequestToUpdateAlbum;
 import com.app.payload.response.AlbumPreviewResponse;
@@ -47,48 +48,38 @@ public class AlbumController {
 	public Flux<AlbumPreviewResponse> getAlbumBySymbol(@PathVariable("symbol") String symbol){
 		return albumService.findAlbumBySymbol(URLDecoder.decode(symbol, Charset.defaultCharset()));
 	}
-
-	@GetMapping("/owner/{id}")
-	public Mono<Boolean> getIsOwner(
-			@PathVariable("id") Integer id, 
-			@RequestHeader(value = "userId", 
-			required = false, 
-			defaultValue = "0") Integer userId
-		){
-		return albumService.userIsOwnerOfAlbum(id, userId);
-	}
 	
 	@PostMapping
 	public Mono<ResponseEntity<?>> createAlbum(
 			@Valid @ModelAttribute RequestAlbum dto,
-			@RequestHeader("userId") Integer userId
+			@RequestHeader("userRole") UserRole userRole
 		) {
-		return albumService.createAlbum(dto, userId);
+		return albumService.createAlbum(dto, userRole);
 	}
 	
 	@PutMapping("/{id}")
 	public Mono<Void> updateAlbum(
 			@Valid @ModelAttribute RequestToUpdateAlbum dto, 
 			@PathVariable("id") Integer id,
-			@RequestHeader("userId") Integer userId
+			@RequestHeader("userRole") UserRole userRole
 		){
-		return albumService.updateAlbum(dto, id, userId);
+		return albumService.updateAlbum(dto, id, userRole);
 	}
 	
 	@DeleteMapping("cover/{id}")
 	public Mono<Void> deleteCoverOfAlbum(
 			@PathVariable("id") Integer id,
-			@RequestHeader("userId") Integer userId
+			@RequestHeader("userRole") UserRole userRole
 		){
-		return albumService.deleteCoverById(id, userId);
+		return albumService.deleteCoverById(id, userRole);
 	}
 	
 	@DeleteMapping("/{id}")
 	public Mono<Void> deleteAlbum(
 			@PathVariable("id") Integer id,
-			@RequestHeader("userId") Integer userId
+			@RequestHeader("userRole") UserRole userRole
 		){
-		return albumService.deleteAlbum(id, userId);
+		return albumService.deleteAlbum(id, userRole);
 	}
 	
 	
