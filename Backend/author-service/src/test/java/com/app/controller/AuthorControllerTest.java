@@ -99,36 +99,6 @@ class AuthorControllerTest {
                 .expectStatus().isNotFound();
     }
 
-    @Test
-    void test_get_owner() {
-        testClient.get()
-                .uri(t -> t.path("/api/authors/owner/" + 2).build())
-                .header("userId", "1")
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(Boolean.class)
-                .isEqualTo(Boolean.TRUE);
-    }
-
-    @Test
-    void test_get_owner_but_its_not_owner() {
-        testClient.get()
-                .uri(t -> t.path("/api/authors/owner/" + 2).build())
-                .header("userId", "3")
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(Boolean.class)
-                .isEqualTo(Boolean.FALSE);
-    }
-
-    @Test
-    void test_get_owner_but_not_found() {
-        testClient.get()
-                .uri(t -> t.path("/api/authors/owner/" + 100).build())
-                .header("userId", "1")
-                .exchange()
-                .expectStatus().isNotFound();
-    }
 
     @Test
     void test_create_author_without_cover() {
@@ -140,7 +110,7 @@ class AuthorControllerTest {
 
         testClient.post()
                 .uri(t -> t.path("/api/authors/").build())
-                .header("userId", "2")
+                .header("userRole", "ADMIN")
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .body(BodyInserters.fromMultipartData(builder.build()))
                 .accept(MediaType.APPLICATION_JSON)
@@ -159,7 +129,7 @@ class AuthorControllerTest {
 
         testClient.post()
                 .uri(t -> t.path("/api/authors/").build())
-                .header("userId", "2")
+                .header("userRole", "ADMIN")
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .body(BodyInserters.fromMultipartData(builder.build()))
                 .accept(MediaType.APPLICATION_JSON)
@@ -177,7 +147,7 @@ class AuthorControllerTest {
 
         testClient.post()
                 .uri(t -> t.path("/api/authors/").build())
-                .header("userId", "2")
+                .header("userRole", "ADMIN")
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .body(BodyInserters.fromMultipartData(builder.build()))
                 .accept(MediaType.APPLICATION_JSON)
@@ -188,7 +158,6 @@ class AuthorControllerTest {
     @Test
     void test_create_author() {
         Author author = new Author();
-        author.setCreatedBy(20);
         author.setName("Test");
         author.setDescription("Some desc");
 
@@ -202,7 +171,7 @@ class AuthorControllerTest {
 
         testClient.post()
                 .uri(t -> t.path("/api/authors/").build())
-                .header("userId", "2")
+                .header("userRole", "ADMIN")
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .body(BodyInserters.fromMultipartData(builder.build()))
                 .exchange()
@@ -211,9 +180,25 @@ class AuthorControllerTest {
     }
 
     @Test
+    public void test_create_author_when_not_admin() {
+        MultipartBodyBuilder builder = new MultipartBodyBuilder();
+
+        builder.part("name", "test with cover");
+        builder.part("description", "test desc with cover");
+        builder.part("cover", new ClassPathResource("testImage.jpeg"));
+
+        testClient.post()
+                .uri(t -> t.path("/api/authors/").build())
+                .header("userRole", "USER")
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .body(BodyInserters.fromMultipartData(builder.build()))
+                .exchange()
+                .expectStatus().isForbidden();
+    }
+
+    @Test
     void test_create_author_with_wrong_file() {
         Author author = new Author();
-        author.setCreatedBy(20);
         author.setName("Test");
         author.setDescription("Some desc");
 
@@ -227,7 +212,7 @@ class AuthorControllerTest {
 
         testClient.post()
                 .uri(t -> t.path("/api/authors/").build())
-                .header("userId", "2")
+                .header("userRole", "ADMIN")
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .body(BodyInserters.fromMultipartData(builder.build()))
                 .exchange()
@@ -247,7 +232,7 @@ class AuthorControllerTest {
 
         testClient.put()
                 .uri(t -> t.path("/api/authors/" + 3).build())
-                .header("userId", "1")
+                .header("userRole", "ADMIN")
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .body(BodyInserters.fromMultipartData(builder.build()))
                 .accept(MediaType.APPLICATION_JSON)
@@ -258,7 +243,6 @@ class AuthorControllerTest {
     @Test
     void test_update_author() {
         Author author = new Author();
-        author.setCreatedBy(20);
         author.setName("Author test");
         author.setDescription("Some desc");
 
@@ -272,7 +256,7 @@ class AuthorControllerTest {
 
         testClient.put()
                 .uri(t -> t.path("/api/authors/" + 3).build())
-                .header("userId", "1")
+                .header("userRole", "ADMIN")
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .body(BodyInserters.fromMultipartData(builder.build()))
                 .accept(MediaType.APPLICATION_JSON)
@@ -290,7 +274,7 @@ class AuthorControllerTest {
 
         testClient.put()
                 .uri(t -> t.path("/api/authors/" + 3).build())
-                .header("userId", "1")
+                .header("userRole", "ADMIN")
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .body(BodyInserters.fromMultipartData(builder.build()))
                 .accept(MediaType.APPLICATION_JSON)
@@ -308,7 +292,7 @@ class AuthorControllerTest {
 
         testClient.put()
                 .uri(t -> t.path("/api/authors/" + 3).build())
-                .header("userId", "1")
+                .header("userRole", "ADMIN")
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .body(BodyInserters.fromMultipartData(builder.build()))
                 .accept(MediaType.APPLICATION_JSON)
@@ -317,7 +301,7 @@ class AuthorControllerTest {
     }
 
     @Test
-    void test_update_author_but_forbidden_expected() {
+    void test_update_author_when_not_admin() {
 
         var builder = new MultipartBodyBuilder();
 
@@ -326,7 +310,7 @@ class AuthorControllerTest {
 
         testClient.put()
                 .uri(t -> t.path("/api/authors/" + 3).build())
-                .header("userId", "4")
+                .header("userRole", "USER")
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .body(BodyInserters.fromMultipartData(builder.build()))
                 .accept(MediaType.APPLICATION_JSON)
@@ -338,7 +322,7 @@ class AuthorControllerTest {
     void test_delete_cover() {
         testClient.delete()
                 .uri(t -> t.path("/api/authors/" + 3).build())
-                .header("userId", "1")
+                .header("userRole", "ADMIN")
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isOk();
@@ -348,17 +332,17 @@ class AuthorControllerTest {
     void test_delete_cover_but_not_found() {
         testClient.delete()
                 .uri(t -> t.path("/api/authors/" + 100).build())
-                .header("userId", "1")
+                .header("userRole", "ADMIN")
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isNotFound();
     }
 
     @Test
-    void test_delete_cover_but_forbidden() {
+    void test_delete_cover_when_not_admin() {
         testClient.delete()
                 .uri(t -> t.path("/api/authors/" + 2).build())
-                .header("userId", "4")
+                .header("userRole", "USER")
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isForbidden();

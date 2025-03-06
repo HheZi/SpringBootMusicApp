@@ -1,5 +1,6 @@
 package com.app.service;
 
+import com.app.enums.UserRole;
 import com.app.exception.AuthorNameException;
 import com.app.kafka.KafkaImageProducer;
 import com.app.kafka.message.ImageDeletionMessage;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.util.function.Tuple2;
 
 import java.io.File;
 import java.util.List;
@@ -56,12 +58,16 @@ public class AuthorService {
     }
 
     @Transactional
-    public Mono<ResponseEntity<?>> saveAuthor(AuthorCreateOrUpdateRequest dto, Integer userId) {
+    public Mono<ResponseEntity<?>> saveAuthor(AuthorCreateOrUpdateRequest dto, UserRole userRole) {
+        if (userRole != UserRole.ADMIN) {
+            return Mono.error(() -> new ResponseStatusException(HttpStatus.FORBIDDEN));
+        }
+
         if (dto.getCover() != null) {
             File file = new File(TEMP_FOLDER_NAME, dto.getCover().filename()).getAbsoluteFile();
 
             return dto.getCover().transferTo(file)
-                    .then(Mono.fromCallable(() -> authorMapper.fromAuthorRequestToAuthor(dto, userId, true)))
+                    .then(Mono.fromCallable(() -> authorMapper.fromAuthorRequestToAuthor(dto,true)))
                     .flatMap(this::isAuthorNameUnique)
                     .flatMap(t -> imageClient.saveAuthorImage(t, file))
                     .flatMap(authorRepository::save)
@@ -69,20 +75,24 @@ public class AuthorService {
                     .map(t -> ResponseEntity.status(HttpStatus.CREATED).build());
         }
 
-        return Mono.just(authorMapper.fromAuthorRequestToAuthor(dto, userId, false))
+        return Mono.just(authorMapper.fromAuthorRequestToAuthor(dto, false))
                 .flatMap(this::isAuthorNameUnique)
                 .flatMap(authorRepository::save)
                 .map(t -> ResponseEntity.status(HttpStatus.CREATED).build());
     }
 
     @Transactional
-    public Mono<Void> updateAuthor(AuthorCreateOrUpdateRequest dto, Integer id, Integer userId) {
+    public Mono<Void> updateAuthor(AuthorCreateOrUpdateRequest dto, Integer id, UserRole userRole) {
+        if (userRole != UserRole.ADMIN) {
+            return Mono.error(() -> new ResponseStatusException(HttpStatus.FORBIDDEN));
+        }
+
         if (dto.getCover() != null) {
             File file = new File(TEMP_FOLDER_NAME, dto.getCover().filename()).getAbsoluteFile();
 
             return dto.getCover().transferTo(file)
                     .then(authorRepository.findById(id))
-                    .flatMap(t -> this.mapAuthorForUpdate(t, dto, userId))
+                    .flatMap(t -> this.mapAuthorForUpdate(t, dto))
                     .flatMap(t -> imageClient.saveAuthorImage(t, file))
                     .flatMap(authorRepository::save)
                     .doFinally(t -> file.delete())
@@ -90,20 +100,13 @@ public class AuthorService {
         }
 
         return authorRepository.findById(id)
-                .flatMap(t -> this.mapAuthorForUpdate(t, dto, userId))
+                .flatMap(t -> this.mapAuthorForUpdate(t, dto))
                 .flatMap(authorRepository::save)
                 .then();
 
     }
 
-    private Mono<Author> mapAuthorForUpdate(Author author, AuthorCreateOrUpdateRequest dto, Integer userId) {
-        return Mono.just(author)
-                .filter(t -> t.getCreatedBy() == userId)
-                .switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.FORBIDDEN)))
-                .flatMap(t -> mapAuthorEntity(t, dto));
-    }
-
-    private Mono<Author> mapAuthorEntity(Author author, AuthorCreateOrUpdateRequest dto) {
+    private Mono<Author> mapAuthorForUpdate(Author author, AuthorCreateOrUpdateRequest dto) {
         author.setDescription(dto.getDescription());
         if (author.getImageName() == null && dto.getCover() != null) {
             author.setImageName(UUID.randomUUID());
@@ -116,17 +119,13 @@ public class AuthorService {
         return Mono.just(author);
     }
 
-    public Mono<Boolean> canUserModify(Integer id, Integer userId) {
-        return authorRepository.findById(id)
-                .switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)))
-                .map(t -> t.getCreatedBy() == userId);
-    }
+    public Mono<Void> deleteAuthorImage(Integer id, UserRole userRole) {
+        if (userRole != UserRole.ADMIN) {
+            return Mono.error(() -> new ResponseStatusException(HttpStatus.FORBIDDEN));
+        }
 
-    public Mono<Void> deleteAuthorImage(Integer id, Integer userId) {
         return authorRepository.findById(id)
                 .switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)))
-                .filter(t -> t.getCreatedBy() == userId)
-                .switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.FORBIDDEN)))
                 .filter(t -> Objects.nonNull(t.getImageName()))
                 .doOnNext(t -> {
                     kafkaImageProducer.sendMessageToDeleteImage(new ImageDeletionMessage(t.getImageName()));
@@ -140,7 +139,7 @@ public class AuthorService {
         return Mono.zip(Mono.just(author), authorRepository.existsByNameIgnoreCase(author.getName()))
                 .filter(t -> !t.getT2())
                 .switchIfEmpty(Mono.error(() -> new AuthorNameException("Author with this name already exists")))
-                .map(t -> t.getT1());
+                .map(Tuple2::getT1);
 
     }
 }

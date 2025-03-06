@@ -1,6 +1,7 @@
 package com.app.controller;
 
 
+import com.app.enums.UserRole;
 import com.app.payload.request.AuthorCreateOrUpdateRequest;
 import com.app.payload.response.AuthorResponse;
 import com.app.service.AuthorService;
@@ -37,38 +38,28 @@ public class AuthorController {
         return authorService.getAuthorByFirstSymbols(URLDecoder.decode(symbol, Charset.defaultCharset()));
     }
 
-    @GetMapping("owner/{id}")
-    public Mono<Boolean> canModify(
-            @PathVariable("id") Integer id,
-            @RequestHeader(value = "userId",
-                    required = false,
-                    defaultValue = "0") Integer userId
-    ) {
-        return authorService.canUserModify(id, userId);
-    }
-
     @PostMapping
     public Mono<ResponseEntity<?>> createAuthor(
             @Valid @ModelAttribute AuthorCreateOrUpdateRequest dto,
-            @RequestHeader("userId") Integer userId
+            @RequestHeader("userRole") UserRole userRole
     ) {
-        return authorService.saveAuthor(dto, userId);
+        return authorService.saveAuthor(dto, userRole);
     }
 
     @PutMapping("{id}")
     public Mono<Void> updateAuthor(
             @Valid @ModelAttribute AuthorCreateOrUpdateRequest dto,
             @PathVariable("id") Integer id,
-            @RequestHeader("userId") Integer userId
+            @RequestHeader("userRole") UserRole userRole
     ) {
-        return authorService.updateAuthor(dto, id, userId);
+        return authorService.updateAuthor(dto, id, userRole);
     }
 
     @DeleteMapping("/{id}")
     public Mono<Void> deleteAuthorImage(
             @PathVariable("id") Integer id,
-            @RequestHeader("userId") Integer userId
+            @RequestHeader("userRole") UserRole userRole
     ) {
-        return authorService.deleteAuthorImage(id, userId);
+        return authorService.deleteAuthorImage(id, userRole);
     }
 }

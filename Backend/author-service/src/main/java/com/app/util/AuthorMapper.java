@@ -14,11 +14,10 @@ public class AuthorMapper {
 
     private final String IMAGE_URL_DEFAULT = IMAGE_URL_FORMAT + "default";
 
-    public Author fromAuthorRequestToAuthor(AuthorCreateOrUpdateRequest dto, Integer userId, boolean isFilePresent) {
+    public Author fromAuthorRequestToAuthor(AuthorCreateOrUpdateRequest dto, boolean isFilePresent) {
         return Author.builder()
                 .name(dto.getName())
                 .imageName(isFilePresent ? UUID.randomUUID() : null)
-                .createdBy(userId)
                 .build();
     }
 
