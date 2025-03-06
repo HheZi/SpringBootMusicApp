@@ -10,8 +10,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class UserDetails {
 	private Integer id;
-	
-	private String username;
 
 	private UserRole userRole;
 }

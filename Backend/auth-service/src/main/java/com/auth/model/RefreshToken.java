@@ -30,11 +30,8 @@ public class RefreshToken {
 	@Column("user_id")
 	private Integer userId;
 
-	private UserRole userRole;
-
-	public RefreshToken(Integer userId, UserRole userRole) {
+	public RefreshToken(Integer userId) {
 		this.userId = userId;
-		this.userRole = userRole;
 	}
 	
 }

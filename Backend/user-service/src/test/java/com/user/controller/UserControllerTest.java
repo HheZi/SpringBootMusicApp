@@ -3,7 +3,7 @@ package com.user.controller;
 import com.user.enums.UserRole;
 import com.user.payload.request.UserAuthRequest;
 import com.user.payload.request.UserFormRequest;
-import com.user.payload.response.ValidatedUser;
+import com.user.payload.response.UserDetails;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -105,11 +105,11 @@ class UserControllerTest {
 		userAuthRequest.setPassword("12345");
 		userAuthRequest.setUsername("test");
 
-		ValidatedUser expected = new ValidatedUser(1, "test", UserRole.ADMIN);
+		UserDetails expected = new UserDetails(1,  UserRole.ADMIN);
 		
-		ValidatedUser responseBody = testClient.post().uri("/api/users/validate")
+		UserDetails responseBody = testClient.post().uri("/api/users/validate")
 				.contentType(MediaType.APPLICATION_JSON).bodyValue(userAuthRequest).exchange().expectStatus()
-				.is2xxSuccessful().expectBody(ValidatedUser.class).returnResult().getResponseBody();
+				.is2xxSuccessful().expectBody(UserDetails.class).returnResult().getResponseBody();
 
 		assertEquals(expected, responseBody);
 		

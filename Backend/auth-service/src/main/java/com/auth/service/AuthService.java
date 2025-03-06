@@ -27,7 +27,7 @@ public class AuthService {
 	
 	private final JwtUtil jwtUtil;
 	
-	private final UserWebService service;
+	private final UserClient userClient;
 	
 	private final RefreshTokenRepository refreshTokenRepository;
 	
@@ -36,16 +36,20 @@ public class AuthService {
 	
 	@Transactional
 	public Mono<AuthResponse> loginUser(AuthRequest authRequest) {
-		Mono<UserDetails> userCredential = service.getUserDetails(authRequest);
+		Mono<UserDetails> userCredential = userClient.getUserDetails(authRequest);
 		return userCredential
 				.flatMap(t -> refreshTokenRepository.findByUserId(t.getId()))
-				.switchIfEmpty(userCredential.map(t -> new RefreshToken(t.getId(), t.getUserRole())))
+				.switchIfEmpty(userCredential.map(t -> new RefreshToken(t.getId())))
 				.doOnNext(t -> {
 					t.setToken(UUID.randomUUID());
 					t.setExpirationDate(Instant.now().plus(EXPIRATION_DATE_OF_REFRESH_TOKEN_IN_DAYS, ChronoUnit.DAYS));
 				})
 				.flatMap(refreshTokenRepository::save)
-				.map(t -> new AuthResponse(jwtUtil.createJwtToken(t.getUserId(), t.getUserRole()), t.getToken().toString()));
+				.zipWith(userCredential)
+				.map(t ->
+						new AuthResponse(jwtUtil.createJwtToken(t.getT2().getId(), t.getT2().getUserRole()),
+								t.getT1().getToken().toString())
+				);
 	}
 
 	public Mono<JwtTokenResponse> refreshJWTToken(RefreshTokenRequest refreshToken) {
@@ -54,9 +58,10 @@ public class AuthService {
 		
 		return refreshTokenRepository
 				.findByToken(refreshToken.getRefreshToken())
-				.filter(t -> t.getExpirationDate().isAfter(Instant.now()))
+				.flatMap(t -> Mono.zip(Mono.just(t), userClient.getUserDetails(t.getUserId())))
+				.filter(t -> t.getT1().getExpirationDate().isAfter(Instant.now()))
 				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.FORBIDDEN)))
-				.map(t -> new JwtTokenResponse(jwtUtil.createJwtToken(t.getUserId(), t.getUserRole())));
+				.map(t -> new JwtTokenResponse(jwtUtil.createJwtToken(t.getT1().getUserId(), t.getT2().getUserRole())));
 	}
 	
 }

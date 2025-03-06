@@ -3,7 +3,7 @@ package com.user.controller;
 import com.user.enums.UserRole;
 import com.user.payload.request.UserAuthRequest;
 import com.user.payload.request.UserFormRequest;
-import com.user.payload.response.ValidatedUser;
+import com.user.payload.response.UserDetails;
 import com.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +18,14 @@ public class UserController {
 
 	private final UserService service;
 
+	@GetMapping("{userId}")
+	public Mono<UserDetails> getUser(
+			@PathVariable("userId")
+			Integer userId
+	) {
+		return service.getUserDetails(userId);
+	}
+
 	@PostMapping
 	public Mono<ResponseEntity<?>> createUser(
 			@Validated @RequestBody
@@ -29,7 +37,7 @@ public class UserController {
 	}
 
 	@PostMapping("/validate")
-	public Mono<ValidatedUser> validate(@RequestBody UserAuthRequest req) {
+	public Mono<UserDetails> validate(@RequestBody UserAuthRequest req) {
 		return service.validateUser(req);
 	}
 

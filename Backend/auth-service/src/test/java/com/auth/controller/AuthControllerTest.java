@@ -6,7 +6,7 @@ import com.auth.payload.request.RefreshTokenRequest;
 import com.auth.payload.response.AuthResponse;
 import com.auth.payload.response.JwtTokenResponse;
 import com.auth.payload.response.UserDetails;
-import com.auth.service.UserWebService;
+import com.auth.service.UserClient;
 import com.auth.util.JwtUtil;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -35,12 +35,12 @@ class AuthControllerTest {
 	private JwtUtil jwtUtil;
 	
 	@MockBean
-	private UserWebService service;
+	private UserClient service;
 	
 	@Test
 	@Order(1)
 	void test_login() {
-		AuthRequest authRequest = configBeforRequest();
+		AuthRequest authRequest = configBeforeRequest();
 		
 		testClient.post()
 		.uri("/api/auth/login")
@@ -53,7 +53,7 @@ class AuthControllerTest {
 
 	@Test
 	void test_refresh_token() {
-		AuthRequest authRequest = configBeforRequest();
+		AuthRequest authRequest = configBeforeRequest();
 		
 		AuthResponse responseBody = testClient.post()
 		.uri("/api/auth/login")
@@ -73,11 +73,13 @@ class AuthControllerTest {
 		.value(t -> assertFalse(jwtUtil.isExpired(t.getToken())));
 	}
 
-	private AuthRequest configBeforRequest() {
-		Mockito.when(service.getUserDetails(any())).thenReturn(Mono.just(new UserDetails(2, "test", UserRole.USER)));
-		
-		AuthRequest authRequest = new AuthRequest("test", "12345");
-		return authRequest;
+	private AuthRequest configBeforeRequest() {
+		Mono<UserDetails> mono = Mono.just(new UserDetails(2, UserRole.USER));
+
+		Mockito.when(service.getUserDetails(any(Integer.class))).thenReturn(mono);
+		Mockito.when(service.getUserDetails(any(AuthRequest.class))).thenReturn(mono);
+
+		return new AuthRequest("test", "12345");
 	}
 	
 }

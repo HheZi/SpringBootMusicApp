@@ -4,7 +4,7 @@ import com.user.enums.UserRole;
 import com.user.exceptions.UserRuntimeException;
 import com.user.payload.request.UserAuthRequest;
 import com.user.payload.request.UserFormRequest;
-import com.user.payload.response.ValidatedUser;
+import com.user.payload.response.UserDetails;
 import com.user.repository.UserRepository;
 import com.user.util.UserMapper;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +14,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Mono;
+
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -25,12 +27,12 @@ public class UserService {
 
 	private final UserMapper userMapper;
 
-	public Mono<ValidatedUser> validateUser(UserAuthRequest authRequest) {
+	public Mono<UserDetails> validateUser(UserAuthRequest authRequest) {
 		return userRepository.findByUsername(authRequest.getUsername())
-				.switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND)))
+				.switchIfEmpty(Mono.error(new ResponseStatusException(NOT_FOUND)))
 				.filter(t -> encoder.matches(authRequest.getPassword(), t.getPassword()))
 				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST)))
-				.map(userMapper::fromUserToValidatedUser);
+				.map(userMapper::fromUserToUserDetails);
 
 	}
 
@@ -41,6 +43,12 @@ public class UserService {
 				.map(request -> userMapper.fromUserFormRequestToUser(request, encoder.encode(formRequest.getPassword())))
 				.flatMap(userRepository::save)
 				.map(t -> ResponseEntity.status(HttpStatus.CREATED).build());
+	}
+
+	public Mono<UserDetails> getUserDetails(Integer userId){
+		return userRepository.findById(userId)
+				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(NOT_FOUND)))
+				.map(userMapper::fromUserToUserDetails);
 	}
 
 	private boolean checkIfUserWithRoleCanBeCreated(UserRole userRoleOfRequest, UserRole role){

@@ -73,6 +73,7 @@ public class AuthenticationGatewayFilter implements GatewayFilter {
 		}
 
 		setUserIdHeader(exchange, jwtUtil.getValue("id", token));
+		setUserIdHeader(exchange, jwtUtil.getValue("userRole", token));
 		
 		return chain.filter(exchange);
 	}
