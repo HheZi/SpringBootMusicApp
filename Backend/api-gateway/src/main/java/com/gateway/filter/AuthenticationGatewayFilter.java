@@ -27,9 +27,9 @@ public class AuthenticationGatewayFilter implements GatewayFilter {
 	@Autowired
 	private JwtUtil jwtUtil;
 
-	private final static String HEADER_USER_ID = "userId";
+	private final static String HEADER_USER_ID = "User-Id";
 
-	private final static String HEADER_USER_ROLE = "userRole";
+	private final static String HEADER_USER_ROLE = "User-Role";
 
 	private final static String BEARER_PREFIX = "Bearer ";
 

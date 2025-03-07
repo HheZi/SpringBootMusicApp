@@ -58,7 +58,7 @@ public class TrackController {
 	@PostMapping
 	public Mono<ResponseEntity<?>> createTrack(
 			@Valid @ModelAttribute CreateTrackDto dto, 
-			@RequestHeader("userRole") UserRole userRole
+			@RequestHeader("User-Role") UserRole userRole
 		) {
 		return trackService.createTrack(dto, userRole);
 	}
@@ -67,7 +67,7 @@ public class TrackController {
 	public Mono<Void> updateTitle(
 			@Valid @RequestBody UpdateTrackRequest title,
 			@PathVariable("id") Long trackId,
-			@RequestHeader("userRole") UserRole userRole
+			@RequestHeader("User-Role") UserRole userRole
 		){
 		return trackService.updateTrackTitle(title, trackId, userRole);
 	}
@@ -75,7 +75,7 @@ public class TrackController {
 	@DeleteMapping("/{id}")
 	public Mono<Void> deleteTrack(
 			@PathVariable("id") Long id,
-			@RequestHeader("userRole") UserRole userRole
+			@RequestHeader("User-Role") UserRole userRole
 		){
 		return trackService.deleteTrack(id, userRole);
 	}

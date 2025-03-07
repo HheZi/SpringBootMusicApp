@@ -52,7 +52,7 @@ public class AlbumController {
 	@PostMapping
 	public Mono<ResponseEntity<?>> createAlbum(
 			@Valid @ModelAttribute RequestAlbum dto,
-			@RequestHeader("userRole") UserRole userRole
+			@RequestHeader("User-Role") UserRole userRole
 		) {
 		return albumService.createAlbum(dto, userRole);
 	}
@@ -61,7 +61,7 @@ public class AlbumController {
 	public Mono<Void> updateAlbum(
 			@Valid @ModelAttribute RequestToUpdateAlbum dto, 
 			@PathVariable("id") Integer id,
-			@RequestHeader("userRole") UserRole userRole
+			@RequestHeader("User-Role") UserRole userRole
 		){
 		return albumService.updateAlbum(dto, id, userRole);
 	}
@@ -69,7 +69,7 @@ public class AlbumController {
 	@DeleteMapping("cover/{id}")
 	public Mono<Void> deleteCoverOfAlbum(
 			@PathVariable("id") Integer id,
-			@RequestHeader("userRole") UserRole userRole
+			@RequestHeader("User-Role") UserRole userRole
 		){
 		return albumService.deleteCoverById(id, userRole);
 	}
@@ -77,7 +77,7 @@ public class AlbumController {
 	@DeleteMapping("/{id}")
 	public Mono<Void> deleteAlbum(
 			@PathVariable("id") Integer id,
-			@RequestHeader("userRole") UserRole userRole
+			@RequestHeader("User-Role") UserRole userRole
 		){
 		return albumService.deleteAlbum(id, userRole);
 	}

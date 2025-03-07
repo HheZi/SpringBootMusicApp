@@ -37,7 +37,7 @@ public class PlaylistController {
     @GetMapping("owner/{id}")
     public Mono<Boolean> getIsCreatorOfPlaylist(
             @PathVariable("id") Integer id,
-            @RequestHeader(value = "userId",
+            @RequestHeader(value = "User-Id",
                     required = false,
                     defaultValue = "0") Integer userId
     ) {
@@ -45,14 +45,14 @@ public class PlaylistController {
     }
 
     @GetMapping("/users/mine/")
-    public Flux<ResponsePlaylistPreview> getPlaylistsByOwner(@RequestHeader("userId") Integer userId) {
+    public Flux<ResponsePlaylistPreview> getPlaylistsByOwner(@RequestHeader("User-Id") Integer userId) {
         return playlistService.getPlaylistsByCreatorId(userId);
     }
 
     @PostMapping
     public Mono<ResponseEntity<?>> createPlaylist(
             @Valid @ModelAttribute CreateOrUpdatePlaylist dto,
-            @RequestHeader("userId") Integer userId
+            @RequestHeader("User-Id") Integer userId
     ) {
         return playlistService.createPlaylist(dto, userId);
     }
@@ -61,7 +61,7 @@ public class PlaylistController {
     public Mono<Void> addTrack(
             @PathVariable("id") Integer id,
             @PathVariable("trackId") Long trackId,
-            @RequestHeader("userId") Integer userId
+            @RequestHeader("User-Id") Integer userId
     ) {
         return playlistService.addTrackToPlaylist(id, trackId, userId);
     }
@@ -70,7 +70,7 @@ public class PlaylistController {
     public Mono<Void> updatePlaylist(
             @Valid @ModelAttribute CreateOrUpdatePlaylist dto,
             @PathVariable("id") Integer id,
-            @RequestHeader("userId") Integer userId
+            @RequestHeader("User-Id") Integer userId
     ) {
         return playlistService.updatePlaylist(dto, id, userId);
     }
@@ -79,7 +79,7 @@ public class PlaylistController {
     public Mono<Void> deleteTrackFromPlaylist(
             @PathVariable("id") Integer id,
             @PathVariable("trackId") Long trackId,
-            @RequestHeader("userId") Integer userId
+            @RequestHeader("User-Id") Integer userId
     ) {
         return playlistService.deleteTrackFromPlaylist(id, trackId, userId);
     }
@@ -87,7 +87,7 @@ public class PlaylistController {
     @DeleteMapping("cover/{id}")
     public Mono<Void> deleteCover(
             @PathVariable("id") Integer id,
-            @RequestHeader("userId") Integer userId
+            @RequestHeader("User-Id") Integer userId
     ) {
         return playlistService.deleteCover(id, userId);
     }
@@ -95,7 +95,7 @@ public class PlaylistController {
     @DeleteMapping("{id}")
     public Mono<Void> deletePlaylist(
             @PathVariable("id") Integer id,
-            @RequestHeader("userId") Integer userId
+            @RequestHeader("User-Id") Integer userId
     ) {
         return playlistService.deletePlaylist(id, userId);
     }

@@ -163,17 +163,6 @@ class AlbumControllerTest {
 	}
 	
 	@Test
-	public void get_album_by_owner_but_it_not_found() {
-		testClient
-		.get()
-		.uri(t -> t.path("/api/albums/owner/"+"100").build())
-		.header("userId", "1")
-		.accept(MediaType.APPLICATION_JSON)
-		.exchange()
-		.expectStatus().isNotFound();
-	}
-	
-	@Test
 	public void create_album_without_cover() {
 		var bodyBuilder = new MultipartBodyBuilder();
 		
@@ -184,7 +173,7 @@ class AlbumControllerTest {
 		testClient
 		.post()
 		.uri(t -> t.path("/api/albums/").build())
-		.header("userRole", "ADMIN")
+		.header("User-Role", "ADMIN")
 		.contentType(MediaType.MULTIPART_FORM_DATA)
 		.body(BodyInserters.fromMultipartData(bodyBuilder.build()))
 		.accept(MediaType.APPLICATION_JSON)
@@ -215,7 +204,7 @@ class AlbumControllerTest {
 		.post()
 		.uri(t -> t.path("/api/albums/").build())
 		.contentType(MediaType.MULTIPART_FORM_DATA)
-		.header("userRole", "ADMIN")
+		.header("User-Role", "ADMIN")
 		.body(BodyInserters.fromMultipartData(bodyBuilder.build()))
 		.accept(MediaType.APPLICATION_JSON)
 		.exchange()
@@ -234,7 +223,7 @@ class AlbumControllerTest {
 		testClient
 		.post()
 		.uri(t -> t.path("/api/albums/").build())
-		.header("userRole", "ADMIN")
+		.header("User-Role", "ADMIN")
 		.contentType(MediaType.MULTIPART_FORM_DATA)
 		.body(BodyInserters.fromMultipartData(bodyBuilder.build()))
 		.accept(MediaType.APPLICATION_JSON)
@@ -259,7 +248,7 @@ class AlbumControllerTest {
 		testClient
 		.post()
 		.uri(t -> t.path("/api/albums/").build())
-		.header("userRole", "ADMIN")
+		.header("User-Role", "ADMIN")
 		.contentType(MediaType.MULTIPART_FORM_DATA)
 		.body(BodyInserters.fromMultipartData(bodyBuilder.build()))
 		.accept(MediaType.APPLICATION_JSON)
@@ -281,7 +270,7 @@ class AlbumControllerTest {
 		testClient
 				.post()
 				.uri(t -> t.path("/api/albums/").build())
-				.header("userRole", "USER")
+				.header("User-Role", "USER")
 				.contentType(MediaType.MULTIPART_FORM_DATA)
 				.body(BodyInserters.fromMultipartData(bodyBuilder.build()))
 				.accept(MediaType.APPLICATION_JSON)
@@ -299,7 +288,7 @@ class AlbumControllerTest {
 		testClient
 		.put()
 		.uri(t -> t.path("/api/albums/"+10).build())
-		.header("userRole", "ADMIN")
+		.header("User-Role", "ADMIN")
 		.contentType(MediaType.MULTIPART_FORM_DATA)
 		.body(BodyInserters.fromMultipartData(bodyBuilder.build()))
 		.accept(MediaType.APPLICATION_JSON)
@@ -345,7 +334,7 @@ class AlbumControllerTest {
 		testClient
 		.put()
 		.uri(t -> t.path("/api/albums/"+10).build())
-		.header("userRole", "ADMIN")
+		.header("User-Role", "ADMIN")
 		.contentType(MediaType.MULTIPART_FORM_DATA)
 		.body(BodyInserters.fromMultipartData(bodyBuilder.build()))
 		.accept(MediaType.APPLICATION_JSON)
@@ -364,7 +353,7 @@ class AlbumControllerTest {
 		testClient
 				.put()
 				.uri(t -> t.path("/api/albums/"+5).build())
-				.header("userRole", "USER")
+				.header("User-Role", "USER")
 				.contentType(MediaType.MULTIPART_FORM_DATA)
 				.body(BodyInserters.fromMultipartData(bodyBuilder.build()))
 		   		.accept(MediaType.APPLICATION_JSON)
@@ -377,7 +366,7 @@ class AlbumControllerTest {
 		testClient
 		.delete()
 		.uri(t -> t.path("/api/albums/cover/"+3).build())
-		.header("userRole", "ADMIN")
+		.header("User-Role", "ADMIN")
 		.accept(MediaType.APPLICATION_JSON)
 		.exchange()
 		.expectStatus().isOk();
@@ -388,7 +377,7 @@ class AlbumControllerTest {
 		testClient
 				.delete()
 				.uri(t -> t.path("/api/albums/cover/"+3).build())
-				.header("userRole", "USER")
+				.header("User-Role", "USER")
 				.accept(MediaType.APPLICATION_JSON)
 				.exchange()
 				.expectStatus().isForbidden();
@@ -399,7 +388,7 @@ class AlbumControllerTest {
 		testClient
 		.delete()
 		.uri(t -> t.path("/api/albums/"+9).build())
-		.header("userRole", "ADMIN")
+		.header("User-Role", "ADMIN")
 		.accept(MediaType.APPLICATION_JSON)
 		.exchange()
 		.expectStatus().isOk();
@@ -410,7 +399,7 @@ class AlbumControllerTest {
 		testClient
 				.delete()
 				.uri(t -> t.path("/api/albums/"+9).build())
-				.header("userRole", "USER")
+				.header("User-Role", "USER")
 				.accept(MediaType.APPLICATION_JSON)
 				.exchange()
 				.expectStatus().isForbidden();

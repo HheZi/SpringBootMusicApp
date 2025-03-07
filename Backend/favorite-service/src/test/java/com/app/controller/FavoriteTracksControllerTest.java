@@ -29,7 +29,7 @@ class FavoriteTracksControllerTest {
 		testClient
 		.get()
 		.uri("/api/favorites/tracks/")
-		.header("userId", "1")
+		.header("User-Id", "1")
 		.accept(MediaType.APPLICATION_JSON)
 		.exchange()
 		.expectStatus().isOk()
@@ -43,7 +43,7 @@ class FavoriteTracksControllerTest {
 		testClient
 		.post()
 		.uri("/api/favorites/tracks/3")
-		.header("userId", "1")
+		.header("User-Id", "1")
 		.accept(MediaType.APPLICATION_JSON)
 		.exchange()
 		.expectStatus().isNoContent();
@@ -54,7 +54,7 @@ class FavoriteTracksControllerTest {
 		testClient
 		.delete()
 		.uri("/api/favorites/tracks/2")
-		.header("userId", "1")
+		.header("User-Id", "1")
 		.accept(MediaType.APPLICATION_JSON)
 		.exchange()
 		.expectStatus().isNoContent();

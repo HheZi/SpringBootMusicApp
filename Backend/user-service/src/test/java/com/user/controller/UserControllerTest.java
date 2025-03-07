@@ -31,7 +31,7 @@ class UserControllerTest {
 
 		testClient.post().uri("/api/users/")
 				.contentType(MediaType.APPLICATION_JSON)
-				.header("userRole", UserRole.USER.name())
+				.header("User-Role", UserRole.USER.name())
 				.bodyValue(formRequest)
 				.exchange()
 				.expectStatus().isCreated();
@@ -49,7 +49,7 @@ class UserControllerTest {
 		.post()
 		.uri("/api/users/")
 		.contentType(MediaType.APPLICATION_JSON)
-		.header("userRole", UserRole.USER.name())
+		.header("User-Role", UserRole.USER.name())
 		.bodyValue(formRequest)
 		.exchange()
 		.expectStatus().is4xxClientError()
@@ -70,7 +70,7 @@ class UserControllerTest {
 				.post()
 				.uri("/api/users/")
 				.contentType(MediaType.APPLICATION_JSON)
-				.header("userRole", UserRole.ADMIN.name())
+				.header("User-Role", UserRole.ADMIN.name())
 				.bodyValue(formRequest)
 				.exchange()
 				.expectStatus().isCreated();
@@ -89,7 +89,7 @@ class UserControllerTest {
 				.post()
 				.uri("/api/users/")
 				.contentType(MediaType.APPLICATION_JSON)
-				.header("userRole", UserRole.USER.name())
+				.header("User-Role", UserRole.USER.name())
 				.bodyValue(formRequest)
 				.exchange()
 				.expectStatus().isBadRequest()

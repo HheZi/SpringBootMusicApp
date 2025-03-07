@@ -21,7 +21,7 @@ public class FavoriteTracksController {
 	@GetMapping
 	public Flux<Long> getTracksInFavorites(
 			@RequestParam(value = "trackId", required = false) List<Long> trackIds,
-			@RequestHeader("userId") Integer userId
+			@RequestHeader("User-Id") Integer userId
 		) {
 		if (trackIds != null) {
 			return service.getTrackInFavorites(trackIds, userId);
@@ -32,7 +32,7 @@ public class FavoriteTracksController {
 	@PostMapping("{trackId}")
 	public Mono<ResponseEntity<?>> addTrackToFavorites(
 			@PathVariable("trackId") Long trackId,
-			@RequestHeader("userId") Integer userId
+			@RequestHeader("User-Id") Integer userId
 		) {
 		return service.addTrackToFavorites(trackId, userId)
 				.then(Mono.just(ResponseEntity.status(HttpStatus.NO_CONTENT).build()));
@@ -41,7 +41,7 @@ public class FavoriteTracksController {
 	@DeleteMapping("{trackId}")
 	public Mono<ResponseEntity<?>> deleteTrackFromFavorites(
 			@PathVariable("trackId") Long trackId,
-			@RequestHeader("userId") Integer userId
+			@RequestHeader("User-Id") Integer userId
 		) {
 		return service.deleteTrackFromFavorites(trackId, userId)
 				.then(Mono.just(ResponseEntity.status(HttpStatus.NO_CONTENT).build()));

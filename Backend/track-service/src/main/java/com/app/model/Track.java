@@ -28,9 +28,6 @@ public class Track {
 	
 	@Column("audio_name")
 	private UUID audioName;
-
-	@Column("created_by")
-	private Integer createdBy;
 	
 	@Builder.Default
 	private Long duration = 0L;

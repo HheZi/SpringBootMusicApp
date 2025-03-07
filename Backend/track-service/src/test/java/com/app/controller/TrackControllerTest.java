@@ -135,7 +135,7 @@ public class TrackControllerTest {
 
         testClient.post()
                 .uri(t -> t.path("/api/tracks/").build())
-                .header("userRole", "ADMIN")
+                .header("User-Role", "ADMIN")
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .body(BodyInserters.fromMultipartData(builder.build()))
                 .accept(MediaType.APPLICATION_JSON)
@@ -159,7 +159,7 @@ public class TrackControllerTest {
 
         testClient.post()
                 .uri(t -> t.path("/api/tracks/").build())
-                .header("userRole", "ADMIN")
+                .header("User-Role", "ADMIN")
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .body(BodyInserters.fromMultipartData(builder.build()))
                 .accept(MediaType.APPLICATION_JSON)
@@ -182,7 +182,7 @@ public class TrackControllerTest {
 
         testClient.post()
                 .uri(t -> t.path("/api/tracks/").build())
-                .header("userRole", "USER")
+                .header("User-Role", "USER")
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .body(BodyInserters.fromMultipartData(builder.build()))
                 .accept(MediaType.APPLICATION_JSON)
@@ -205,7 +205,7 @@ public class TrackControllerTest {
 
         testClient.post()
                 .uri(t -> t.path("/api/tracks/").build())
-                .header("userRole", "ADMIN")
+                .header("User-Role", "ADMIN")
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .body(BodyInserters.fromMultipartData(builder.build()))
                 .accept(MediaType.APPLICATION_JSON)
@@ -231,7 +231,7 @@ public class TrackControllerTest {
 
         testClient.post()
                 .uri(t -> t.path("/api/tracks/").build())
-                .header("userRole", "ADMIN")
+                .header("User-Role", "ADMIN")
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .body(BodyInserters.fromMultipartData(builder.build()))
                 .accept(MediaType.APPLICATION_JSON)
@@ -250,7 +250,7 @@ public class TrackControllerTest {
         testClient.patch()
                 .uri("/api/tracks/3")
                 .bodyValue(testNew)
-                .header("userRole", "ADMIN")
+                .header("User-Role", "ADMIN")
                 .exchange()
                 .expectStatus().isOk();
     }
@@ -259,7 +259,7 @@ public class TrackControllerTest {
     public void test_delete_track(){
         testClient.delete()
                 .uri("/api/tracks/3")
-                .header("userRole", "ADMIN")
+                .header("User-Role", "ADMIN")
                 .exchange()
                 .expectStatus().isOk();
     }

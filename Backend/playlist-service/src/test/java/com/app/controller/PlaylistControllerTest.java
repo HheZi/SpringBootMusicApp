@@ -79,7 +79,7 @@ class PlaylistControllerTest {
     public void test_get_is_owner_of_playlist() {
         testClient.get()
                 .uri("/api/playlists/owner/" + 1)
-                .header("userId", "1")
+                .header("User-Id", "1")
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(Boolean.class)
@@ -90,7 +90,7 @@ class PlaylistControllerTest {
     public void test_get_is_owner_of_playlist_but_false_expected() {
         testClient.get()
                 .uri("/api/playlists/owner/" + 1)
-                .header("userId", "2")
+                .header("User-Id", "2")
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(Boolean.class)
@@ -101,7 +101,7 @@ class PlaylistControllerTest {
     public void test_get_playlists_of_user() {
         testClient.get()
                 .uri("/api/playlists/users/mine/")
-                .header("userId", "1")
+                .header("User-Id", "1")
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
@@ -112,7 +112,7 @@ class PlaylistControllerTest {
     public void test_get_playlists_of_user_but_not_found() {
         testClient.get()
                 .uri("/api/playlists/mine/")
-                .header("userId", "100")
+                .header("User-Id", "100")
                 .exchange()
                 .expectStatus().isNotFound();
     }
@@ -135,7 +135,7 @@ class PlaylistControllerTest {
 
         testClient.post()
                 .uri(t -> t.path("/api/playlists/").build())
-                .header("userId", playlist.getCreatedBy().toString())
+                .header("User-Id", playlist.getCreatedBy().toString())
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .body(BodyInserters.fromMultipartData(builder.build()))
                 .exchange()
@@ -151,7 +151,7 @@ class PlaylistControllerTest {
 
         testClient.post()
                 .uri(t -> t.path("/api/playlists/").build())
-                .header("userId", "2")
+                .header("User-Id", "2")
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .body(BodyInserters.fromMultipartData(builder.build()))
                 .exchange()
@@ -172,7 +172,7 @@ class PlaylistControllerTest {
 
         testClient.post()
                 .uri(t -> t.path("/api/playlists/").build())
-                .header("userId", "2")
+                .header("User-Id", "2")
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .body(BodyInserters.fromMultipartData(builder.build()))
                 .exchange()
@@ -185,7 +185,7 @@ class PlaylistControllerTest {
     public void test_add_track_to_playlist() {
         testClient.patch()
                 .uri("/api/playlists/1/7")
-                .header("userId", "1")
+                .header("User-Id", "1")
                 .exchange()
                 .expectStatus().isOk();
     }
@@ -194,7 +194,7 @@ class PlaylistControllerTest {
     public void test_add_track_to_playlist_but_already_exists() {
         testClient.patch()
                 .uri("/api/playlists/1/1")
-                .header("userId", "1")
+                .header("User-Id", "1")
                 .exchange()
                 .expectStatus().value(is(409));
     }
@@ -217,7 +217,7 @@ class PlaylistControllerTest {
 
         testClient.put()
                 .uri(t -> t.path("/api/playlists/3").build())
-                .header("userId", playlist.getCreatedBy().toString())
+                .header("User-Id", playlist.getCreatedBy().toString())
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .body(BodyInserters.fromMultipartData(builder.build()))
                 .accept(MediaType.APPLICATION_JSON)
@@ -238,7 +238,7 @@ class PlaylistControllerTest {
 
         testClient.put()
                 .uri(t -> t.path("/api/playlists/3").build())
-                .header("userId", "2")
+                .header("User-Id", "2")
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .body(BodyInserters.fromMultipartData(builder.build()))
                 .exchange()
@@ -257,7 +257,7 @@ class PlaylistControllerTest {
 
         testClient.put()
                 .uri(t -> t.path("/api/playlists/3").build())
-                .header("userId", "2")
+                .header("User-Id", "2")
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .body(BodyInserters.fromMultipartData(builder.build()))
                 .exchange()
@@ -268,7 +268,7 @@ class PlaylistControllerTest {
     public void test_delete_track_from_playlist() {
         testClient.delete()
                 .uri("/api/playlists/1/2")
-                .header("userId", "1")
+                .header("User-Id", "1")
                 .exchange()
                 .expectStatus().isOk();
     }
@@ -277,7 +277,7 @@ class PlaylistControllerTest {
     public void test_delete_cover_of_playlist() {
         testClient.delete()
                 .uri("/api/playlists/cover/1")
-                .header("userId", "1")
+                .header("User-Id", "1")
                 .exchange()
                 .expectStatus().isOk();
     }
@@ -286,7 +286,7 @@ class PlaylistControllerTest {
     public void test_delete_playlist() {
         testClient.delete()
                 .uri("/api/playlists/4")
-                .header("userId", "3")
+                .header("User-Id", "3")
                 .exchange()
                 .expectStatus().isOk();
     }

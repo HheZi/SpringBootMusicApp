@@ -110,7 +110,7 @@ class AuthorControllerTest {
 
         testClient.post()
                 .uri(t -> t.path("/api/authors/").build())
-                .header("userRole", "ADMIN")
+                .header("User-Role", "ADMIN")
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .body(BodyInserters.fromMultipartData(builder.build()))
                 .accept(MediaType.APPLICATION_JSON)
@@ -129,7 +129,7 @@ class AuthorControllerTest {
 
         testClient.post()
                 .uri(t -> t.path("/api/authors/").build())
-                .header("userRole", "ADMIN")
+                .header("User-Role", "ADMIN")
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .body(BodyInserters.fromMultipartData(builder.build()))
                 .accept(MediaType.APPLICATION_JSON)
@@ -147,7 +147,7 @@ class AuthorControllerTest {
 
         testClient.post()
                 .uri(t -> t.path("/api/authors/").build())
-                .header("userRole", "ADMIN")
+                .header("User-Role", "ADMIN")
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .body(BodyInserters.fromMultipartData(builder.build()))
                 .accept(MediaType.APPLICATION_JSON)
@@ -171,7 +171,7 @@ class AuthorControllerTest {
 
         testClient.post()
                 .uri(t -> t.path("/api/authors/").build())
-                .header("userRole", "ADMIN")
+                .header("User-Role", "ADMIN")
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .body(BodyInserters.fromMultipartData(builder.build()))
                 .exchange()
@@ -189,7 +189,7 @@ class AuthorControllerTest {
 
         testClient.post()
                 .uri(t -> t.path("/api/authors/").build())
-                .header("userRole", "USER")
+                .header("User-Role", "USER")
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .body(BodyInserters.fromMultipartData(builder.build()))
                 .exchange()
@@ -212,7 +212,7 @@ class AuthorControllerTest {
 
         testClient.post()
                 .uri(t -> t.path("/api/authors/").build())
-                .header("userRole", "ADMIN")
+                .header("User-Role", "ADMIN")
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .body(BodyInserters.fromMultipartData(builder.build()))
                 .exchange()
@@ -232,7 +232,7 @@ class AuthorControllerTest {
 
         testClient.put()
                 .uri(t -> t.path("/api/authors/" + 3).build())
-                .header("userRole", "ADMIN")
+                .header("User-Role", "ADMIN")
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .body(BodyInserters.fromMultipartData(builder.build()))
                 .accept(MediaType.APPLICATION_JSON)
@@ -256,7 +256,7 @@ class AuthorControllerTest {
 
         testClient.put()
                 .uri(t -> t.path("/api/authors/" + 3).build())
-                .header("userRole", "ADMIN")
+                .header("User-Role", "ADMIN")
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .body(BodyInserters.fromMultipartData(builder.build()))
                 .accept(MediaType.APPLICATION_JSON)
@@ -274,7 +274,7 @@ class AuthorControllerTest {
 
         testClient.put()
                 .uri(t -> t.path("/api/authors/" + 3).build())
-                .header("userRole", "ADMIN")
+                .header("User-Role", "ADMIN")
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .body(BodyInserters.fromMultipartData(builder.build()))
                 .accept(MediaType.APPLICATION_JSON)
@@ -292,7 +292,7 @@ class AuthorControllerTest {
 
         testClient.put()
                 .uri(t -> t.path("/api/authors/" + 3).build())
-                .header("userRole", "ADMIN")
+                .header("User-Role", "ADMIN")
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .body(BodyInserters.fromMultipartData(builder.build()))
                 .accept(MediaType.APPLICATION_JSON)
@@ -310,7 +310,7 @@ class AuthorControllerTest {
 
         testClient.put()
                 .uri(t -> t.path("/api/authors/" + 3).build())
-                .header("userRole", "USER")
+                .header("User-Role", "USER")
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .body(BodyInserters.fromMultipartData(builder.build()))
                 .accept(MediaType.APPLICATION_JSON)
@@ -322,7 +322,7 @@ class AuthorControllerTest {
     void test_delete_cover() {
         testClient.delete()
                 .uri(t -> t.path("/api/authors/" + 3).build())
-                .header("userRole", "ADMIN")
+                .header("User-Role", "ADMIN")
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isOk();
@@ -332,7 +332,7 @@ class AuthorControllerTest {
     void test_delete_cover_but_not_found() {
         testClient.delete()
                 .uri(t -> t.path("/api/authors/" + 100).build())
-                .header("userRole", "ADMIN")
+                .header("User-Role", "ADMIN")
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isNotFound();
@@ -342,7 +342,7 @@ class AuthorControllerTest {
     void test_delete_cover_when_not_admin() {
         testClient.delete()
                 .uri(t -> t.path("/api/authors/" + 2).build())
-                .header("userRole", "USER")
+                .header("User-Role", "USER")
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isForbidden();

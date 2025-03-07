@@ -41,7 +41,7 @@ public class AuthorController {
     @PostMapping
     public Mono<ResponseEntity<?>> createAuthor(
             @Valid @ModelAttribute AuthorCreateOrUpdateRequest dto,
-            @RequestHeader("userRole") UserRole userRole
+            @RequestHeader("User-Role") UserRole userRole
     ) {
         return authorService.saveAuthor(dto, userRole);
     }
@@ -50,7 +50,7 @@ public class AuthorController {
     public Mono<Void> updateAuthor(
             @Valid @ModelAttribute AuthorCreateOrUpdateRequest dto,
             @PathVariable("id") Integer id,
-            @RequestHeader("userRole") UserRole userRole
+            @RequestHeader("User-Role") UserRole userRole
     ) {
         return authorService.updateAuthor(dto, id, userRole);
     }
@@ -58,7 +58,7 @@ public class AuthorController {
     @DeleteMapping("/{id}")
     public Mono<Void> deleteAuthorImage(
             @PathVariable("id") Integer id,
-            @RequestHeader("userRole") UserRole userRole
+            @RequestHeader("User-Role") UserRole userRole
     ) {
         return authorService.deleteAuthorImage(id, userRole);
     }
