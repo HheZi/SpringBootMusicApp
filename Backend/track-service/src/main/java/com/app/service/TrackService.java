@@ -1,5 +1,6 @@
 package com.app.service;
 
+import com.app.enums.UserRole;
 import com.app.kafka.message.TrackDeletionMessage;
 import com.app.kafka.producer.KafkaTrackProducer;
 import com.app.model.Track;
@@ -103,12 +104,16 @@ public class TrackService {
 	}
 	
 	@Transactional
-	public Mono<ResponseEntity<?>> createTrack(CreateTrackDto dto, Integer userId) {
+	public Mono<ResponseEntity<?>> createTrack(CreateTrackDto dto, UserRole userRole) {
+		if (userRole != UserRole.ADMIN){
+			throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+		}
+
 		File file = new File(TEMP_FOLDER_NAME, dto.getAudio().filename()).getAbsoluteFile();
 
 		return dto.getAudio().transferTo(file)
 				.then(Mono.fromCallable(() -> new Mp3File(file)))
-				.map(mp3File -> mapper.fromCreateTrackDtoToTrack(dto, userId, mp3File))
+				.map(mp3File -> mapper.fromCreateTrackDtoToTrack(dto, mp3File))
 				.flatMap(track -> audioClient.saveAudio(track, file))
 				.flatMap(repository::save)
 				.doFinally(t -> file.delete())
@@ -116,11 +121,13 @@ public class TrackService {
 	}
 	
 	@Transactional
-	public Mono<Void> deleteTrack(Long id, Integer userId){
+	public Mono<Void> deleteTrack(Long id, UserRole userRole){
+		if (userRole != UserRole.ADMIN){
+			throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+		}
+
 		return repository.findById(id)
 				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)))
-				.filter(t -> t.getCreatedBy() == userId)
-				.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.FORBIDDEN)))
 				.doOnNext(t -> {
 					kafkaTrackProducer.sendMessage(new TrackDeletionMessage(t.getId(), t.getAudioName().toString()));
 				})
@@ -138,10 +145,12 @@ public class TrackService {
 	}
 	
 	@Transactional
-	public Mono<Void> updateTrackTitle(UpdateTrackRequest updateTrack, Long trackId, Integer userId){
+	public Mono<Void> updateTrackTitle(UpdateTrackRequest updateTrack, Long trackId, UserRole userRole){
+		if (userRole != UserRole.ADMIN){
+			throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+		}
+
 		return repository.findById(trackId)
-		.filter(t -> t.getCreatedBy() == userId)
-		.switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.FORBIDDEN)))
 		.doOnNext(t -> {
 				t.setTitle(updateTrack.getTitle());
 		})

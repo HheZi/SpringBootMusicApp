@@ -1,5 +1,6 @@
 package com.app.controller;
 
+import com.app.enums.UserRole;
 import com.app.payload.request.CreateTrackDto;
 import com.app.payload.request.UpdateTrackRequest;
 import com.app.payload.response.ResponseTotalDuration;
@@ -57,26 +58,26 @@ public class TrackController {
 	@PostMapping
 	public Mono<ResponseEntity<?>> createTrack(
 			@Valid @ModelAttribute CreateTrackDto dto, 
-			@RequestHeader("userId") Integer userId
+			@RequestHeader("userRole") UserRole userRole
 		) {
-		return trackService.createTrack(dto, userId);
+		return trackService.createTrack(dto, userRole);
 	}
 	
 	@PatchMapping("/{id}")
 	public Mono<Void> updateTitle(
-			@Valid @RequestBody UpdateTrackRequest title, 
-			@RequestHeader("userId") Integer userId, 
-			@PathVariable("id") Long trackId
+			@Valid @RequestBody UpdateTrackRequest title,
+			@PathVariable("id") Long trackId,
+			@RequestHeader("userRole") UserRole userRole
 		){
-		return trackService.updateTrackTitle(title, trackId, userId);
+		return trackService.updateTrackTitle(title, trackId, userRole);
 	}
 	
 	@DeleteMapping("/{id}")
 	public Mono<Void> deleteTrack(
 			@PathVariable("id") Long id,
-			@RequestHeader("userId") Integer userId
+			@RequestHeader("userRole") UserRole userRole
 		){
-		return trackService.deleteTrack(id, userId);
+		return trackService.deleteTrack(id, userRole);
 	}
 	
 	@DeleteMapping

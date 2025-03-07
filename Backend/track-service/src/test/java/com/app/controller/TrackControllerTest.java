@@ -135,7 +135,7 @@ public class TrackControllerTest {
 
         testClient.post()
                 .uri(t -> t.path("/api/tracks/").build())
-                .header("userId", "2")
+                .header("userRole", "ADMIN")
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .body(BodyInserters.fromMultipartData(builder.build()))
                 .accept(MediaType.APPLICATION_JSON)
@@ -159,7 +159,7 @@ public class TrackControllerTest {
 
         testClient.post()
                 .uri(t -> t.path("/api/tracks/").build())
-                .header("userId", "2")
+                .header("userRole", "ADMIN")
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .body(BodyInserters.fromMultipartData(builder.build()))
                 .accept(MediaType.APPLICATION_JSON)
@@ -170,7 +170,28 @@ public class TrackControllerTest {
     }
 
     @Test
-    public void test_create_track_with_without_file(){
+    public void test_create_track_when_not_admin(){
+        var builder = new MultipartBodyBuilder();
+
+        builder.part("title", "test4");
+        builder.part("albumId", "2");
+        builder.part("audio", new ClassPathResource("file"));
+
+        Track track = new Track();
+        track.setAudioName(UUID.randomUUID());
+
+        testClient.post()
+                .uri(t -> t.path("/api/tracks/").build())
+                .header("userRole", "USER")
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .body(BodyInserters.fromMultipartData(builder.build()))
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isForbidden();
+    }
+
+    @Test
+    public void test_create_track_without_file(){
         var builder = new MultipartBodyBuilder();
 
         builder.part("title", "test4");
@@ -184,7 +205,7 @@ public class TrackControllerTest {
 
         testClient.post()
                 .uri(t -> t.path("/api/tracks/").build())
-                .header("userId", "2")
+                .header("userRole", "ADMIN")
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .body(BodyInserters.fromMultipartData(builder.build()))
                 .accept(MediaType.APPLICATION_JSON)
@@ -195,7 +216,7 @@ public class TrackControllerTest {
     }
 
     @Test
-    public void test_create_track_with_wit_incorrect_body(){
+    public void test_create_track_with_incorrect_body(){
         var builder = new MultipartBodyBuilder();
 
         builder.part("title", " ");
@@ -210,7 +231,7 @@ public class TrackControllerTest {
 
         testClient.post()
                 .uri(t -> t.path("/api/tracks/").build())
-                .header("userId", "2")
+                .header("userRole", "ADMIN")
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .body(BodyInserters.fromMultipartData(builder.build()))
                 .accept(MediaType.APPLICATION_JSON)
@@ -220,6 +241,8 @@ public class TrackControllerTest {
                 .jsonPath("$.[0]").value(is("Title can't be blank"));
     }
 
+
+
     @Test
     public void test_update_track_title(){
         UpdateTrackRequest testNew = new UpdateTrackRequest("testNew");
@@ -227,7 +250,7 @@ public class TrackControllerTest {
         testClient.patch()
                 .uri("/api/tracks/3")
                 .bodyValue(testNew)
-                .header("userId", "2")
+                .header("userRole", "ADMIN")
                 .exchange()
                 .expectStatus().isOk();
     }
@@ -236,7 +259,7 @@ public class TrackControllerTest {
     public void test_delete_track(){
         testClient.delete()
                 .uri("/api/tracks/3")
-                .header("userId", "2")
+                .header("userRole", "ADMIN")
                 .exchange()
                 .expectStatus().isOk();
     }

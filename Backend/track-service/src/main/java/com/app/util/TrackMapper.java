@@ -14,12 +14,11 @@ public class TrackMapper {
 
 	private final String AUDIO_URL = "http://localhost:8080/api/files/audio/%s";
 	
-	public Track fromCreateTrackDtoToTrack(CreateTrackDto dto, Integer userId, Mp3File mp3File) {
+	public Track fromCreateTrackDtoToTrack(CreateTrackDto dto, Mp3File mp3File) {
 		return Track.builder()
 				.title(dto.getTitle())
 				.audioName(UUID.randomUUID())
 				.albumId(dto.getAlbumId())
-				.createdBy(userId)
 				.duration(mp3File.getLengthInSeconds())
 				.build();
 	}
