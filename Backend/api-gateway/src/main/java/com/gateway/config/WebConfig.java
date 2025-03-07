@@ -1,8 +1,8 @@
 package com.gateway.config;
 
-import com.gateway.config.filter.AuthenticationGatewayFilter;
-import com.gateway.config.filter.aggregation.AlbumAggregationFilter;
-import com.gateway.config.filter.aggregation.TracksAggregationFilter;
+import com.gateway.filter.AuthenticationGatewayFilter;
+import com.gateway.filter.aggregation.AlbumAggregationFilter;
+import com.gateway.filter.aggregation.TracksAggregationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.cloud.gateway.route.RouteLocator;

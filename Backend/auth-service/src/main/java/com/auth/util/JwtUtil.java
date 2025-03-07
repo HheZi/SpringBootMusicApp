@@ -22,11 +22,15 @@ public class JwtUtil {
 	
 	@Value("${jwt.expirationInMinutes}")
 	private Long EXPIRATION_TIME_IN_MINUTES;
+
+	public final static String USER_ROLE_KEY = "userRole";
+
+	public final static String USER_ID_KEY = "id";
 	
 	public String createJwtToken(Integer userId, UserRole userRole) {
 		return Jwts.builder()
-				.claim("id", userId)
-				.claim("userRole", userRole.name())
+				.claim(USER_ID_KEY, userId)
+				.claim(USER_ROLE_KEY, userRole.name())
 				.issuedAt(new Date())
 				.expiration(Date.from(Instant.now().plus(EXPIRATION_TIME_IN_MINUTES, ChronoUnit.MINUTES)))
 				.signWith(getSingingKey())

@@ -1,5 +1,6 @@
 package com.gateway.utils;
 
+import com.gateway.model.UserJwtPayload;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -16,6 +17,9 @@ public class JwtUtil {
 	@Value("${token.secret}")
 	private String SECRET_KEY;
 
+	public final static String USER_ROLE_KEY = "userRole";
+
+	public final static String USER_ID_KEY = "id";
 	
 	private Claims getClaims(String token) {
 		return  Jwts.parser().verifyWith(getSingingKey()).build().parseSignedClaims(token).getPayload();
@@ -29,8 +33,13 @@ public class JwtUtil {
 		}
 	}
 
-	public String getValue(Object key, String token) {
-		return getClaims(token).get(key).toString();
+	public UserJwtPayload getUserJwtPayload(String token) {
+		Claims claims = getClaims(token);
+
+		String userId = (String) claims.get(USER_ID_KEY);
+		String userRole = (String) claims.get(USER_ROLE_KEY);
+
+		return new UserJwtPayload(userId, userRole);
 	}
 	
 	private SecretKey getSingingKey() {
