@@ -6,10 +6,14 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
+
+import static org.springframework.util.StringUtils.hasText;
 
 @Component
 public class JwtUtil {
@@ -20,6 +24,8 @@ public class JwtUtil {
 	public final static String USER_ROLE_KEY = "userRole";
 
 	public final static String USER_ID_KEY = "id";
+
+	private final static String BEARER_PREFIX = "Bearer ";
 	
 	private Claims getClaims(String token) {
 		return  Jwts.parser().verifyWith(getSingingKey()).build().parseSignedClaims(token).getPayload();
@@ -41,7 +47,13 @@ public class JwtUtil {
 
 		return new UserJwtPayload(userId, userRole);
 	}
-	
+
+	public String getValueOfPayload(String key, String token){
+		Claims claims = getClaims(token);
+
+		return (String) claims.get(key);
+	}
+
 	private SecretKey getSingingKey() {
 		return Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
 	}

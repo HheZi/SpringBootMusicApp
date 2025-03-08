@@ -1,6 +1,7 @@
 package com.gateway.config;
 
 import com.gateway.filter.AuthenticationGatewayFilter;
+import com.gateway.filter.IsAdminFilter;
 import com.gateway.filter.aggregation.AlbumAggregationFilter;
 import com.gateway.filter.aggregation.TracksAggregationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,9 @@ public class WebConfig {
 	
 	@Autowired
 	private AlbumAggregationFilter albumAggregationFilter;
+
+	@Autowired
+	private IsAdminFilter isAdminFilter;
 
 	@Bean
 	RouteLocator routeLocator(RouteLocatorBuilder builder) {
@@ -53,6 +57,8 @@ public class WebConfig {
 				.route(t -> t.path("/tracks").filters(f -> f.filters(authenticationGatewayFilter, trackAggregationFilter)).uri("http://localhost"))
 				
 				.route(t -> t.path("/albums/*").filters(f -> f.filters(authenticationGatewayFilter, albumAggregationFilter)).uri("http://localhost"))
+
+				.route(t -> t.path("/is-admin").filters(f -> f.filter(isAdminFilter)).uri("http://localhost"))
 				
 				.build();
 	}
