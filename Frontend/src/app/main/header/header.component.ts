@@ -14,7 +14,6 @@ export class HeaderComponent implements OnInit{
   public items: MenuItem[] = [
     {label: "Create Track", routerLink: "track/create"},
     {label: "Create Album", routerLink: "album/create"},
-    {label: "Create Playlist", routerLink: "playlist/create"},
     {label: "Create Author", routerLink: "author/create"}
   ];
   public butLabel: string = "Create";
