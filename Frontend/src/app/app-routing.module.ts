@@ -13,8 +13,9 @@ import { SeeAuthorComponent } from './main/see-author/see-author.component';
 import { CreatePlaylistComponent } from './main/create-playlist/create-playlist.component';
 import { SeePlaylistComponent } from './main/see-playlist/see-playlist.component';
 import { SeeFavoriteTracksComponent } from './main/see-favorite-tracks/see-favorite-tracks.component';
-import { authGuard } from './auth-guard.guard';
+import { adminGuard } from './admin-guard.guard';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
+import { authGuard } from './auth-guard.guard';
 
 const routes: Routes = [
 {
@@ -30,9 +31,9 @@ const routes: Routes = [
   component: MainComponent,
   children: [
   {path: 'home', component: HomeComponent}, 
-  {path: 'album/create', component: CreateAlbumComponent, canActivate: [authGuard]},
-  {path: 'track/create', component: CreateTrackComponent, canActivate: [authGuard]},
-  {path: 'author/create', component: CreateAuthorComponent, canActivate: [authGuard]},
+  {path: 'album/create', component: CreateAlbumComponent, canActivate: [adminGuard]},
+  {path: 'track/create', component: CreateTrackComponent, canActivate: [adminGuard]},
+  {path: 'author/create', component: CreateAuthorComponent, canActivate: [adminGuard]},
   {path: 'playlist/create', component: CreatePlaylistComponent, canActivate: [authGuard]},
   {path: 'album/:id', component: SeeAlbumComponent},
   {path: 'author/:id', component: SeeAuthorComponent},

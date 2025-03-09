@@ -11,7 +11,7 @@ export class AuthorService {
 
   private readonly AUTHOR_URL = AppConts.BASE_URL + '/api/authors/';
 
-  constructor(private httpClient: HttpClient, private authService: AuthService) { }
+  constructor(private httpClient: HttpClient) { }
 
   public getAuthorsById(id: number): Observable<Object>{
     return this.httpClient.get(this.AUTHOR_URL + id, { responseType: 'json'});
@@ -23,10 +23,6 @@ export class AuthorService {
 
   public createAuthor(body: FormData): Observable<Object>{
     return this.httpClient.post(this.AUTHOR_URL, body, { responseType: "json"});
-  }
-
-  public canModify(id: number): Observable<Object>{
-    return this.httpClient.get(this.AUTHOR_URL + "owner/" + id);
   }
 
   public updateAuthor(data: FormData, id: number): Observable<Object>{

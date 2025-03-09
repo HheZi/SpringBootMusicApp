@@ -6,6 +6,7 @@ import { Title } from '@angular/platform-browser';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { Album } from './album';
 import { TrackListComponent } from '../track-list/track-list.component';
+import { AuthService } from '../../services/auth/auth.service';
 
 @Component({
   selector: 'app-see-album',
@@ -15,7 +16,7 @@ import { TrackListComponent } from '../track-list/track-list.component';
 })
 export class SeeAlbumComponent {
   public album: Album = { id: 0, imageUrl: "", name: "", numberOfTracks: 0, albumType: "", releaseDate: '', totalDuration: '', authorId: 0, authorImageUrl: '', authorName: '' };
-  public isOwnerOfAlbum = false;
+  public isAdmin = false;
   public isNotFound = false;
 
   @ViewChild(TrackListComponent) trackList!: TrackListComponent;
@@ -32,7 +33,8 @@ export class SeeAlbumComponent {
     private trackService: TrackService,
     private title: Title,
     private messageService: MessageService,
-    private confirmationService: ConfirmationService
+    private confirmationService: ConfirmationService,
+    private authService: AuthService
   ) { }
 
   ngOnInit(): void {
@@ -66,11 +68,11 @@ export class SeeAlbumComponent {
       error: () => this.isNotFound = true
     })
 
-    this.albumService.getIsUserIsOwnerOfAlbum(albumId).subscribe({
-      next: (resp: any) => {
-        this.isOwnerOfAlbum = resp;
-        this.trackList.makeUpdatable(resp)
-        if (resp){
+    this.authService.isAdmin$.subscribe({
+      next: (val: boolean) => {
+        this.isAdmin = val;
+        this.trackList.makeUpdatable(this.isAdmin)
+        if (this.isAdmin){
           this.trackList.onDelete('Delete this track from album?', (trackId: number) => {
             this.trackService.deleteTrack(trackId).subscribe(() => {
               this.messageService.add({ closable: true, severity: "success", summary: "Track deleted" });

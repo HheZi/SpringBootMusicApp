@@ -15,7 +15,7 @@ export class AlbumService {
 
   private readonly ALBUM_URL: string = AppConts.BASE_URL + "/api/albums/";
   
-  constructor(private httpClient: HttpClient, private authService: AuthService, private trackService: TrackService) {}
+  constructor(private httpClient: HttpClient) {}
 
 
   public getFullAlbum(id: number): Observable<Object>{
@@ -33,10 +33,6 @@ export class AlbumService {
 
   public getAlbumsBySymbol(symbol: string): Observable<Object>{
     return this.httpClient.get(this.ALBUM_URL + "symbol/" + symbol);
-  }
-  
-  public getIsUserIsOwnerOfAlbum(albumId: number): Observable<Object>{
-    return this.httpClient.get(this.ALBUM_URL + "owner/" + albumId);
   }
 
   public createAlbum(formData: FormData): Observable<Object>{

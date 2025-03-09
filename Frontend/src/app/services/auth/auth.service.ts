@@ -1,17 +1,21 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { AppConts } from '../../app.consts';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable, tap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  
+
   private readonly TOKEN_KEY_NAME = 'token';
   
   private readonly REFRESH_TOKEN_KEY_NAME = "refreshToken";
   
+  private isAdminSubject = new BehaviorSubject<boolean>(false);
+  
+  isAdmin$ = this.isAdminSubject.asObservable();
+
   constructor(private httpClient: HttpClient) { }
   
   public saveAuthToken(value: any): void{
@@ -24,11 +28,22 @@ export class AuthService {
   }
   
   public isUserAuthenticated(): boolean {
-    return localStorage.getItem(this.TOKEN_KEY_NAME) == null && localStorage.getItem(this.REFRESH_TOKEN_KEY_NAME) == null
+    return localStorage.getItem(this.TOKEN_KEY_NAME) != null && localStorage.getItem(this.REFRESH_TOKEN_KEY_NAME) != null
   }
 
   public updateToken(): Observable<Object>{
     return this.httpClient.post(AppConts.BASE_URL + "/api/auth/refresh", {refreshToken: this.getRefreshToken()});
+  }
+
+  public IsUserAdmin(): Observable<boolean> {
+    return this.httpClient.get<boolean>(AppConts.BASE_URL + '/is-admin').pipe(
+      tap((response: any) => this.isAdminSubject.next(response.isAdmin)
+    )
+    );
+  }
+
+  public getCurrentIsAdmin(): boolean | null {
+    return this.isAdminSubject.value;
   }
   
   public getAuthToken(): string | null{

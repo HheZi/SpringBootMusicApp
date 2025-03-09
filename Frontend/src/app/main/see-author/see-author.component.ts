@@ -7,6 +7,7 @@ import { TrackService } from '../../services/track/track.service';
 import { Title } from '@angular/platform-browser';
 import { Author } from './author';
 import { TrackListComponent } from '../track-list/track-list.component';
+import { AuthService } from '../../services/auth/auth.service';
 
 @Component({
   selector: 'app-see-author',
@@ -34,7 +35,8 @@ export class SeeAuthorComponent implements OnInit {
     private trackService: TrackService,
     private messageService: MessageService,
     private router: Router,
-    private title: Title
+    private title: Title,
+    private authService: AuthService
   ) { }
 
   ngOnInit(): void {
@@ -51,8 +53,8 @@ export class SeeAuthorComponent implements OnInit {
         this.editableAuthor.name = this.author.name;
         this.editableAuthor.description = this.author.description;
         this.title.setTitle(this.author.name);
-        this.authorService.canModify(this.author.id).subscribe((resp: any) => {
-          this.canModify = resp;
+        this.authService.isAdmin$.subscribe((val: boolean) => {
+          this.canModify = val;
         })
         this.albumService.getAlbumsByAuthorId(this.author.id).subscribe((albums: any) => {
           this.albums = albums;

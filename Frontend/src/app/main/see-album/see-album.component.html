@@ -5,7 +5,7 @@
             <h4 class="album-type text-uppercase text-muted">{{ album.albumType }}</h4>
             <h1 class="album-title d-flex align-items-center">
                 {{ album.name }}
-                <span *ngIf="isOwnerOfAlbum" class="ms-3">
+                <span *ngIf="isAdmin" class="ms-3">
                     <i class="pi pi-pencil icon btn btn-outline-secondary btn-sm"
                         (click)="editDialogVisible = true"></i>
                 </span>

@@ -1,16 +1,14 @@
-import { inject } from '@angular/core';
-import { CanActivateChildFn, Router} from '@angular/router';
-import { AuthService } from './services/auth/auth.service';
+import { CanActivateChildFn, Router } from "@angular/router";
+import { AuthService } from "./services/auth/auth.service";
+import { inject } from "@angular/core";
 
-export const authGuard: CanActivateChildFn = (route, state) => {
-  const authService: AuthService = inject(AuthService);
-  const router: Router = inject(Router);
+export const authGuard: CanActivateChildFn = () => {
+  const authService = inject(AuthService);
+  const router = inject(Router);
 
-  const isAuth: boolean = authService.isUserAuthenticated();
-
-  if(isAuth){
-    router.navigate(['login']);
-    return false;
+  if (authService.isUserAuthenticated()){
+    return true;
   }
-  return true;
+  router.navigate(["login"]);
+  return false;
 };

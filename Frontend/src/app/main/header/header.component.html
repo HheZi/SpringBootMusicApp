@@ -7,7 +7,7 @@
         (click)="navigateTo('/favorite/tracks')" 
         title="Favorite Tracks">
       </i>
-      <p-menu #menu [model]="items" [popup]="true"></p-menu>
+      <p-menu #menu [model]="items" [popup]="true" *ngIf="isAdmin"></p-menu>
       <p-button 
         (onClick)="menu.toggle($event)" 
         icon="pi pi-ellipsis-v" 
