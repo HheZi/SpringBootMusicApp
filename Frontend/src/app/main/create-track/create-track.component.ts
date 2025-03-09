@@ -7,9 +7,10 @@ import { MessageService } from 'primeng/api';
 import { Title } from '@angular/platform-browser';
 
 @Component({
-  selector: 'app-create-track',
-  templateUrl: './create-track.component.html',
-  styleUrl: './create-track.component.css'
+    selector: 'app-create-track',
+    templateUrl: './create-track.component.html',
+    styleUrl: './create-track.component.css',
+    standalone: false
 })
 export class CreateTrackComponent implements  OnInit{
 

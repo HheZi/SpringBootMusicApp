@@ -5,9 +5,10 @@ import { TrackListComponent } from '../track-list/track-list.component';
 import { TrackService } from '../../services/track/track.service';
 
 @Component({
-  selector: 'app-see-favorite-tracks',
-  templateUrl: './see-favorite-tracks.component.html',
-  styleUrl: './see-favorite-tracks.component.css'
+    selector: 'app-see-favorite-tracks',
+    templateUrl: './see-favorite-tracks.component.html',
+    styleUrl: './see-favorite-tracks.component.css',
+    standalone: false
 })
 export class SeeFavoriteTracksComponent implements AfterViewInit{
 

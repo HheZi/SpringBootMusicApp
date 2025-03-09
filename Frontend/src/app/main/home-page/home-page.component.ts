@@ -1,6 +1,5 @@
-import { AfterContentInit, AfterViewInit, Component, OnInit, ViewChild, ViewChildren } from '@angular/core';
+import { AfterViewInit, Component, ViewChild } from '@angular/core';
 import { TrackService } from '../../services/track/track.service';
-import { MessageService } from 'primeng/api';
 import { Title } from '@angular/platform-browser';
 import { AuthorService } from '../../services/author/author.service';
 import { AlbumService } from '../../services/album/album.service';
@@ -11,9 +10,10 @@ import { PlaylistService } from '../../services/playlist/playlist.service';
 import { TrackListComponent } from '../track-list/track-list.component';
 
 @Component({
-  selector: 'app-home-page',
-  templateUrl: './home-page.component.html',
-  styleUrls: ['./home-page.component.css'],
+    selector: 'app-home-page',
+    templateUrl: './home-page.component.html',
+    styleUrls: ['./home-page.component.css'],
+    standalone: false
 })
 export class HomeComponent implements  AfterViewInit {
 

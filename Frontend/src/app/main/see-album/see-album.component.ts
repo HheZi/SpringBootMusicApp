@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlbumService } from '../../services/album/album.service';
 import { TrackService } from '../../services/track/track.service';
@@ -15,7 +15,7 @@ import { AuthService } from '../../services/auth/auth.service';
     providers: [ConfirmationService],
     standalone: false
 })
-export class SeeAlbumComponent {
+export class SeeAlbumComponent implements AfterViewInit{
   public album: Album = { id: 0, imageUrl: "", name: "", numberOfTracks: 0, albumType: "", releaseDate: '', totalDuration: '', authorId: 0, authorImageUrl: '', authorName: '' };
   public isAdmin = false;
   public isNotFound = false;
@@ -38,7 +38,7 @@ export class SeeAlbumComponent {
     private authService: AuthService
   ) { }
 
-  ngOnInit(): void {
+  ngAfterViewInit(): void {
     const albumId = this.activeRoute.snapshot.paramMap.get('id');
     if (albumId) {
       this.loadAlbum(parseInt(albumId));

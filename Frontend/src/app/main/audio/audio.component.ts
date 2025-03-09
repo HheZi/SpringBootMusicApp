@@ -8,9 +8,10 @@ import { MessageService } from 'primeng/api';
 import { Track } from '../track-list/track';
 
 @Component({
-  selector: 'app-audio',
-  templateUrl: './audio.component.html',
-  styleUrl: './audio.component.css'
+    selector: 'app-audio',
+    templateUrl: './audio.component.html',
+    styleUrl: './audio.component.css',
+    standalone: false
 })
 export class AudioComponent implements OnInit, OnDestroy {
 

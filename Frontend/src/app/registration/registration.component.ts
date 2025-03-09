@@ -5,9 +5,10 @@ import { Router } from '@angular/router';
 import { Title } from '@angular/platform-browser';
 
 @Component({
-  selector: 'app-registration',
-  templateUrl: './registration.component.html',
-  styleUrl: './registration.component.css'
+    selector: 'app-registration',
+    templateUrl: './registration.component.html',
+    styleUrl: './registration.component.css',
+    standalone: false
 })
 export class RegistrationComponent implements OnInit{
 

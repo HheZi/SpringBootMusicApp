@@ -10,10 +10,11 @@ import { Observable } from 'rxjs';
 import { FavoriteService } from '../../services/favorite/favorite.service';
 
 @Component({
-  selector: 'app-track-list',
-  templateUrl: './track-list.component.html',
-  styleUrl: './track-list.component.css',
-  providers: [ConfirmationService]
+    selector: 'app-track-list',
+    templateUrl: './track-list.component.html',
+    styleUrl: './track-list.component.css',
+    providers: [ConfirmationService],
+    standalone: false
 })
 export class TrackListComponent {
 

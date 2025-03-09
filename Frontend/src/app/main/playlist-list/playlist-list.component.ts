@@ -4,9 +4,10 @@ import { PlaylistService } from '../../services/playlist/playlist.service';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-playlist-list',
-  templateUrl: './playlist-list.component.html',
-  styleUrl: './playlist-list.component.css'
+    selector: 'app-playlist-list',
+    templateUrl: './playlist-list.component.html',
+    styleUrl: './playlist-list.component.css',
+    standalone: false
 })
 export class PlaylistListComponent {
 

@@ -5,9 +5,10 @@ import { PlaylistService } from '../../services/playlist/playlist.service';
 import { MessageService } from 'primeng/api';
 
 @Component({
-  selector: 'app-create-playlist',
-  templateUrl: './create-playlist.component.html',
-  styleUrl: './create-playlist.component.css'
+    selector: 'app-create-playlist',
+    templateUrl: './create-playlist.component.html',
+    styleUrl: './create-playlist.component.css',
+    standalone: false
 })
 export class CreatePlaylistComponent {
 

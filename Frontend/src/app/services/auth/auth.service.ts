@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { AppConts } from '../../app.consts';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
@@ -37,12 +37,11 @@ export class AuthService {
 
   public IsUserAdmin(): Observable<boolean> {
     return this.httpClient.get<boolean>(AppConts.BASE_URL + '/is-admin').pipe(
-      tap((response: any) => this.isAdminSubject.next(response.isAdmin)
-    )
+      tap((response: any) => this.isAdminSubject.next(response.admin))
     );
   }
 
-  public getCurrentIsAdmin(): boolean | null {
+  public getCurrentIsAdmin(): boolean {
     return this.isAdminSubject.value;
   }
   
@@ -57,5 +56,6 @@ export class AuthService {
   public logout() {
     localStorage.removeItem(this.REFRESH_TOKEN_KEY_NAME);
     localStorage.removeItem(this.TOKEN_KEY_NAME);
+    this.isAdminSubject.next(false);
   }
 }

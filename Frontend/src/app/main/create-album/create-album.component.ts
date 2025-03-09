@@ -6,9 +6,10 @@ import { MessageService } from 'primeng/api';
 import { Title } from '@angular/platform-browser';
 
 @Component({
-  selector: 'app-create-album',
-  templateUrl: './create-album.component.html',
-  styleUrl: './create-album.component.css'
+    selector: 'app-create-album',
+    templateUrl: './create-album.component.html',
+    styleUrl: './create-album.component.css',
+    standalone: false
 })
 export class CreateAlbumComponent implements OnInit {
   public albumForm: FormGroup;

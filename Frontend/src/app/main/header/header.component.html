@@ -7,12 +7,14 @@
         (click)="navigateTo('/favorite/tracks')" 
         title="Favorite Tracks">
       </i>
-      <p-menu #menu [model]="items" [popup]="true" *ngIf="isAdmin"></p-menu>
-      <p-button 
-        (onClick)="menu.toggle($event)" 
-        icon="pi pi-ellipsis-v" 
-        class="menu-btn btn-outline-secondary">
-      </p-button>
+      <div *ngIf="isAdmin">
+        <p-menu #menu [model]="items" [popup]="true" ></p-menu>
+        <p-button 
+          (onClick)="menu.toggle($event)" 
+          icon="pi pi-ellipsis-v" 
+          class="menu-btn btn-outline-secondary">
+        </p-button>
+      </div>
     </div>
 
     <form class="search-form ms-auto me-auto d-flex align-items-center" (ngSubmit)="onSearch()">

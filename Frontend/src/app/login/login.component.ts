@@ -7,9 +7,10 @@ import { Title } from '@angular/platform-browser';
 
 
 @Component({
-  selector: 'app-login',
-  templateUrl: './login.component.html',
-  styleUrl: './login.component.css',
+    selector: 'app-login',
+    templateUrl: './login.component.html',
+    styleUrl: './login.component.css',
+    standalone: false
 })
 export class LoginComponent implements OnInit {
 
@@ -29,6 +30,7 @@ export class LoginComponent implements OnInit {
       next: (tokenResp: any) => {
         this.authService.saveAuthToken(tokenResp);
         this.router.navigate(["/home"]);
+        this.authService.IsUserAdmin().subscribe();
       },
       error: err => {
         this.messageService.add({ severity: "error", summary: "Error", detail: "Bad credential", closable: true })

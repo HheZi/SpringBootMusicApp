@@ -10,9 +10,10 @@ import { TrackListComponent } from '../track-list/track-list.component';
 import { AuthService } from '../../services/auth/auth.service';
 
 @Component({
-  selector: 'app-see-author',
-  templateUrl: './see-author.component.html',
-  styleUrl: './see-author.component.css'
+    selector: 'app-see-author',
+    templateUrl: './see-author.component.html',
+    styleUrl: './see-author.component.css',
+    standalone: false
 })
 export class SeeAuthorComponent implements OnInit {
   

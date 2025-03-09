@@ -10,10 +10,11 @@ import { HttpHeaders } from '@angular/common/http';
 import { formatNumber } from '@angular/common';
 
 @Component({
-  selector: 'app-see-playlist',
-  templateUrl: './see-playlist.component.html',
-  styleUrl: './see-playlist.component.css',
-  providers: [ConfirmationService]
+    selector: 'app-see-playlist',
+    templateUrl: './see-playlist.component.html',
+    styleUrl: './see-playlist.component.css',
+    providers: [ConfirmationService],
+    standalone: false
 })
 export class SeePlaylistComponent implements OnInit {
 

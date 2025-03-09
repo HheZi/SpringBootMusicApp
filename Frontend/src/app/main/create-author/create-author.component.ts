@@ -5,9 +5,10 @@ import { MessageService } from 'primeng/api';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
-  selector: 'app-create-author',
-  templateUrl: './create-author.component.html',
-  styleUrl: './create-author.component.css'
+    selector: 'app-create-author',
+    templateUrl: './create-author.component.html',
+    styleUrl: './create-author.component.css',
+    standalone: false
 })
 export class CreateAuthorComponent implements OnInit{
 
