@@ -130,6 +130,7 @@ public class PlaylistService {
         return playlistRepository.findById(id)
                 .filter(t -> t.getCreatedBy() == userId)
                 .switchIfEmpty(Mono.error(() -> new ResponseStatusException(HttpStatus.FORBIDDEN)))
+                .flatMap(playlist -> checkCreatedByAndUpdatePlaylist(playlist, dto, userId))
                 .flatMap(playlistRepository::save)
                 .then();
     }

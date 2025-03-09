@@ -9,10 +9,11 @@ import { TrackListComponent } from '../track-list/track-list.component';
 import { AuthService } from '../../services/auth/auth.service';
 
 @Component({
-  selector: 'app-see-album',
-  templateUrl: './see-album.component.html',
-  styleUrl: './see-album.component.css',
-  providers: [ConfirmationService]
+    selector: 'app-see-album',
+    templateUrl: './see-album.component.html',
+    styleUrl: './see-album.component.css',
+    providers: [ConfirmationService],
+    standalone: false
 })
 export class SeeAlbumComponent {
   public album: Album = { id: 0, imageUrl: "", name: "", numberOfTracks: 0, albumType: "", releaseDate: '', totalDuration: '', authorId: 0, authorImageUrl: '', authorName: '' };
@@ -68,11 +69,11 @@ export class SeeAlbumComponent {
       error: () => this.isNotFound = true
     })
 
-    this.authService.isAdmin$.subscribe({
-      next: (val: boolean) => {
+    this.authService.isAdmin$.subscribe(
+      (val: boolean) => {
         this.isAdmin = val;
-        this.trackList.makeUpdatable(this.isAdmin)
-        if (this.isAdmin){
+        this.trackList.makeUpdatable(val)
+        if (val){
           this.trackList.onDelete('Delete this track from album?', (trackId: number) => {
             this.trackService.deleteTrack(trackId).subscribe(() => {
               this.messageService.add({ closable: true, severity: "success", summary: "Track deleted" });
@@ -80,7 +81,6 @@ export class SeeAlbumComponent {
             });
           });
         }
-      }
     })
 
   }

@@ -11,7 +11,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class UserJwtPayload {
 
-    private String userId;
+    private Integer userId;
 
     private String userRole;
 

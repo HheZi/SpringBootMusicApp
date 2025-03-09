@@ -30,7 +30,7 @@ public class UserController {
 	public Mono<ResponseEntity<?>> createUser(
 			@Validated @RequestBody
 			UserFormRequest dto,
-			@RequestHeader("User-Role") UserRole role
+			@RequestHeader(value = "User-Role", required = false) UserRole role
 	) {
 		return service.createNewUser(dto, role);
 

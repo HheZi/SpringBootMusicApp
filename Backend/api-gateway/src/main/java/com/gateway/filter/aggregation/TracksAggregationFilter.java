@@ -51,7 +51,7 @@ public class TracksAggregationFilter implements GatewayFilter {
 	}
 	
 	private String getUserIdFromHeader(ServerWebExchange exchange) {
-		List<String> list = exchange.getRequest().getHeaders().getOrEmpty("userId");
+		List<String> list = exchange.getRequest().getHeaders().getOrEmpty("User-Id");
 		
 		return list.isEmpty() ? null : list.get(0);
 	}
@@ -155,7 +155,7 @@ public class TracksAggregationFilter implements GatewayFilter {
 						.build()
 						.get()
 						.uri(u -> u.queryParam("trackId", t).build())
-						.header("userId", userId)
+						.header("User-Id", userId)
 						.accept(MediaType.APPLICATION_JSON)
 						.exchangeToFlux(e -> e.bodyToFlux(Long.class)));
 	}

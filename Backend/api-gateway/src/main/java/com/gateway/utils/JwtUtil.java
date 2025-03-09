@@ -42,7 +42,7 @@ public class JwtUtil {
 	public UserJwtPayload getUserJwtPayload(String token) {
 		Claims claims = getClaims(token);
 
-		String userId = (String) claims.get(USER_ID_KEY);
+		Integer userId = (Integer) claims.get(USER_ID_KEY);
 		String userRole = (String) claims.get(USER_ROLE_KEY);
 
 		return new UserJwtPayload(userId, userRole);
