@@ -88,6 +88,11 @@ docker compose up
 
 4. Navigate to `http://localhost:4200/home` in your web browser.
 
+## How to add content
+
+* To add music/albums/authors you need login as Admin.
+* To do that use username Admin and password admin in login page.
+
 ## Usage
 
 - Register or log in to your account
