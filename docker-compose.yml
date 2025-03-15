@@ -106,34 +106,16 @@ services:
         condition: service_started  
       config-server:
         condition: service_healthy
-  
-  audio-service:
-    image: hhezi/springbootmusicapp-audio-service
-    container_name: audio-service
+
+  file-service:
+    image: hhezi/springbootmusicapp-file-service
+    container_name: file-service
     restart: on-failure
     environment:
       - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
       - spring.profiles.active=container
     volumes:
       - audio-volume:/home/app/audio
-    networks:
-      - backend-network
-    depends_on:
-      eureka-server:
-        condition: service_healthy
-      config-server:
-        condition: service_healthy
-      kafka:
-        condition: service_started
-  
-  image-service:
-    image: hhezi/springbootmusicapp-image-service
-    container_name: image-service
-    restart: on-failure
-    environment:
-      - spring.profiles.active=container
-      - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
-    volumes:
       - image-volume:/home/app/images
     networks:
       - backend-network
@@ -141,7 +123,7 @@ services:
       eureka-server:
         condition: service_healthy
       config-server:
-        condition: service_healthy  
+          condition: service_healthy
       kafka:
         condition: service_started
 

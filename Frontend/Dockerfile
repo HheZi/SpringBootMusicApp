@@ -2,8 +2,8 @@ FROM node:20-alpine AS build
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm install -g @angular/cli@17
-RUN npm ci
+RUN npm install -g @angular/cli@19
+RUN npm ci --force
 COPY . .
 RUN ng build
 
