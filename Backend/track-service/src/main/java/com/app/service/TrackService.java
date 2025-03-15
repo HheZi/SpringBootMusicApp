@@ -4,6 +4,7 @@ import com.app.enums.UserRole;
 import com.app.kafka.message.TrackDeletionMessage;
 import com.app.kafka.producer.KafkaTrackProducer;
 import com.app.model.Track;
+import com.app.payload.UploadTrack;
 import com.app.payload.request.CreateTrackDto;
 import com.app.payload.request.UpdateTrackRequest;
 import com.app.payload.response.ResponseTotalDuration;
@@ -12,6 +13,7 @@ import com.app.repository.TrackRepository;
 import com.app.util.TrackMapper;
 import com.mpatric.mp3agic.Mp3File;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -26,8 +28,11 @@ import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -40,21 +45,21 @@ public class TrackService {
 	private final AudioClient audioClient;
 
 	private final R2dbcEntityTemplate template;
-	
+
 	private final KafkaTrackProducer kafkaTrackProducer;
-	
+
 	private final String TEMP_FOLDER_NAME = "temp";
-	
+
 	@Transactional
 	public Mono<Page<ResponseTrack>> getTracks(
-			String trackName, 
+			String trackName,
 			List<Integer> albumId,
 			List<Long> ids,
 			Integer page,
 			Integer size
 		){
 		Criteria criteria = Criteria.empty();
-		
+
 		PageRequest pageable =  PageRequest.of(page, size);
 		Mono<Long> count = template.count(Query.empty(), Track.class);
 
@@ -70,22 +75,22 @@ public class TrackService {
 			criteria = Criteria.where("id").in(ids);
 			count = template.count(Query.query(criteria), Track.class);
 		}
-		
+
 		Flux<ResponseTrack> tracks = template.select(Query.query(criteria).with(pageable), Track.class)
 		.map(mapper::fromTrackToResponseTrack);
-		
+
 		return Mono.zip(tracks.collectList(), count)
 				.map(t -> new PageImpl<ResponseTrack>(t.getT1(), pageable, t.getT2()));
-		
+
 	}
-	
+
 	public Mono<Integer> countTracksByAlbumId(Long albumId){
 		return repository.countByAlbumId(albumId);
 	}
 
 	public Mono<ResponseTotalDuration> totalTimeOfTracks(List<Long> ids, Integer albumId) {
 		Flux<Track> tracks = Flux.empty();
-		
+
 		if (ids == null && albumId == null ) {
 			return Mono.error(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST));
 		}
@@ -95,31 +100,42 @@ public class TrackService {
 		else if (albumId != null) {
 			tracks = repository.findByAlbumId(albumId);
 		}
-		
+
 		return tracks
 				.switchIfEmpty(Flux.just(new Track()))
 				.map(Track::getDuration)
 				.reduce(Long::sum)
 				.map(mapper::getDurationOfTrack);
 	}
-	
+
 	@Transactional
 	public Mono<ResponseEntity<?>> createTrack(CreateTrackDto dto, UserRole userRole) {
 		if (userRole != UserRole.ADMIN){
 			throw new ResponseStatusException(HttpStatus.FORBIDDEN);
 		}
 
-		File file = new File(TEMP_FOLDER_NAME, dto.getAudio().filename()).getAbsoluteFile();
+		Path path = Paths.get(TEMP_FOLDER_NAME, dto.getAudio().filename());
 
-		return dto.getAudio().transferTo(file)
-				.then(Mono.fromCallable(() -> new Mp3File(file)))
-				.map(mp3File -> mapper.fromCreateTrackDtoToTrack(dto, mp3File))
-				.flatMap(track -> audioClient.saveAudio(track, file))
+		return dto.getAudio().transferTo(path)
+				.then(Mono.just(new UploadTrack(path, UUID.randomUUID())))
+				.flatMap(audioClient::saveAudio)
+				.flatMap(t ->
+                        Mono.zip(
+                                Mono.fromCallable(() -> new Mp3File(t.getPath())),
+								Mono.just(t.getName())
+                        )
+				)
+				.map(objects -> mapper.fromCreateTrackDtoToTrack(dto, objects.getT2(), objects.getT1()))
 				.flatMap(repository::save)
-				.doFinally(t -> file.delete())
+				.doFinally(t -> this.deleteTrackFile(path))
 				.map(track -> ResponseEntity.status(HttpStatus.CREATED).build());
 	}
-	
+
+	@SneakyThrows
+	public void deleteTrackFile(Path path) {
+		Files.delete(path);
+	}
+
 	@Transactional
 	public Mono<Void> deleteTrack(Long id, UserRole userRole){
 		if (userRole != UserRole.ADMIN){
@@ -133,7 +149,7 @@ public class TrackService {
 				})
 				.flatMap(repository::delete);
 	}
-	
+
 	@Transactional
 	public Mono<Void> deleteTracksByAlbumId(Integer albumId) {
 		return repository.findByAlbumId(albumId)
@@ -143,7 +159,7 @@ public class TrackService {
 		.collectList()
 		.flatMap(repository::deleteAll);
 	}
-	
+
 	@Transactional
 	public Mono<Void> updateTrackTitle(UpdateTrackRequest updateTrack, Long trackId, UserRole userRole){
 		if (userRole != UserRole.ADMIN){

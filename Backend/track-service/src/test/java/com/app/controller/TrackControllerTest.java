@@ -4,6 +4,7 @@ import com.app.exception.FileValidationException;
 import com.app.kafka.consumer.KafkaAlbumConsumer;
 import com.app.kafka.producer.KafkaTrackProducer;
 import com.app.model.Track;
+import com.app.payload.UploadTrack;
 import com.app.payload.request.UpdateTrackRequest;
 import com.app.service.AudioClient;
 import org.junit.jupiter.api.Test;
@@ -22,10 +23,12 @@ import org.springframework.web.reactive.function.BodyInserters;
 import reactor.core.publisher.Mono;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.UUID;
 
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.ArgumentMatchers.any;
 
 @SpringBootTest
 @EnableAutoConfiguration(exclude = KafkaAutoConfiguration.class)
@@ -127,11 +130,12 @@ public class TrackControllerTest {
         builder.part("albumId", "2");
         builder.part("audio", new ClassPathResource("file.mp3"));
 
-        Track track = new Track();
-        track.setAudioName(UUID.randomUUID());
+        UploadTrack uploadTrack = new UploadTrack();
+        uploadTrack.setName(UUID.randomUUID());
+        uploadTrack.setPath(Paths.get("temp", "file.mp3"));
 
-        Mockito.when(service.saveAudio(Mockito.any(Track.class), Mockito.any(File.class)))
-                .thenReturn(Mono.just(track));
+        Mockito.when(service.saveAudio(any()))
+                .thenReturn(Mono.just(uploadTrack));
 
         testClient.post()
                 .uri(t -> t.path("/api/tracks/").build())
@@ -153,8 +157,8 @@ public class TrackControllerTest {
 
         Track track = new Track();
         track.setAudioName(UUID.randomUUID());
-
-        Mockito.when(service.saveAudio(Mockito.any(Track.class), Mockito.any(File.class)))
+//
+        Mockito.when(service.saveAudio(any()))
                 .thenReturn(Mono.error(() -> new FileValidationException("Wrong format of file. Can be only MP3")));
 
         testClient.post()
@@ -197,10 +201,7 @@ public class TrackControllerTest {
         builder.part("title", "test4");
         builder.part("albumId", "2");
 
-        Track track = new Track();
-        track.setAudioName(UUID.randomUUID());
-
-        Mockito.when(service.saveAudio(Mockito.any(Track.class), Mockito.any(File.class)))
+        Mockito.when(service.saveAudio(any()))
                 .thenReturn(Mono.error(() -> new FileValidationException("Wrong format of file. Can be only MP3")));
 
         testClient.post()
@@ -223,10 +224,8 @@ public class TrackControllerTest {
         builder.part("albumId", "2");
         builder.part("audio", new ClassPathResource("file"));
 
-        Track track = new Track();
-        track.setAudioName(UUID.randomUUID());
 
-        Mockito.when(service.saveAudio(Mockito.any(Track.class), Mockito.any(File.class)))
+        Mockito.when(service.saveAudio(any()))
                 .thenReturn(Mono.error(() -> new FileValidationException("Wrong format of file. Can be only MP3")));
 
         testClient.post()

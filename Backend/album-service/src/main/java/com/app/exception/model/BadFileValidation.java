@@ -1,10 +1,14 @@
 package com.app.exception.model;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
+@NoArgsConstructor
+@Getter
+@Setter
 public class BadFileValidation {
 
-    private final String reason;
+    private String reason;
 
 }

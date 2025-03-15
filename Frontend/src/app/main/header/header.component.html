@@ -15,9 +15,9 @@
           class="menu-btn btn-outline-secondary">
         </p-button>
       </div>
-      <a href="/playlist/create" class="btn btn-outline-primary ms-2">
+      <div (click)="navigateTo('/playlist/create')" class="btn btn-outline-primary ms-2">
         <i class="pi pi-plus-circle me-1"></i> Create Playlist
-      </a>
+      </div>
     </div>
 
     <form class="search-form ms-auto me-auto d-flex align-items-center" (ngSubmit)="onSearch()">

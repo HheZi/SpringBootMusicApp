@@ -19,6 +19,8 @@ services:
     restart: on-failure
     ports: 
       - 4200:4200
+    profiles:
+      - frontend
 
   eureka-server: 
     build: 

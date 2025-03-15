@@ -3,6 +3,7 @@ package com.app.service;
 import com.app.exception.FileValidationException;
 import com.app.exception.model.BadFileValidation;
 import com.app.model.Track;
+import com.app.payload.UploadTrack;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpStatusCode;
@@ -21,13 +22,13 @@ public class AudioClient {
 
     private final WebClient.Builder webClient;
 
-    public Mono<Track> saveAudio(Track track, File pathToTempAudio) {
-        if(track.getAudioName() == null || pathToTempAudio == null) return Mono.empty();
+    public Mono<UploadTrack> saveAudio(UploadTrack uploadTrack) {
+        if(uploadTrack == null) return Mono.empty();
 
         MultipartBodyBuilder builder = new MultipartBodyBuilder();
 
-        builder.part("file", new FileSystemResource(pathToTempAudio));
-        builder.part("name", track.getAudioName().toString());
+        builder.part("file", new FileSystemResource(uploadTrack.getPath()));
+        builder.part("name", uploadTrack.getName().toString());
 
         return webClient.build()
                 .post().uri("http://file-service/api/files/audio")
@@ -35,7 +36,7 @@ public class AudioClient {
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, this::handleBadRequestError)
                 .toBodilessEntity()
-                .map(voidResponseEntity -> track);
+                .map(voidResponseEntity -> uploadTrack);
 
     }
 
